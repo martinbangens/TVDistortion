@@ -34,10 +34,8 @@ using DGL::NanoVG;
 // -----------------------------------------------------------------------
 
 class DistoTVUI : public UI,
-                         //public ImageButton::Callback,
                          public ImageKnob::Callback,
                          public ImageSlider::Callback
-			 
 {
 public:
     DistoTVUI();
@@ -70,12 +68,9 @@ protected:
     void onNanoDisplay()  override;
 
 private:
-    //Rule for NanoVG, if you dont use ScopedPointer you need to make sure you have no leak
-    //also it better to use NanoVG object types, you can easely make the program crash
+    
     Image fImgBackground;
     //ImageAboutWindow fAboutWindow;
-    
-    
     
     
     //ScopedPointer<ImageButton> fButtonAbout;

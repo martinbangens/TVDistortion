@@ -17,7 +17,6 @@
 #include "DistoTVPlugin.hpp"
 #include "DistoTVUI.hpp"
 #include <Widget.hpp>
-//#include <lo/lo_osc_types.h>
 
 START_NAMESPACE_DISTRHO
 
@@ -27,18 +26,13 @@ namespace Art = DistoTVArtwork;
 
 DistoTVUI::DistoTVUI() // constructor definition.
     : UI(Art::backgroundWidth, Art::backgroundHeight),// initializer list
-      fImgBackground(Art::backgroundData, Art::backgroundWidth, Art::backgroundHeight, GL_BGR)/*,
-      fAboutWindow(this) */
+      fImgBackground(Art::backgroundData, Art::backgroundWidth, Art::backgroundHeight, GL_BGR)
 {
-/*    // about
-    Image aboutImage(Art::aboutData, Art::aboutWidth, Art::aboutHeight, GL_BGR);
-    fAboutWindow.setImage(aboutImage);
-*/
+
     //fNanoPixmap.loadSharedResources();
     // sliders
     Image sliderImage(Art::sliderData, Art::sliderWidth, Art::sliderHeight);
-    //Point<int> sliderPosStart(57, 43);
-    //Point<int> sliderPosEnd(57, 43 + 160);
+
     
     fSliderWet = new ImageSlider(this, sliderImage);
     fSliderWet->setId(DistoTVPlugin::paramWet);
@@ -115,34 +109,7 @@ DistoTVUI::DistoTVUI() // constructor definition.
     fKnobHigh->setDefault(0.0f);
     fKnobHigh->setRotationAngle(270);
     fKnobHigh->setCallback(this);
-    /*
-    // knob Low-Mid
-    fKnobLowMid = new ImageKnob(this, knobImage, ImageKnob::Vertical);
-    fKnobLowMid->setId(DistrhoPlugin3BandEQ::paramLowMidFreq);
-    fKnobLowMid->setAbsolutePos(65, 269);
-    fKnobLowMid->setRange(0.0f, 1000.0f);
-    fKnobLowMid->setDefault(440.0f);
-    fKnobLowMid->setRotationAngle(270);
-    fKnobLowMid->setCallback(this);
 
-    // knob Mid-High
-    fKnobMidHigh = new ImageKnob(this, knobImage, ImageKnob::Vertical);
-    fKnobMidHigh->setId(DistrhoPlugin3BandEQ::paramMidHighFreq);
-    fKnobMidHigh->setAbsolutePos(159, 269);
-    fKnobMidHigh->setRange(1000.0f, 20000.0f);
-    fKnobMidHigh->setDefault(1000.0f);
-    fKnobMidHigh->setRotationAngle(270);
-    fKnobMidHigh->setCallback(this);
-*/
-    // about button
-    //Image aboutImageNormal(Art::aboutButtonNormalData, Art::aboutButtonNormalWidth, Art::aboutButtonNormalHeight);
-    //Image aboutImageHover(Art::aboutButtonHoverData, Art::aboutButtonHoverWidth, Art::aboutButtonHoverHeight);
-    //fButtonAbout = new ImageButton(this, aboutImageNormal, aboutImageHover, aboutImageHover);
-    //fButtonAbout->setAbsolutePos(264, 300);
-    //fButtonAbout->setCallback(this);
-  
-  
-  
   
   
 
