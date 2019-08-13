@@ -25,7 +25,7 @@ I'm noob to programming, I know the basics, took courses in c++ when I was young
 This is far from done or usable.
 I'm uploading the code just to show it right now.
 in hope that someone will help me understand what
-I'm doing. XD
+I'm doing.
 
 Screenshot
 -----------

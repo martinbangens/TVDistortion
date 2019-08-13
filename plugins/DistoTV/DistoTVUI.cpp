@@ -16,7 +16,8 @@
 
 #include "DistoTVPlugin.hpp"
 #include "DistoTVUI.hpp"
-
+#include <Widget.hpp>
+//#include <lo/lo_osc_types.h>
 
 START_NAMESPACE_DISTRHO
 
@@ -24,8 +25,8 @@ namespace Art = DistoTVArtwork;
 
 // -----------------------------------------------------------------------
 
-DistoTVUI::DistoTVUI()
-    : UI(Art::backgroundWidth, Art::backgroundHeight),// Main window
+DistoTVUI::DistoTVUI() // constructor definition.
+    : UI(Art::backgroundWidth, Art::backgroundHeight),// initializer list
       fImgBackground(Art::backgroundData, Art::backgroundWidth, Art::backgroundHeight, GL_BGR)/*,
       fAboutWindow(this) */
 {
@@ -139,20 +140,21 @@ DistoTVUI::DistoTVUI()
     //fButtonAbout = new ImageButton(this, aboutImageNormal, aboutImageHover, aboutImageHover);
     //fButtonAbout->setAbsolutePos(264, 300);
     //fButtonAbout->setCallback(this);
-    
+  
+  
+  
+  
+  
+
+
+  
     // set default values
     programLoaded(0);
 }
-DistoTVUI::~DistoTVUI()
-{
- /*   for (std::vector<ImageKnob*>::iterator it=vPixmap.begin(), end=vPixmap.end(); it != end; ++it)
-    {
-        fPixmap*  pix(*it);
-        delete pix;
-    }
+//DistoTVUI::~DistoTVUI() // destrucktor
+//{
 
-    vPixmap.clear();*/
-}
+//}
 // -----------------------------------------------------------------------
 // DSP Callbacks
 
@@ -230,19 +232,54 @@ void DistoTVUI::imageSliderValueChanged(ImageSlider* slider, float value)
     setParameterValue(slider->getId(), value);
 }
 
-void DistoTVUI::onDisplay()
+bool DistoTVUI::onMouse(const MouseEvent & ev) // this gets called when the mouse is presse, released.
 {
-   fImgBackground.draw();
-
-  
-}
-/*I have to define this pure virtal funktion */
-void DistoTVUI::onNanoDisplay() // Im stuck here
-{
-   fPixmap.beginFrame(100,100);
-
+  if (ev.press)// if pressed not released and if left mouse button
+    if (ev.button == 1)
+    {
+    //last condition is, if inside TV-Screen
+      if(ev.pos.getY() >= 195 and ev.pos.getY() <= 385 and ev.pos.getX() >= 130 and ev.pos.getX() <= 320)
+      {
+	printf("Im inside tv\n");
+	
+	//I want to start write valuse tto the grapical line from here
+	
+      }
+    }
     
-   fPixmap.endFrame();
+  return true;
+}
+
+bool DistoTVUI::onMotion (const MotionEvent & ) // this gets called when mouse is moving over the UI
+{
+  
+    
+  
+  
+  //printf("the mouse was moved");
+  //printf("	X=%i	", po.pos.getX());
+  //printf("Y=%i\n", po.pos.getY());
+  
+  return true;
+}
+
+void DistoTVUI::onNanoDisplay()
+{
+  fImgBackground.draw();
+     //background
+  
+    // here is the pixel dotts from nano that is supposed to be the line in the tv
+    for (int i = 0; i <= 190; i++){
+    
+    beginPath();
+    circle(130 + i, 300/* there should be some arry here that hold data from mouse */ , 1);
+    fillColor(167,14,65);
+    fill();
+    
+    
+    }
+    
+printf("im here \n");
 }
 // -----------------------------------------------------------------------
 

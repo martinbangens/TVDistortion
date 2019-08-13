@@ -17,15 +17,19 @@
 #pragma once
 
 #include "DistrhoUI.hpp"
-
+#include "DistoTVArtwork.hpp"
 #include <NanoVG.hpp>
 #include "ImageWidgets.hpp"
-#include "DistoTVArtwork.hpp"
+#include "Widget.hpp"
+
+
 
 START_NAMESPACE_DISTRHO
 using DGL::Image;
 using DGL::ImageKnob;
 using DGL::NanoVG;
+
+
 
 // -----------------------------------------------------------------------
 
@@ -33,10 +37,11 @@ class DistoTVUI : public UI,
                          //public ImageButton::Callback,
                          public ImageKnob::Callback,
                          public ImageSlider::Callback
+			 
 {
 public:
     DistoTVUI();
-    ~DistoTVUI() override;
+    //~DistoTVUI() override;
    
 
 protected:
@@ -56,22 +61,29 @@ protected:
     void imageSliderDragStarted(ImageSlider* slider) override;
     void imageSliderDragFinished(ImageSlider* slider) override;
     void imageSliderValueChanged(ImageSlider* slider, float value) override;
-
-    void onDisplay() override;
+    
+    // Mouse
+    bool onMouse(const MouseEvent & ) override;
+    bool onMotion (const MotionEvent & ) override;
+    
+   // void onDisplay() override;
     void onNanoDisplay()  override;
 
 private:
+    //Rule for NanoVG, if you dont use ScopedPointer you need to make sure you have no leak
+    //also it better to use NanoVG object types, you can easely make the program crash
     Image fImgBackground;
     //ImageAboutWindow fAboutWindow;
-
+    
+    
     
     
     //ScopedPointer<ImageButton> fButtonAbout;
     ScopedPointer<ImageKnob> fKnobLow, fKnobMid, fKnobHigh, fKnobMaster, fKnobDist, fKnobBit, fKnobTVNoise;
     ScopedPointer<ImageSlider> fSliderWet;
     
- 
-    NanoVG fPixmap;
+    
+    //NanoVG fPixmap;
     //std::vector<fPixmap*> vPixmap;
 
     DISTRHO_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(DistoTVUI)
