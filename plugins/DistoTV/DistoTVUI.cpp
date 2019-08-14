@@ -29,7 +29,7 @@ DistoTVUI::DistoTVUI() // constructor definition.
       fImgBackground(Art::backgroundData, Art::backgroundWidth, Art::backgroundHeight, GL_BGR)
 {
 
-    //fNanoPixmap.loadSharedResources();
+    
     // sliders
     Image sliderImage(Art::sliderData, Art::sliderWidth, Art::sliderHeight);
 
@@ -112,16 +112,12 @@ DistoTVUI::DistoTVUI() // constructor definition.
 
   
   
-
-
-  
     // set default values
     programLoaded(0);
 }
-//DistoTVUI::~DistoTVUI() // destrucktor
-//{
+//DistoTVUI::~DistoTVUI(){}
 
-//}
+
 // -----------------------------------------------------------------------
 // DSP Callbacks
 
@@ -160,15 +156,7 @@ void DistoTVUI::programLoaded(uint32_t index)
 
 // -----------------------------------------------------------------------
 // Widget Callbacks
-/*
-void DistoTVUI::imageButtonClicked(ImageButton* button, int)
-{
-    if (button != fButtonAbout)
-        return;
 
-    fAboutWindow.exec();
-}
-*/
 void DistoTVUI::imageKnobDragStarted(ImageKnob* knob)
 {
     editParameter(knob->getId(), true);
@@ -205,27 +193,37 @@ bool DistoTVUI::onMouse(const MouseEvent & ev) // this gets called when the mous
     if (ev.button == 1)
     {
     //last condition is, if inside TV-Screen
-      if(ev.pos.getY() >= 195 and ev.pos.getY() <= 385 and ev.pos.getX() >= 130 and ev.pos.getX() <= 320)
-      {
+      if(ev.pos.getY() >= 195 and ev.pos.getY() <= 385 and ev.pos.getX() >= 130 and ev.pos.getX() <= 320){
 	printf("Im inside tv\n");
-	
-	//I want to start write valuse tto the grapical line from here
-	
+	printDots = true;
+	return true;
       }
     }
-    
+  printDots = false;
+  printf("printDots is false\n");
   return true;
 }
 
-bool DistoTVUI::onMotion (const MotionEvent & ) // this gets called when mouse is moving over the UI
+bool DistoTVUI::onMotion (const MotionEvent & po) // this gets called when mouse is moving over the UI
 {
-  
+  if(po.pos.getY() >= 195 and po.pos.getY() <= 385 and po.pos.getX() > 130 and po.pos.getX() < 320){
+      
     
+      
+
+      
+  if (printDots){
+    line[po.pos.getX()-130]= po.pos.getY() - 300;  
+    repaint();  
+  }
+    
+}  
   
   
-  //printf("the mouse was moved");
-  //printf("	X=%i	", po.pos.getX());
-  //printf("Y=%i\n", po.pos.getY());
+  
+  printf("the mouse was moved");
+  printf("	X=%i	", po.pos.getX());
+  printf("Y=%i\n", po.pos.getY());
   
   return true;
 }
@@ -234,19 +232,20 @@ void DistoTVUI::onNanoDisplay()
 {
   fImgBackground.draw();
      //background
-  
+    
     // here is the pixel dotts from nano that is supposed to be the line in the tv
+    
     for (int i = 0; i <= 190; i++){
     
     beginPath();
-    circle(130 + i, 300/* there should be some arry here that hold data from mouse */ , 1);
-    fillColor(167,14,65);
+    circle(130+ i, line[i] + 300 , 1.5);
+    fillColor(70,33,5);
     fill();
+    closePath();
     
-    
-    }
-    
-printf("im here \n");
+  }
+
+
 }
 // -----------------------------------------------------------------------
 

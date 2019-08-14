@@ -72,14 +72,14 @@ private:
     Image fImgBackground;
     //ImageAboutWindow fAboutWindow;
     
+    int line[190]={0};
+    bool printDots;
+      
     
     //ScopedPointer<ImageButton> fButtonAbout;
     ScopedPointer<ImageKnob> fKnobLow, fKnobMid, fKnobHigh, fKnobMaster, fKnobDist, fKnobBit, fKnobTVNoise;
     ScopedPointer<ImageSlider> fSliderWet;
     
-    
-    //NanoVG fPixmap;
-    //std::vector<fPixmap*> vPixmap;
 
     DISTRHO_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(DistoTVUI)
 };
