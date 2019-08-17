@@ -19,6 +19,7 @@
 
 #include "DistrhoPlugin.hpp"
 
+#define AREAHEIGHT 250
 START_NAMESPACE_DISTRHO
 
 // -----------------------------------------------------------------------
@@ -36,8 +37,6 @@ public:
 	paramDist,
 	paramBit,
 	paramTVNoise,
-        paramLowMidFreq,
-        paramMidHighFreq,
         paramCount
     };
 
@@ -86,14 +85,14 @@ protected:
     // Init
 
     void initParameter(uint32_t index, Parameter& parameter) override;
-    void initProgramName(uint32_t index, String& programName) override;
+    //void initProgramName(uint32_t index, String& programName) override;
 
     // -------------------------------------------------------------------
     // Internal data
 
     float getParameterValue(uint32_t index) const override;
     void  setParameterValue(uint32_t index, float value) override;
-    void  loadProgram(uint32_t index) override;
+    //void  loadProgram(uint32_t index) override;
 
     // -------------------------------------------------------------------
     // Process
@@ -101,10 +100,16 @@ protected:
     void activate() override;
     void deactivate() override;
     void run(const float** inputs, float** outputs, uint32_t frames) override;
-
+    void setState(const char* key, const char* value) override;
+    void initState(unsigned int index, String& key, String& defval) override;
     // -------------------------------------------------------------------
 
+
 private:
+    float graph, speed;
+    float wave_y[AREAHEIGHT];
+    
+  
     float sigL1, sigR2, outVol;
     
     float fDist, fBit, fTVNoise;

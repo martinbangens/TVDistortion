@@ -30,7 +30,7 @@ DistoTVPlugin::DistoTVPlugin()
     : Plugin(paramCount, 1, 0) // 1 program, 0 states
 {
     // set default values
-    loadProgram(0);
+    //loadProgram(0);
 
     // reset
     deactivate();
@@ -85,14 +85,14 @@ void DistoTVPlugin::initParameter(uint32_t index, Parameter& parameter)
     }
 }
 
-void DistoTVPlugin::initProgramName(uint32_t index, String& programName)
+/*void DistoTVPlugin::initProgramName(uint32_t index, String& programName)
 {
     if (index != 0)
         return;
 
     programName = "Default";
 }
-
+*/
 // -----------------------------------------------------------------------
 // Internal data
 
@@ -142,7 +142,31 @@ void DistoTVPlugin::setParameterValue(uint32_t index, float value)
     }
 }
 
-void DistoTVPlugin::loadProgram(uint32_t index)
+void DistoTVPlugin::setState(const char* key, const char* value)
+{
+	if (strcmp(key, "waveform") == 0) {
+		char* tmp;
+		int i = 0;
+		char tmpbuf[4*AREAHEIGHT+1] = {0};
+		snprintf(tmpbuf, 4*AREAHEIGHT, "%s", value);
+		tmp = strtok(tmpbuf, " ");
+		while ((tmp != NULL) && (i < AREAHEIGHT)) {
+			wave_y[i] = ((float) atoi(tmp))/AREAHEIGHT - 0.5;
+			i++;
+			printf("dsp wave_y[%d]=%.2f \n", i, wave_y[i]);
+			tmp = strtok(NULL, " ");
+		}
+	
+	}
+}
+
+void DistoTVPlugin::initState(unsigned int index, String& key, String& defvalue)
+{
+	if (index == 0) key = "waveform";
+	defvalue = "";
+}
+
+/*void DistoTVPlugin::loadProgram(uint32_t index)
 {
     if (index != 0)
         return;
@@ -164,7 +188,7 @@ void DistoTVPlugin::loadProgram(uint32_t index)
     // reset filter values
     activate();
 }
-
+*/
 // -----------------------------------------------------------------------
 // Process
 
@@ -209,7 +233,16 @@ void DistoTVPlugin::run(const float** inputs, float** outputs, uint32_t frames)
     {
         sigL1 = in1[i];
         sigR2 = in2[i];
-        
+	
+	
+	
+	// signal is sterio and the clipping can be done on 4 places separetly
+	// left+ and left- and right+ and right-
+	
+	//gonna start make Left +
+	//if (sigL1 >= 0.0002 *  
+	
+	
         tmp1LP = a0LP * sigL1 - b1LP * tmp1LP + kDC_ADD;
         tmp2LP = a0LP * sigR2 - b1LP * tmp2LP + kDC_ADD;
         out1LP = tmp1LP - kDC_ADD;

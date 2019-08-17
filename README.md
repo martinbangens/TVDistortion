@@ -28,15 +28,9 @@ Screenshot
 <b>
 
 DistoTV<br/>
-![screenshot](https://raw.githubusercontent.com/martinbangens/DistoTV/master/plugins/DistoTV/Screenshot1.png "DistoTV")
+![screenshot](https://raw.githubusercontent.com/martinbangens/DistoTV/master/plugins/DistoTV/snapshot1.png "DistoTV")
 
 DistoTV<br/>
-![screenshot](https://raw.githubusercontent.com/martinbangens/DistoTV/master/plugins/DistoTV/Screenshot2.png "DistoTV")
-
-DistoTV<br/>
-![screenshot](https://raw.githubusercontent.com/martinbangens/DistoTV/master/plugins/DistoTV/Screenshot3.png "DistoTV")
-
-DistoTV<br/>
-![screenshot](https://raw.githubusercontent.com/martinbangens/DistoTV/master/plugins/DistoTV/Screenshot4.png "DistoTV")
+![screenshot](https://raw.githubusercontent.com/martinbangens/DistoTV/master/plugins/DistoTV/snapshot2.png "Line")
 
 </b>

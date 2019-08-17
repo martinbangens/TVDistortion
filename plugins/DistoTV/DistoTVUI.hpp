@@ -17,17 +17,16 @@
 #pragma once
 
 #include "DistrhoUI.hpp"
-#include "DistoTVArtwork.hpp"
-#include <NanoVG.hpp>
 #include "ImageWidgets.hpp"
-#include "Widget.hpp"
 
+#include "DistoTVArtwork.hpp"
 
+#define AREAHEIGHT 250
 
 START_NAMESPACE_DISTRHO
 using DGL::Image;
 using DGL::ImageKnob;
-using DGL::NanoVG;
+using DGL::ImageSwitch;
 
 
 
@@ -47,12 +46,13 @@ protected:
     // DSP Callbacks
 
     void parameterChanged(uint32_t index, float value) override;
-    void programLoaded(uint32_t index) override;
+    //void programLoaded(uint32_t index) override;
+    void stateChanged(const char*, const char*) override;
 
     // -------------------------------------------------------------------
     // Widget Callbacks
 
-    //void imageButtonClicked(ImageButton* button, int) override;
+    
     void imageKnobDragStarted(ImageKnob* knob) override;
     void imageKnobDragFinished(ImageKnob* knob) override;
     void imageKnobValueChanged(ImageKnob* knob, float value) override;
@@ -60,23 +60,36 @@ protected:
     void imageSliderDragFinished(ImageSlider* slider) override;
     void imageSliderValueChanged(ImageSlider* slider, float value) override;
     
+    
+    
+    // void onDisplay() override;
+    void onDisplay()  override;
+    
+    void uiIdle() override;
+    
     // Mouse
     bool onMouse(const MouseEvent & ) override;
     bool onMotion (const MotionEvent & ) override;
-    
-   // void onDisplay() override;
-    void onNanoDisplay()  override;
 
 private:
     
     Image fImgBackground;
-    //ImageAboutWindow fAboutWindow;
     
-    int line[190]={0};
-    bool printDots;
+    
+    float wave_y[AREAHEIGHT];
+    float env_y[AREAHEIGHT];
+    bool fGraph;
+
+    bool fDragging;
+    bool fDragValid;
+    DGL::Rectangle<int> fCanvasArea;
+
+    bool fWaveUpdated;
+    char fWaveState[4*AREAHEIGHT+1];
+
       
     
-    //ScopedPointer<ImageButton> fButtonAbout;
+    
     ScopedPointer<ImageKnob> fKnobLow, fKnobMid, fKnobHigh, fKnobMaster, fKnobDist, fKnobBit, fKnobTVNoise;
     ScopedPointer<ImageSlider> fSliderWet;
     

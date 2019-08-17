@@ -26,9 +26,12 @@ namespace Art = DistoTVArtwork;
 
 DistoTVUI::DistoTVUI() // constructor definition.
     : UI(Art::backgroundWidth, Art::backgroundHeight),// initializer list
-      fImgBackground(Art::backgroundData, Art::backgroundWidth, Art::backgroundHeight, GL_BGR)
+      fImgBackground(Art::backgroundData, Art::backgroundWidth, Art::backgroundHeight, GL_BGR),
+      fWaveUpdated(false)
+      
 {
-
+    fDragging = false;
+    fDragValid = false;
     
     // sliders
     Image sliderImage(Art::sliderData, Art::sliderWidth, Art::sliderHeight);
@@ -110,14 +113,46 @@ DistoTVUI::DistoTVUI() // constructor definition.
     fKnobHigh->setRotationAngle(270);
     fKnobHigh->setCallback(this);
 
-  
+    // drawing area
+    fCanvasArea.setPos(10,10);
+    fCanvasArea.setSize(AREAHEIGHT,AREAHEIGHT);
+    for (int i = 0; i < AREAHEIGHT; i++) {
+        wave_y[i] = -(AREAHEIGHT*(sin(2.*i*M_PI/AREAHEIGHT)-1.0))/2.;
+        env_y[i] = -(2*AREAHEIGHT*(sin(2.*i*M_PI/AREAHEIGHT/2.)-1.0))/2. < AREAHEIGHT / 2. ? -(2*AREAHEIGHT*(sin(2.*i*M_PI/AREAHEIGHT/2.)-1.0))/2. : AREAHEIGHT / 2.;
+    }
+
+    // toggle
+    //fToggleGraph = new ImageSwitch(this, toggleonImage, toggleoffImage);
+    //fToggleGraph->setAbsolutePos(300, 33);
+    //fToggleGraph->setCallback(this);
+    //fToggleGraph->setDown(false);
+
+    // set default values
+    //fKnobGain->setValue(0.0f);
+    //fKnobSpeed->setValue(10.0f);
   
     // set default values
-    programLoaded(0);
+    //programLoaded(0);
 }
 //DistoTVUI::~DistoTVUI(){}
 
-
+void DistoTVUI::stateChanged(const char* key, const char* value)
+{
+        if (strcmp(key, "waveform") == 0) {
+	        char* tmp;
+	        int i = 0;
+	        char tmpbuf[4*AREAHEIGHT+1] = {0};
+	        snprintf(tmpbuf, 4*AREAHEIGHT, "%s", value);
+	        tmp = strtok(tmpbuf, " ");
+	        while ((tmp != NULL) && (i < AREAHEIGHT)) {
+	                wave_y[i] = AREAHEIGHT-((float)atoi(tmp));
+	                i++;
+	                printf("reload dsp wave_y[%d]=%.2f ", i, wave_y[i]);
+	                tmp = strtok(NULL, " ");
+	        }
+	} 
+	repaint();
+}
 // -----------------------------------------------------------------------
 // DSP Callbacks
 
@@ -140,7 +175,7 @@ void DistoTVUI::parameterChanged(uint32_t index, float value)
     }
 }
 
-void DistoTVUI::programLoaded(uint32_t index)
+/*void DistoTVUI::programLoaded(uint32_t index)
 {
     if (index != 0)
         return;
@@ -150,9 +185,8 @@ void DistoTVUI::programLoaded(uint32_t index)
     fKnobMid->setValue(0.0f);
     fKnobHigh->setValue(0.0f);
     fKnobMaster->setValue(0.0f);
-    //fKnobLowMid->setValue(220.0f);
-    //fKnobMidHigh->setValue(2000.0f);
-}
+  
+}*/
 
 // -----------------------------------------------------------------------
 // Widget Callbacks
@@ -189,62 +223,113 @@ void DistoTVUI::imageSliderValueChanged(ImageSlider* slider, float value)
 
 bool DistoTVUI::onMouse(const MouseEvent & ev) // this gets called when the mouse is presse, released.
 {
-  if (ev.press)// if pressed not released and if left mouse button
-    if (ev.button == 1)
+  {
+    if (ev.button != 1)
+        return false;
+
+    if (ev.press)
     {
-    //last condition is, if inside TV-Screen
-      if(ev.pos.getY() >= 195 and ev.pos.getY() <= 385 and ev.pos.getX() >= 130 and ev.pos.getX() <= 320){
-	printf("Im inside tv\n");
-	printDots = true;
-	return true;
-      }
+        if (! fCanvasArea.contains(ev.pos)) {
+            //fDragValid = false;
+            return false;
+	}
+
+        fDragging = true;
+        fDragValid = true;
+        return true;
     }
-  printDots = false;
-  printf("printDots is false\n");
+    else if (fDragging)
+    {
+        fDragging = false;
+        return true;
+    }
+
   return true;
-}
-
-bool DistoTVUI::onMotion (const MotionEvent & po) // this gets called when mouse is moving over the UI
-{
-  if(po.pos.getY() >= 195 and po.pos.getY() <= 385 and po.pos.getX() > 130 and po.pos.getX() < 320){
-      
-    
-      
-
-      
-  if (printDots){
-    line[po.pos.getX()-130]= po.pos.getY() - 300;  
-    repaint();  
   }
+}
+bool DistoTVUI::onMotion (const MotionEvent & ev) // this gets called when mouse is moving over the UI
+{
+  if (! fDragging)
+        return false;
+    if (! fDragValid)
+    {
+        fDragValid = true;
+    }
+
+	
+
+    int x = ev.pos.getX();
+    int y = ev.pos.getY();
+
+    if (x > fCanvasArea.getWidth()+10)
+    x = fCanvasArea.getWidth()+10;
+    if (x < 10) x = 10;
+    if (y < 10) y = 10;
+
+    float *gr;
     
-}  
-  
-  
-  
-  printf("the mouse was moved");
-  printf("	X=%i	", po.pos.getX());
-  printf("Y=%i\n", po.pos.getY());
-  
+    
+        gr = wave_y;
+        if (y > fCanvasArea.getHeight()+10)
+            y = fCanvasArea.getHeight()+10;
+    
+
+    if (gr[x-10] != (y-10)) {
+        char* tmp =  fWaveState;
+        memset(tmp, 0, sizeof(fWaveState));
+
+        int i;
+        for(i = 0; i < AREAHEIGHT; i++) {
+            char wavestr[5] = {0};
+            snprintf(wavestr, sizeof(wavestr), "%03d ", (int) (fCanvasArea.getHeight()-gr[i]));
+            strcat(tmp, wavestr);
+        }
+
+        gr[x-10] = y-10;
+
+        fWaveUpdated = true;
+
+        repaint();
+    }
+
+
   return true;
 }
 
-void DistoTVUI::onNanoDisplay()
+void DistoTVUI::onDisplay()
 {
   fImgBackground.draw();
      //background
     
-    // here is the pixel dotts from nano that is supposed to be the line in the tv
-    
-    for (int i = 0; i <= 190; i++){
-    
-    beginPath();
-    circle(130+ i, line[i] + 300 , 1.5);
-    fillColor(70,33,5);
-    fill();
-    closePath();
-    
-  }
+    glEnable(GL_BLEND);// blend the color with current pixel buffer
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glEnable(GL_LINE_SMOOTH);// draw lines whit filtering
+    glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
 
+    glLineWidth(2);
+    float *gr;
+    gr = wave_y;
+
+    int i;
+        glColor4f(0.235f, 1.f, 0.235f, 1.0f);
+        for (i = 2; i < AREAHEIGHT; ++i) {
+            glBegin(GL_LINES);
+                    glVertex2i(i-1+fCanvasArea.getX(), gr[i-1]+fCanvasArea.getY());
+                    glVertex2i(i+fCanvasArea.getX(), gr[i]+fCanvasArea.getY());
+            glEnd();
+        }
+    // reset color
+    glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+
+}
+
+void DistoTVUI::uiIdle()
+{
+    if (fWaveUpdated)
+    {
+        fWaveUpdated = false;
+        setState("waveform", fWaveState);
+    }
 
 }
 // -----------------------------------------------------------------------
