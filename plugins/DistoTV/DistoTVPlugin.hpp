@@ -19,7 +19,7 @@
 
 #include "DistrhoPlugin.hpp"
 
-#define AREAHEIGHT 250
+#define AREAHEIGHT 190
 START_NAMESPACE_DISTRHO
 
 // -----------------------------------------------------------------------

@@ -27,7 +27,7 @@ START_NAMESPACE_DISTRHO
 // -----------------------------------------------------------------------
 
 DistoTVPlugin::DistoTVPlugin()
-    : Plugin(paramCount, 1, 0) // 1 program, 0 states
+    : Plugin(paramCount, 0, 0) // 1 program, 0 states
 {
     // set default values
     //loadProgram(0);

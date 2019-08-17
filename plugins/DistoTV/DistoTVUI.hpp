@@ -21,7 +21,7 @@
 
 #include "DistoTVArtwork.hpp"
 
-#define AREAHEIGHT 250
+#define AREAHEIGHT 190
 
 START_NAMESPACE_DISTRHO
 using DGL::Image;
@@ -77,7 +77,7 @@ private:
     
     
     float wave_y[AREAHEIGHT];
-    float env_y[AREAHEIGHT];
+    //float env_y[AREAHEIGHT];
     bool fGraph;
 
     bool fDragging;

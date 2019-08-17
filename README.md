@@ -30,7 +30,5 @@ Screenshot
 DistoTV<br/>
 ![screenshot](https://raw.githubusercontent.com/martinbangens/DistoTV/master/plugins/DistoTV/snapshot1.png "DistoTV")
 
-DistoTV<br/>
-![screenshot](https://raw.githubusercontent.com/martinbangens/DistoTV/master/plugins/DistoTV/snapshot2.png "Line")
 
 </b>

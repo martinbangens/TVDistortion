@@ -114,22 +114,12 @@ DistoTVUI::DistoTVUI() // constructor definition.
     fKnobHigh->setCallback(this);
 
     // drawing area
-    fCanvasArea.setPos(10,10);
+    fCanvasArea.setPos(130,195);
     fCanvasArea.setSize(AREAHEIGHT,AREAHEIGHT);
     for (int i = 0; i < AREAHEIGHT; i++) {
         wave_y[i] = -(AREAHEIGHT*(sin(2.*i*M_PI/AREAHEIGHT)-1.0))/2.;
-        env_y[i] = -(2*AREAHEIGHT*(sin(2.*i*M_PI/AREAHEIGHT/2.)-1.0))/2. < AREAHEIGHT / 2. ? -(2*AREAHEIGHT*(sin(2.*i*M_PI/AREAHEIGHT/2.)-1.0))/2. : AREAHEIGHT / 2.;
     }
 
-    // toggle
-    //fToggleGraph = new ImageSwitch(this, toggleonImage, toggleoffImage);
-    //fToggleGraph->setAbsolutePos(300, 33);
-    //fToggleGraph->setCallback(this);
-    //fToggleGraph->setDown(false);
-
-    // set default values
-    //fKnobGain->setValue(0.0f);
-    //fKnobSpeed->setValue(10.0f);
   
     // set default values
     //programLoaded(0);
@@ -261,20 +251,20 @@ bool DistoTVUI::onMotion (const MotionEvent & ev) // this gets called when mouse
     int x = ev.pos.getX();
     int y = ev.pos.getY();
 
-    if (x > fCanvasArea.getWidth()+10)
-    x = fCanvasArea.getWidth()+10;
-    if (x < 10) x = 10;
-    if (y < 10) y = 10;
+    if (x > fCanvasArea.getWidth()+130)
+    x = fCanvasArea.getWidth()+130;
+    if (x < 130) x = 130;
+    if (y < 195) y = 195;
 
     float *gr;
     
     
         gr = wave_y;
-        if (y > fCanvasArea.getHeight()+10)
-            y = fCanvasArea.getHeight()+10;
+        if (y > fCanvasArea.getHeight()+195)
+            y = fCanvasArea.getHeight()+195;
     
 
-    if (gr[x-10] != (y-10)) {
+    if (gr[x-130] != (y-195)) {
         char* tmp =  fWaveState;
         memset(tmp, 0, sizeof(fWaveState));
 
@@ -285,7 +275,7 @@ bool DistoTVUI::onMotion (const MotionEvent & ev) // this gets called when mouse
             strcat(tmp, wavestr);
         }
 
-        gr[x-10] = y-10;
+        gr[x-130] = y-195;
 
         fWaveUpdated = true;
 
