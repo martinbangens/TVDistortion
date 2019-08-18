@@ -46,8 +46,9 @@ protected:
     // DSP Callbacks
 
     void parameterChanged(uint32_t index, float value) override;
-    //void programLoaded(uint32_t index) override;
-    void stateChanged(const char*, const char*) override;
+    void programLoaded(uint32_t index) override;
+    void stateChanged(const char* key, const char* value) override;
+    
   
 
     // -------------------------------------------------------------------
@@ -76,9 +77,8 @@ private:
     
     Image fImgBackground;
     
+    float wave_y[AREAHEIGHT] = {0};
     
-    float wave_y[AREAHEIGHT];
-    //float env_y[AREAHEIGHT];
     bool fGraph;
 
     bool fDragging;

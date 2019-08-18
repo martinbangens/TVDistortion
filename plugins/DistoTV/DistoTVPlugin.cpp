@@ -27,10 +27,10 @@ START_NAMESPACE_DISTRHO
 // -----------------------------------------------------------------------
 
 DistoTVPlugin::DistoTVPlugin()
-    : Plugin(paramCount, 0, 0) // 1 program, 0 states
+    : Plugin(paramCount, 1, 1) // 1 program, 0 states
 {
     // set default values
-    //loadProgram(0);
+    loadProgram(0);
 
     // reset
     deactivate();
@@ -48,7 +48,7 @@ void DistoTVPlugin::initParameter(uint32_t index, Parameter& parameter)
         parameter.name       = "Wet";
         parameter.symbol     = "wet";
         parameter.unit       = "%";
-        parameter.ranges.def = 0.0f;
+        parameter.ranges.def = 50.0f;
         parameter.ranges.min = 0.0f;
         parameter.ranges.max = 100.0f;
         break;
@@ -124,7 +124,7 @@ void DistoTVPlugin::initParameter(uint32_t index, Parameter& parameter)
         break;
     }
 }
-/*
+
 void DistoTVPlugin::initProgramName(uint32_t index, String& programName)
 {
     if (index != 0)
@@ -132,7 +132,7 @@ void DistoTVPlugin::initProgramName(uint32_t index, String& programName)
 
     programName = "Default";
 }
-*/
+
 // -----------------------------------------------------------------------
 // Internal data
 
@@ -201,11 +201,13 @@ void DistoTVPlugin::setParameterValue(uint32_t index, float value)
 
 void DistoTVPlugin::setState(const char* key, const char* value)
 {
+  //printf("\nthis is the string\n%s", value);
 	if (strcmp(key, "waveform") == 0) {
 		char* tmp;
 		int i = 0;
 		char tmpbuf[4*AREAHEIGHT+1] = {0};
-		snprintf(tmpbuf, 4*AREAHEIGHT, "%s", value);// why man?
+		snprintf(tmpbuf, 4*AREAHEIGHT, "%s", value);
+		//printf("\nthe value of tmpbuf\n%s", tmpbuf);
 		tmp = strtok(tmpbuf, " "); // take me word for word baby
 		while ((tmp != NULL) && (i < AREAHEIGHT)) {
 			wave_y[i] = ((float) atoi(tmp))/AREAHEIGHT - 0.5; // take float values of the strings and put in wave_y
@@ -217,35 +219,42 @@ void DistoTVPlugin::setState(const char* key, const char* value)
 	}
 }
 
-/*String getState(const char * key) {
-if (strcmp(key, "waveform") == 0) {
-		char* tmp;
-		int i = 0;
-		char tmpbuf[4*AREAHEIGHT+1] = {0};
-		snprintf(tmpbuf, 4*AREAHEIGHT, "%s", value);// why man?
-		tmp = strtok(tmpbuf, " "); // take me word for word baby
-		while ((tmp != NULL) && (i < AREAHEIGHT)) {
-			wave_y[i] = ((float) atoi(tmp))/AREAHEIGHT - 0.5; // take float values of the strings and put in wave_y
-			i++;						  // but why devided by AREAHEIGHT - 0.5
-			printf("dsp wave_y[%d]=%.2f \n", i, wave_y[i]);
-			tmp = strtok(NULL, " ");
-		}
-	
-	}
+String DistoTVPlugin::getState(const char * key)const { // this seem logical to me 
+/*  if (strcmp(key, "waveform") == 0) {			  // I whant DistoTV to be able to save the wave in presets
+    //har tmp[];
+    int i = 0;
+    int SpaceTime = 0;
+    char tmpbuf[4*AREAHEIGHT+1] = {0};
+    while (i < AREAHEIGHT) {
+      SpaceTime++;
+      tmpbuf[i] = (char)wave_y[i];
+      if (SpaceTime == 3){
+	tmpbuf[i] = ' ';
+	SpaceTime = 0;
+      }
+    }
+    return String(tmpbuf);
+  
+  }*///well it make the plugin crash XD 
+  return String("");
 }
-*/
+
 void DistoTVPlugin::initState(unsigned int index, String& key, String& defvalue)
 {
 	if (index == 0) key = "waveform";
 	defvalue = "";
 }
 
-/*void DistoTVPlugin::loadProgram(uint32_t index)
+void DistoTVPlugin::loadProgram(uint32_t index)
 {
     if (index != 0)
         return;
 
     // Default values
+    fWet = 50.0f;
+    fTVNoise = 0.0f;
+    fBit = 0.0f;
+    fDist = 0.0f;
     fLow = 0.0f;
     fMid = 0.0f;
     fHigh = 0.0f;
@@ -262,7 +271,7 @@ void DistoTVPlugin::initState(unsigned int index, String& key, String& defvalue)
     // reset filter values
     activate();
 }
-*/
+
 // -----------------------------------------------------------------------
 // Process
 

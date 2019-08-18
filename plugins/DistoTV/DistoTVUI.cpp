@@ -43,7 +43,7 @@ DistoTVUI::DistoTVUI() // constructor definition.
     fSliderWet->setStartPos(20,1);
     fSliderWet->setEndPos(402,1);
     fSliderWet->setRange(0.0f, 100.0f);
-    fSliderWet->setDefault(0.0f);
+    fSliderWet->setDefault(50.0f);
     fSliderWet->setCallback(this);
 
     // knobs Gett Imgage data
@@ -115,19 +115,21 @@ DistoTVUI::DistoTVUI() // constructor definition.
 
     // drawing area
     fCanvasArea.setPos(130,195);
-    fCanvasArea.setSize(AREAHEIGHT,AREAHEIGHT);
+    fCanvasArea.setSize(AREAHEIGHT,AREAHEIGHT); // this my be what brakes the program... the ui should only read from the plugin when init
     for (int i = 0; i < AREAHEIGHT; i++) {
         wave_y[i] = -(AREAHEIGHT*(sin(2.*i*M_PI/AREAHEIGHT)-1.0))/2.;
     }
+    
 
-  
+    
     // set default values
-    //programLoaded(0);
+    programLoaded(0);
 }
 //DistoTVUI::~DistoTVUI(){}
 
 void DistoTVUI::stateChanged(const char* key, const char* value)
 {
+  printf("Im here at StateCHanged\n");
         if (strcmp(key, "waveform") == 0) {
 	        char* tmp;
 	        int i = 0;
@@ -143,6 +145,8 @@ void DistoTVUI::stateChanged(const char* key, const char* value)
 	} 
 	repaint();
 }
+
+
 // -----------------------------------------------------------------------
 // DSP Callbacks
 
@@ -177,18 +181,22 @@ void DistoTVUI::parameterChanged(uint32_t index, float value)
     }
 }
 
-/*void DistoTVUI::programLoaded(uint32_t index)
+void DistoTVUI::programLoaded(uint32_t index)
 {
     if (index != 0)
         return;
 
     // Default values
+    fSliderWet->setValue(50.0f);
+    fKnobTVNoise->setValue(0.0f);
+    fKnobBit->setValue(0.0f);
+    fKnobDist->setValue(0.0f);
     fKnobLow->setValue(0.0f);
     fKnobMid->setValue(0.0f);
     fKnobHigh->setValue(0.0f);
     fKnobMaster->setValue(0.0f);
   
-}*/
+}
 
 // -----------------------------------------------------------------------
 // Widget Callbacks
