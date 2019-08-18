@@ -18,8 +18,8 @@
 
 #include <cmath>
 
-static const float kAMP_DB = 8.656170245f; // natural log of decibel?
-static const float kDC_ADD = 1e-30f; 	   // 0.000000000000000000000000000001
+static const float kAMP_DB = 8.656170245f; 
+static const float kDC_ADD = 1e-30f; 	   
 static const float kPI     = 3.141592654f;
 
 START_NAMESPACE_DISTRHO
@@ -43,6 +43,46 @@ void DistoTVPlugin::initParameter(uint32_t index, Parameter& parameter)
 {
     switch (index)
     {
+    case paramWet:
+        parameter.hints      = kParameterIsAutomable;
+        parameter.name       = "Wet";
+        parameter.symbol     = "wet";
+        parameter.unit       = "%";
+        parameter.ranges.def = 0.0f;
+        parameter.ranges.min = 0.0f;
+        parameter.ranges.max = 100.0f;
+        break;
+
+    case paramTVNoise:
+        parameter.hints      = kParameterIsAutomable;
+        parameter.name       = "TVNoise";
+        parameter.symbol     = "tvnoise";
+        parameter.unit       = "%";
+        parameter.ranges.def = 0.0f;
+        parameter.ranges.min = 0.0f;
+        parameter.ranges.max = 100.0f;
+        break;
+
+    case paramBit:
+        parameter.hints      = kParameterIsAutomable;
+        parameter.name       = "Bit";
+        parameter.symbol     = "bit";
+        parameter.unit       = "%";
+        parameter.ranges.def = 0.0f;
+        parameter.ranges.min = 0.0f;
+        parameter.ranges.max = 100.0f;
+        break;
+
+    case paramDist:
+        parameter.hints      = kParameterIsAutomable;
+        parameter.name       = "Dist";
+        parameter.symbol     = "dist";
+        parameter.unit       = "%";
+        parameter.ranges.def = 0.0f;
+        parameter.ranges.min = 0.0f;
+        parameter.ranges.max = 100.0f;
+        break;
+
     case paramLow:
         parameter.hints      = kParameterIsAutomable;
         parameter.name       = "Low";
@@ -84,8 +124,8 @@ void DistoTVPlugin::initParameter(uint32_t index, Parameter& parameter)
         break;
     }
 }
-
-/*void DistoTVPlugin::initProgramName(uint32_t index, String& programName)
+/*
+void DistoTVPlugin::initProgramName(uint32_t index, String& programName)
 {
     if (index != 0)
         return;
@@ -100,6 +140,14 @@ float DistoTVPlugin::getParameterValue(uint32_t index) const
 {
     switch (index)
     {
+    case paramWet:
+        return fWet;
+    case paramTVNoise:
+        return fTVNoise;
+    case paramBit:
+        return fBit;
+    case paramDist:
+        return fDist;
     case paramLow:
         return fLow;
     case paramMid:
@@ -120,6 +168,18 @@ void DistoTVPlugin::setParameterValue(uint32_t index, float value)
 
     switch (index)
     {
+    case paramWet:
+        fWet   = value;
+        break;
+    case paramTVNoise:
+        fTVNoise   = value;
+        break;
+    case paramBit:
+        fBit   = value;
+        break;
+    case paramDist:
+        fDist = value;
+        break;
     case paramLow:
         fLow   = value;
         lowVol = std::exp( (fLow/48.0f) * 48.0f / kAMP_DB);
@@ -136,9 +196,6 @@ void DistoTVPlugin::setParameterValue(uint32_t index, float value)
         fMaster = value;
         outVol  = std::exp( (fMaster/48.0f) * 48.0f / kAMP_DB);
         break;
-    case paramWet:
-        fDist = value;
-        break;
     }
 }
 
@@ -148,11 +205,11 @@ void DistoTVPlugin::setState(const char* key, const char* value)
 		char* tmp;
 		int i = 0;
 		char tmpbuf[4*AREAHEIGHT+1] = {0};
-		snprintf(tmpbuf, 4*AREAHEIGHT, "%s", value);
-		tmp = strtok(tmpbuf, " ");
+		snprintf(tmpbuf, 4*AREAHEIGHT, "%s", value);// why man?
+		tmp = strtok(tmpbuf, " "); // take me word for word baby
 		while ((tmp != NULL) && (i < AREAHEIGHT)) {
-			wave_y[i] = ((float) atoi(tmp))/AREAHEIGHT - 0.5;
-			i++;
+			wave_y[i] = ((float) atoi(tmp))/AREAHEIGHT - 0.5; // take float values of the strings and put in wave_y
+			i++;						  // but why devided by AREAHEIGHT - 0.5
 			printf("dsp wave_y[%d]=%.2f \n", i, wave_y[i]);
 			tmp = strtok(NULL, " ");
 		}
@@ -160,6 +217,23 @@ void DistoTVPlugin::setState(const char* key, const char* value)
 	}
 }
 
+/*String getState(const char * key) {
+if (strcmp(key, "waveform") == 0) {
+		char* tmp;
+		int i = 0;
+		char tmpbuf[4*AREAHEIGHT+1] = {0};
+		snprintf(tmpbuf, 4*AREAHEIGHT, "%s", value);// why man?
+		tmp = strtok(tmpbuf, " "); // take me word for word baby
+		while ((tmp != NULL) && (i < AREAHEIGHT)) {
+			wave_y[i] = ((float) atoi(tmp))/AREAHEIGHT - 0.5; // take float values of the strings and put in wave_y
+			i++;						  // but why devided by AREAHEIGHT - 0.5
+			printf("dsp wave_y[%d]=%.2f \n", i, wave_y[i]);
+			tmp = strtok(NULL, " ");
+		}
+	
+	}
+}
+*/
 void DistoTVPlugin::initState(unsigned int index, String& key, String& defvalue)
 {
 	if (index == 0) key = "waveform";

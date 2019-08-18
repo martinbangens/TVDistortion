@@ -20,8 +20,21 @@ You are more then welcome to do whatever you want whit the code, I would love to
 
 This is far from done or usable.
 I'm uploading the code just to show it right now.
-in hope that someone will help me understand what
-I'm doing.
+I case I need help
+
+TO DO
+
+1. when mouse is hold down and wave is painted
+    if I paint out of the screen to the right
+     the plugin will stopp paint
+     FIX ME
+2. In VST mode if I close the UI Window
+    the wave gets reset back to default sine wave
+    FIX ME
+3. Need programs activated and also states in DistrhoPluginInfo.h
+4. Need some simpel distortion dsp to start with
+5. analyse the code closely
+6. 3 preset built-in
 
 Screenshot
 -----------

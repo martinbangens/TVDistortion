@@ -27,16 +27,16 @@ START_NAMESPACE_DISTRHO
 class DistoTVPlugin : public Plugin
 {
 public:
-    enum Parameters
+    enum Parameters // What the Fuck !!
     {
-        paramLow = 0,
+        paramWet= 0,
+        paramTVNoise,
+        paramBit,
+        paramDist,
+        paramLow, 
         paramMid,
         paramHigh,
         paramMaster,
-	paramWet,
-	paramDist,
-	paramBit,
-	paramTVNoise,
         paramCount
     };
 
@@ -102,17 +102,18 @@ protected:
     void run(const float** inputs, float** outputs, uint32_t frames) override;
     void setState(const char* key, const char* value) override;
     void initState(unsigned int index, String& key, String& defval) override;
+    //String getState(const char * key)const override;
     // -------------------------------------------------------------------
 
 
 private:
+    
     float graph, speed;
     float wave_y[AREAHEIGHT];
     
-  
     float sigL1, sigR2, outVol;
     
-    float fDist, fBit, fTVNoise;
+    float fWet, fTVNoise, fBit, fDist;
     
     float fLow, fMid, fHigh, fMaster, fLowMidFreq, fMidHighFreq;
 

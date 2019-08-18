@@ -52,7 +52,7 @@ DistoTVUI::DistoTVUI() // constructor definition.
     
     // knob TV-Noise
     fKnobTVNoise = new ImageKnob(this, knobImage, ImageKnob::Vertical);
-    fKnobTVNoise->setId(DistoTVPlugin::paramBit);
+    fKnobTVNoise->setId(DistoTVPlugin::paramTVNoise);
     fKnobTVNoise->setAbsolutePos(20, 120);
     fKnobTVNoise->setRange(0.0f, 100.0f);
     fKnobTVNoise->setDefault(0.0f);
@@ -150,6 +150,18 @@ void DistoTVUI::parameterChanged(uint32_t index, float value)
 {
     switch (index)
     {
+    case DistoTVPlugin::paramWet:
+        fSliderWet->setValue(value);
+        break;
+    case DistoTVPlugin::paramTVNoise:
+        fKnobTVNoise->setValue(value);
+        break;   
+    case DistoTVPlugin::paramBit:
+        fKnobBit->setValue(value);
+        break;  
+    case DistoTVPlugin::paramDist:
+        fKnobDist->setValue(value);
+        break;
     case DistoTVPlugin::paramLow:
         fKnobLow->setValue(value);
         break;
