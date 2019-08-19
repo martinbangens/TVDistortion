@@ -32,7 +32,6 @@ ifeq ($(HAVE_JACK),true)
 TARGETS += jack
 endif
 
-TARGETS += ladspa
 TARGETS += vst
 
 ifeq ($(HAVE_DGL),true)

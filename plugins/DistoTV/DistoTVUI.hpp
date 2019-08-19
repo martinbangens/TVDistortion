@@ -77,7 +77,7 @@ private:
     
     Image fImgBackground;
     
-    float wave_y[AREAHEIGHT] = {0}; //DSP Data
+    float wave_y[AREAHEIGHT+1] = {0}; //DSP Data
     
 
     bool fDragging;
