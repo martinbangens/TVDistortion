@@ -139,7 +139,7 @@ void DistoTVUI::stateChanged(const char* key, const char* value)
 	        while ((tmp != NULL) && (i < AREAHEIGHT)) {
 	                wave_y[i] = AREAHEIGHT-((float)atoi(tmp));
 	                i++;
-	                printf("reload dsp wave_y[%d]=%.2f ", i, wave_y[i]);
+	                //printf("reload dsp wave_y[%d]=%.2f ", i, wave_y[i]);
 	                tmp = strtok(NULL, " ");
 	        }
 	} 
@@ -266,38 +266,31 @@ bool DistoTVUI::onMotion (const MotionEvent & ev) // this gets called when mouse
         fDragValid = true;
     }
 
-	
-
     int x = ev.pos.getX();
     int y = ev.pos.getY();
+ 
+    if (x > 320) x = 320;// outside right
+    if (x < 130) x = 130;// outside left
+    if (y > 385) y = 385;// outside bottom
+    if (y < 195) y = 195;// outside top
+  
+    float *gr; 
+    gr = wave_y;
 
-    if (x > fCanvasArea.getWidth()+130)
-    x = fCanvasArea.getWidth()+130;
-    if (x < 130) x = 130;
-    if (y < 195) y = 195;
-
-    float *gr;
-    
-    
-        gr = wave_y;
-        if (y > fCanvasArea.getHeight()+195)
-            y = fCanvasArea.getHeight()+195;
-    
-
-    if (gr[x-130] != (y-195)) {
+    if (gr[x-130] != (y-195)) { // if wave_y is not the same as getY()
         char* tmp =  fWaveState;
-        memset(tmp, 0, sizeof(fWaveState));
+        memset(tmp, 0, sizeof(fWaveState));// fill fWaveState whit 0
 
-        int i;
+        int i;// make new string and put it back in fWaveState
         for(i = 0; i < AREAHEIGHT; i++) {
             char wavestr[5] = {0};
             snprintf(wavestr, sizeof(wavestr), "%03d ", (int) (fCanvasArea.getHeight()-gr[i]));
             strcat(tmp, wavestr);
         }
 
-        gr[x-130] = y-195;
+        gr[x-130] = y-195; // give wave_y the new value
 
-        fWaveUpdated = true;
+        fWaveUpdated = true; // then uiIdle() will setState()
 
         repaint();
     }

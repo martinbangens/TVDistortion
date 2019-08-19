@@ -77,16 +77,15 @@ private:
     
     Image fImgBackground;
     
-    float wave_y[AREAHEIGHT] = {0};
+    float wave_y[AREAHEIGHT] = {0}; //DSP Data
     
-    bool fGraph;
 
     bool fDragging;
     bool fDragValid;
-    DGL::Rectangle<int> fCanvasArea;
+    DGL::Rectangle<int> fCanvasArea; //OpenGL image data for the wave + size and position 
 
     bool fWaveUpdated;
-    char fWaveState[4*AREAHEIGHT+1];
+    char fWaveState[4*AREAHEIGHT+1]; // 4 char(3 values and 1 space for every pixel) +1 extra for "NULL" terminator = The State Wave String :D
 
       
     

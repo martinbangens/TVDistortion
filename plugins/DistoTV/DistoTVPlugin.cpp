@@ -17,6 +17,7 @@
 #include "DistoTVPlugin.hpp"
 
 #include <cmath>
+#include <lo/lo_osc_types.h>
 
 static const float kAMP_DB = 8.656170245f; 
 static const float kDC_ADD = 1e-30f; 	   
@@ -201,42 +202,42 @@ void DistoTVPlugin::setParameterValue(uint32_t index, float value)
 
 void DistoTVPlugin::setState(const char* key, const char* value)
 {
-  //printf("\nthis is the string\n%s", value);
+  printf("\nthis is setState string\n%s", value);
 	if (strcmp(key, "waveform") == 0) {
 		char* tmp;
 		int i = 0;
 		char tmpbuf[4*AREAHEIGHT+1] = {0};
-		snprintf(tmpbuf, 4*AREAHEIGHT, "%s", value);
+		snprintf(tmpbuf, 4*AREAHEIGHT+1, "%s", value);
 		//printf("\nthe value of tmpbuf\n%s", tmpbuf);
 		tmp = strtok(tmpbuf, " "); // take me word for word baby
 		while ((tmp != NULL) && (i < AREAHEIGHT)) {
 			wave_y[i] = ((float) atoi(tmp))/AREAHEIGHT - 0.5; // take float values of the strings and put in wave_y
-			i++;						  // but why devided by AREAHEIGHT - 0.5
-			printf("dsp wave_y[%d]=%.2f \n", i, wave_y[i]);
+			
+			//printf("dsp wave_y[%d]=%.2f \n", i, wave_y[i]);
 			tmp = strtok(NULL, " ");
+			i++;
 		}
 	
 	}
 }
 
-String DistoTVPlugin::getState(const char * key)const { // this seem logical to me 
-/*  if (strcmp(key, "waveform") == 0) {			  // I whant DistoTV to be able to save the wave in presets
-    //har tmp[];
-    int i = 0;
-    int SpaceTime = 0;
+String DistoTVPlugin::getState(const char * key)const {
+  if (strcmp(key, "waveform") == 0) {
     char tmpbuf[4*AREAHEIGHT+1] = {0};
-    while (i < AREAHEIGHT) {
-      SpaceTime++;
-      tmpbuf[i] = (char)wave_y[i];
-      if (SpaceTime == 3){
-	tmpbuf[i] = ' ';
-	SpaceTime = 0;
-      }
-    }
+    int i = 0;
+    int value;
+    char word[5];   
+    while(i < AREAHEIGHT) {
+     value = (int)(wave_y[i]*(AREAHEIGHT+0.5))+95;
+     snprintf(word,5,"%03d ", value);
+     strcat(tmpbuf,word);     
+    i++; 
+   }
+   printf("\nthis is getState string\n%s",tmpbuf);
     return String(tmpbuf);
-  
-  }*///well it make the plugin crash XD 
-  return String("");
+  }
+   
+  return String("false");
 }
 
 void DistoTVPlugin::initState(unsigned int index, String& key, String& defvalue)

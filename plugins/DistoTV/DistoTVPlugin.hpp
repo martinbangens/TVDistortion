@@ -109,7 +109,7 @@ protected:
 private:
     
     float graph, speed;
-    float wave_y[AREAHEIGHT];
+    float wave_y[AREAHEIGHT] = {0};
     
     float sigL1, sigR2, outVol;
     
