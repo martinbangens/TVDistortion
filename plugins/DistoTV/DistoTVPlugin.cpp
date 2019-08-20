@@ -17,7 +17,7 @@
 #include "DistoTVPlugin.hpp"
 
 #include <cmath>
-#include <lo/lo_osc_types.h>
+//#include <lo/lo_osc_types.h>
 
 static const float kAMP_DB = 8.656170245f; 
 static const float kDC_ADD = 1e-30f; 	   
@@ -28,7 +28,7 @@ START_NAMESPACE_DISTRHO
 // -----------------------------------------------------------------------
 
 DistoTVPlugin::DistoTVPlugin()
-    : Plugin(paramCount, 1, 1) // 1 program, 0 states
+    : Plugin(paramCount, 2, 1) //  program, states
 {
     // set default values
     loadProgram(0);
@@ -126,13 +126,7 @@ void DistoTVPlugin::initParameter(uint32_t index, Parameter& parameter)
     }
 }
 
-void DistoTVPlugin::initProgramName(uint32_t index, String& programName)
-{
-    if (index != 0)
-        return;
 
-    programName = "Default";
-}
 
 // -----------------------------------------------------------------------
 // Internal data
@@ -202,23 +196,22 @@ void DistoTVPlugin::setParameterValue(uint32_t index, float value)
 
 void DistoTVPlugin::setState(const char* key, const char* value)
 {
-  printf("\nthis is setState string\n%s", value);
-	if (strcmp(key, "waveform") == 0) {
-		char* tmp;
-		int i = 0;
-		char tmpbuf[4*AREAHEIGHT+1] = {0};
-		snprintf(tmpbuf, 4*AREAHEIGHT+1, "%s", value);
-		//printf("\nthe value of tmpbuf\n%s", tmpbuf);
-		tmp = strtok(tmpbuf, " "); // take me word for word baby
-		while ((tmp != NULL) && (i < AREAHEIGHT)) {
-			wave_y[i] = ((float) atoi(tmp))/AREAHEIGHT - 0.5; // take float values of the strings and put in wave_y
-			
-			//printf("dsp wave_y[%d]=%.2f \n", i, wave_y[i]);
-			tmp = strtok(NULL, " ");
-			i++;
-		}
-	
-	}
+        //printf("\nthis is setState string\n%s", value);
+        if (strcmp(key, "waveform") == 0) {
+                char* tmp;
+                int i = 0;
+                char tmpbuf[4*AREAHEIGHT+1] = {0};
+                snprintf(tmpbuf, 4*AREAHEIGHT+1, "%s", value);
+                //printf("\nthe value of tmpbuf\n%s", tmpbuf);
+                tmp = strtok(tmpbuf, " "); // take me word for word baby
+                while ((tmp != NULL) && (i < AREAHEIGHT)) {
+                        wave_y[i] = ((float) atoi(tmp))/AREAHEIGHT - 0.5; // take float values of the strings and put in wave_y
+                        //printf("dsp wave_y[%d]=%.2f \n", i, wave_y[i]);
+                        tmp = strtok(NULL, " ");
+                        i++;
+                }
+        
+       }
 }
 
 String DistoTVPlugin::getState(const char * key)const {
@@ -231,25 +224,39 @@ String DistoTVPlugin::getState(const char * key)const {
      value = (int)(wave_y[i]*(AREAHEIGHT+0.5))+95;
      snprintf(word,5,"%03d ", value);
      strcat(tmpbuf,word);     
-    i++; 
+     i++; 
    }
-   printf("\nthis is getState string\n%s",tmpbuf);
-    return String(tmpbuf);
-  }
+   //printf("\nthis is getState string\n%s",tmpbuf);
+   return String(tmpbuf);
+   }
    
   return String("false");
 }
 
+void DistoTVPlugin::initProgramName(uint32_t index, String& programName)
+{
+  
+  switch (index) {
+        case 0:
+            programName = "DefaultName";
+            break;
+        case 1:
+            programName = "First";
+            break;
+    }
+}
+
 void DistoTVPlugin::initState(unsigned int index, String& key, String& defvalue)
 {
-	if (index == 0) key = "waveform";
-	defvalue = "";
+    if (index == 0) key = "waveform";
+        defvalue = "";
 }
 
 void DistoTVPlugin::loadProgram(uint32_t index)
 {
-    if (index != 0)
-        return;
+  
+  
+    if (index == 0){
 
     // Default values
     fWet = 50.0f;
@@ -271,6 +278,13 @@ void DistoTVPlugin::loadProgram(uint32_t index)
 
     // reset filter values
     activate();
+
+    }
+    switch (index) {
+        case 1:
+            setParameterValue(paramWet, 30.0f);
+            break;
+    }
 }
 
 // -----------------------------------------------------------------------
@@ -317,14 +331,30 @@ void DistoTVPlugin::run(const float** inputs, float** outputs, uint32_t frames)
     {
         sigL1 = in1[i];
         sigR2 = in2[i];
+	graph++;
+	if (graph == 190)
+	  graph = 0;
 	
-	
+	// Got basic clipping for testing
+	// Need some warm tube amp for this
+	// then parralell drive-sig with dry
 	
 	// signal is sterio and the clipping can be done on 4 places separetly
 	// left+ and left- and right+ and right-
 	
-	//gonna start make Left +
-	//if (sigL1 >= 0.0002 *  
+	if (sigL1 >= 0.5+wave_y[graph]){
+	  sigL1 = 0.5+wave_y[graph];
+	}
+	if (sigL1 <=-0.5-wave_y[graph]){
+	  sigL1 = -0.5-wave_y[graph];
+	}
+	if (sigR2 >= 0.5+wave_y[graph]){
+	  sigR2 = 0.5+wave_y[graph];
+	}
+	if (sigR2 <=-0.5-wave_y[graph]){
+	  sigR2 = -0.5-wave_y[graph];
+	}
+	
 	
 	
         tmp1LP = a0LP * sigL1 - b1LP * tmp1LP + kDC_ADD;

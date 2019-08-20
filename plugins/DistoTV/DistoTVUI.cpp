@@ -117,10 +117,9 @@ DistoTVUI::DistoTVUI() // constructor definition.
     fCanvasArea.setPos(130,195);
     fCanvasArea.setSize(AREAHEIGHT,AREAHEIGHT); // this my be what brakes the program... the ui should only read from the plugin when init
     for (int i = 0; i < AREAHEIGHT; i++) {
-        wave_y[i] = -(AREAHEIGHT*(sin(2.*i*M_PI/AREAHEIGHT)-1.0))/2.;
+        wave_y[i] = -(AREAHEIGHT*(sin(2.*i*M_PI/AREAHEIGHT)-1.0))/2.; //95;
     }
     
-
     
     // set default values
     programLoaded(0);
@@ -129,7 +128,8 @@ DistoTVUI::DistoTVUI() // constructor definition.
 
 void DistoTVUI::stateChanged(const char* key, const char* value)
 {
-  printf("Im here at StateCHanged\n");
+  //printf("Im here at StateChanged\n");
+  
         if (strcmp(key, "waveform") == 0) {
 	        char* tmp;
 	        int i = 0;
@@ -139,7 +139,7 @@ void DistoTVUI::stateChanged(const char* key, const char* value)
 	        while ((tmp != NULL) && (i < AREAHEIGHT)) {
 	                wave_y[i] = AREAHEIGHT-((float)atoi(tmp));
 	                i++;
-	                //printf("reload dsp wave_y[%d]=%.2f ", i, wave_y[i]);
+	                //printf("%03d ", (int)wave_y[i]);
 	                tmp = strtok(NULL, " ");
 	        }
 	} 
@@ -183,8 +183,7 @@ void DistoTVUI::parameterChanged(uint32_t index, float value)
 
 void DistoTVUI::programLoaded(uint32_t index)
 {
-    if (index != 0)
-        return;
+    if (index == 0){
 
     // Default values
     fSliderWet->setValue(50.0f);
@@ -195,7 +194,19 @@ void DistoTVUI::programLoaded(uint32_t index)
     fKnobMid->setValue(0.0f);
     fKnobHigh->setValue(0.0f);
     fKnobMaster->setValue(0.0f);
-  
+    }
+    if (index == 1){
+
+    // Default values
+    fSliderWet->setValue(50.0f);
+    fKnobTVNoise->setValue(0.0f);
+    fKnobBit->setValue(0.0f);
+    fKnobDist->setValue(0.0f);
+    fKnobLow->setValue(0.0f);
+    fKnobMid->setValue(0.0f);
+    fKnobHigh->setValue(0.0f);
+    fKnobMaster->setValue(0.0f);
+    }
 }
 
 // -----------------------------------------------------------------------
@@ -277,7 +288,7 @@ bool DistoTVUI::onMotion (const MotionEvent & ev) // this gets called when mouse
     float *gr; 
     gr = wave_y;
 
-    if (gr[x-130] != (y-195)) { // if wave_y is not the same as getY()
+    if (gr[x-130] != (y-195)) { // if wave_y is not the same as getY(), then update
         char* tmp =  fWaveState;
         memset(tmp, 0, sizeof(fWaveState));// fill fWaveState whit 0
 

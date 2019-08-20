@@ -62,11 +62,8 @@ protected:
     void imageSliderDragFinished(ImageSlider* slider) override;
     void imageSliderValueChanged(ImageSlider* slider, float value) override;
     
-    
-    
-    // void onDisplay() override;
+    // Display
     void onDisplay()  override;
-    
     void uiIdle() override;
     
     // Mouse
@@ -77,7 +74,7 @@ private:
     
     Image fImgBackground;
     
-    float wave_y[AREAHEIGHT+1] = {0}; //DSP Data
+    float wave_y[AREAHEIGHT+1] = {0}; //Reflect DSP Data
     
 
     bool fDragging;

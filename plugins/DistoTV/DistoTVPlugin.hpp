@@ -27,7 +27,7 @@ START_NAMESPACE_DISTRHO
 class DistoTVPlugin : public Plugin
 {
 public:
-    enum Parameters // What the Fuck !!
+    enum Parameters
     {
         paramWet= 0,
         paramTVNoise,
@@ -53,17 +53,17 @@ protected:
 
     const char* getDescription() const override
     {
-        return "Distorion, stereo version.";
+        return "Distortion, stereo version.";
     }
 
     const char* getMaker() const noexcept override
     {
-        return "Martin";
+        return "DistoTV";
     }
 
     const char* getHomePage() const override
     {
-        return "https://github.com/IndustrialSounds/DistoTV";
+        return "https://github.com/martinbangens/DistoTV";
     }
 
     const char* getLicense() const noexcept override
@@ -89,7 +89,7 @@ protected:
 
     // -------------------------------------------------------------------
     // Internal data
-
+      
     float getParameterValue(uint32_t index) const override;
     void  setParameterValue(uint32_t index, float value) override;
     void  loadProgram(uint32_t index) override;
@@ -103,12 +103,14 @@ protected:
     void setState(const char* key, const char* value) override;
     void initState(unsigned int index, String& key, String& defval) override;
     String getState(const char* key) const override;
-    // -------------------------------------------------------------------
+    
+// -------------------------------------------------------------------
 
 
 private:
     
-    float graph, speed;
+    int graph = 0;
+    
     float wave_y[AREAHEIGHT+1] = {0};
     
     float sigL1, sigR2, outVol;
