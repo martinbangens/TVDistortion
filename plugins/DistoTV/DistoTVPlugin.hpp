@@ -104,6 +104,18 @@ protected:
     void initState(unsigned int index, String& key, String& defval) override;
     String getState(const char* key) const override;
     
+    
+    // --------------------------------------------------------------
+    // DSP
+    
+    float tube(float input, float gain);
+    
+    
+    
+    
+    
+    
+    
 // -------------------------------------------------------------------
 
 
@@ -113,7 +125,7 @@ private:
     
     float wave_y[AREAHEIGHT+1] = {0};
     
-    float sigL1, sigR2, outVol;
+    float sigL1, sigR2, sigDryL1, sigDryR2, outVol;
     
     float fWet, fTVNoise, fBit, fDist;
     

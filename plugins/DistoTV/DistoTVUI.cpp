@@ -117,7 +117,7 @@ DistoTVUI::DistoTVUI() // constructor definition.
     fCanvasArea.setPos(130,195);
     fCanvasArea.setSize(AREAHEIGHT,AREAHEIGHT); // this my be what brakes the program... the ui should only read from the plugin when init
     for (int i = 0; i < AREAHEIGHT; i++) {
-        wave_y[i] = -(AREAHEIGHT*(sin(2.*i*M_PI/AREAHEIGHT)-1.0))/2.; //95;
+        wave_y[i] = /*-(AREAHEIGHT*(sin(2.*i*M_PI/AREAHEIGHT)-1.0))/2.; */95;
     }
     
     

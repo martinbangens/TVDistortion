@@ -17,6 +17,7 @@
 #include "DistoTVPlugin.hpp"
 
 #include <cmath>
+#include <lo/lo_osc_types.h>
 //#include <lo/lo_osc_types.h>
 
 static const float kAMP_DB = 8.656170245f; 
@@ -316,6 +317,18 @@ void DistoTVPlugin::deactivate()
     tmp1LP = tmp2LP = tmp1HP = tmp2HP = 0.0f;
 }
 
+float DistoTVPlugin::tube(float sig, float gain)
+{
+ 
+  sig = sig * (2*gain);
+  
+  if (sig < 0.000000001f and sig > -0.000000001f){
+   sig = sin(sig);
+  }
+  sig = sig + sin(0.000000000000000000000000001f);
+  return sig;
+}
+
 void DistoTVPlugin::run(const float** inputs, float** outputs, uint32_t frames)
 {
     const float* in1  = inputs[0];
@@ -329,8 +342,8 @@ void DistoTVPlugin::run(const float** inputs, float** outputs, uint32_t frames)
       */
     for (uint32_t i=0; i < frames; ++i)
     {
-        sigL1 = in1[i];
-        sigR2 = in2[i];
+        sigDryL1 = sigL1 = in1[i];
+        sigDryR2 = sigR2 = in2[i];
 	graph++;
 	if (graph == 190)
 	  graph = 0;
@@ -339,8 +352,14 @@ void DistoTVPlugin::run(const float** inputs, float** outputs, uint32_t frames)
 	// Need some warm tube amp for this
 	// then parralell drive-sig with dry
 	
+	//amplitude
+	
+	sigL1 = tube(sigL1, 0.15*fDist);
+	sigR2 = tube(sigR2, 0.15*fDist);
+	
 	// signal is sterio and the clipping can be done on 4 places separetly
 	// left+ and left- and right+ and right-
+	
 	
 	if (sigL1 >= 0.5+wave_y[graph]){
 	  sigL1 = 0.5+wave_y[graph];
@@ -354,8 +373,12 @@ void DistoTVPlugin::run(const float** inputs, float** outputs, uint32_t frames)
 	if (sigR2 <=-0.5-wave_y[graph]){
 	  sigR2 = -0.5-wave_y[graph];
 	}
+
+	//sigL1 = sigL1 / (2*(0.15*fDist));
+	//sigR2 = sigR2 / (2*(0.15*fDist));
 	
-	
+	sigL1 = sigDryL1 - (sigDryL1 * 0.01 *fDist) + (sigL1 * 0.01 * fDist);
+	sigR2 = sigDryR2 - (sigDryR2 * 0.01 *fDist) + (sigL1 * 0.01 * fDist);
 	
         tmp1LP = a0LP * sigL1 - b1LP * tmp1LP + kDC_ADD;
         tmp2LP = a0LP * sigR2 - b1LP * tmp2LP + kDC_ADD;

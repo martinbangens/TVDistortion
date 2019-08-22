@@ -27,6 +27,16 @@ TO DO
 1. Add some simple dist algorithm, funstuff
 2. Add default presets
 
+other ui stuff
+
+interpolation menu on the leftbottum corner
+channel menu on the left botton corner(for diffrent wavevs at the same time)
+base wave widget with  menu under the tv
+preset menu to the right 
+
+graph reset botton
+smoth botton
+
 Screenshot
 -----------
 <b>
