@@ -1,7 +1,5 @@
 #!/bin/bash
 
-echo "This script is not tested hit control c"
-read
 
 set -e
 

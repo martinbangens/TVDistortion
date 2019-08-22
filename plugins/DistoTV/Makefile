@@ -35,12 +35,6 @@ endif
 TARGETS += vst
 
 ifeq ($(HAVE_DGL),true)
-ifeq ($(HAVE_LIBLO),true)
-TARGETS += dssi
-endif
-endif
-
-ifeq ($(HAVE_DGL),true)
 TARGETS += lv2_sep
 else
 TARGETS += lv2_dsp

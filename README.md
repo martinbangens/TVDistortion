@@ -29,10 +29,10 @@ TO DO
 
 other ui stuff
 
-interpolation menu on the leftbottum corner
-channel menu on the left botton corner(for diffrent wavevs at the same time)
-base wave widget with  menu under the tv
-preset menu to the right 
+interpolation menu on the left bottom corner
+channel menu on the left botton corner(for different waves at the same time)
+base wave widget with menu under the tv
+preset menu to the right
 
 graph reset botton
 smoth botton

@@ -18,7 +18,7 @@
 
 #include <cmath>
 #include <lo/lo_osc_types.h>
-//#include <lo/lo_osc_types.h>
+#include "DistoTV-DSP.hpp"
 
 static const float kAMP_DB = 8.656170245f; 
 static const float kDC_ADD = 1e-30f; 	   
@@ -293,6 +293,13 @@ void DistoTVPlugin::loadProgram(uint32_t index)
 
 void DistoTVPlugin::activate()
 {
+    
+    int rndnum;
+    for (int i = 0; i <= 100; i++){
+        rndnum =  rand() % 100 + 1;
+	rnd[i] = rndnum * 0.00000000000000000000000000001f;
+    }
+  
     const float sr = (float)getSampleRate();
 
     xLP  = std::exp(-2.0f * kPI * freqLP / sr);
@@ -317,17 +324,6 @@ void DistoTVPlugin::deactivate()
     tmp1LP = tmp2LP = tmp1HP = tmp2HP = 0.0f;
 }
 
-float DistoTVPlugin::tube(float sig, float gain)
-{
- 
-  sig = sig * (2*gain);
-  
-  if (sig < 0.000000001f and sig > -0.000000001f){
-   sig = sin(sig);
-  }
-  sig = sig + sin(0.000000000000000000000000001f);
-  return sig;
-}
 
 void DistoTVPlugin::run(const float** inputs, float** outputs, uint32_t frames)
 {
@@ -354,8 +350,8 @@ void DistoTVPlugin::run(const float** inputs, float** outputs, uint32_t frames)
 	
 	//amplitude
 	
-	sigL1 = tube(sigL1, 0.15*fDist);
-	sigR2 = tube(sigR2, 0.15*fDist);
+	sigL1 = tube(sigL1, 0.14*fDist);
+	sigR2 = tube(sigR2, 0.14*fDist);
 	
 	// signal is sterio and the clipping can be done on 4 places separetly
 	// left+ and left- and right+ and right-
@@ -363,19 +359,30 @@ void DistoTVPlugin::run(const float** inputs, float** outputs, uint32_t frames)
 	
 	if (sigL1 >= 0.5+wave_y[graph]){
 	  sigL1 = 0.5+wave_y[graph];
+	  if(cubicSampels)
+	     sigL1 = sigL1 + 0.000000000000000000000001;
 	}
 	if (sigL1 <=-0.5-wave_y[graph]){
 	  sigL1 = -0.5-wave_y[graph];
+	  if(cubicSampels==false)
+	     sigL1 = sigL1 + 0.000000000000000000000001;
 	}
 	if (sigR2 >= 0.5+wave_y[graph]){
 	  sigR2 = 0.5+wave_y[graph];
+	  if(cubicSampels)
+	     sigR2 = sigR2 + 0.000000000000000000000001;
 	}
 	if (sigR2 <=-0.5-wave_y[graph]){
 	  sigR2 = -0.5-wave_y[graph];
+	  if(cubicSampels==false)
+	     sigL1 = sigL1 + 0.000000000000000000000001;
 	}
+	cubicSampels++;
 
-	//sigL1 = sigL1 / (2*(0.15*fDist));
-	//sigR2 = sigR2 / (2*(0.15*fDist));
+	//sigL1 = sigL1  /2/(fDist* 0.15);
+	//sigR2 = sigR2  /2/(fDist* 0.15);
+	
+	sigL1 = sigL1 + rnd[graph];
 	
 	sigL1 = sigDryL1 - (sigDryL1 * 0.01 *fDist) + (sigL1 * 0.01 * fDist);
 	sigR2 = sigDryR2 - (sigDryR2 * 0.01 *fDist) + (sigL1 * 0.01 * fDist);
