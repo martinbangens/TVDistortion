@@ -171,7 +171,8 @@ void DistoTVPlugin::setParameterValue(uint32_t index, float value)
         fTVNoise   = value;
         break;
     case paramBit:
-        fBit   = value;
+        fBit   = (int)value;
+	bit = fBit;
         break;
     case paramDist:
         fDist = value;
@@ -379,6 +380,12 @@ void DistoTVPlugin::run(const float** inputs, float** outputs, uint32_t frames)
 	}
 	cubicSampels++;
 
+	if (fBit > 0){
+	  if (bit == 0){bit = fBit; graph++;}
+	  bit--;
+	  graph--;
+	}
+	
 	//sigL1 = sigL1  /2/(fDist* 0.15);
 	//sigR2 = sigR2  /2/(fDist* 0.15);
 	

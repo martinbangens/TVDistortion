@@ -115,7 +115,7 @@ private:
     bool cubicSampels = false;
     
     float rnd[191];
-    
+    float bit; 
     float wave_y[AREAHEIGHT+1] = {0};
     
     float sigL1, sigR2, sigDryL1, sigDryR2, outVol;
