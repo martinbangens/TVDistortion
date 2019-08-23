@@ -112,6 +112,15 @@ DistoTVUI::DistoTVUI() // constructor definition.
     fKnobHigh->setDefault(0.0f);
     fKnobHigh->setRotationAngle(270);
     fKnobHigh->setCallback(this);
+    
+    //knob Cubics
+    fKnobCubic = new ImageKnob(this, knobSmallImage);
+    fKnobCubic->setId(DistoTVPlugin::paramCub);
+    fKnobCubic->setAbsolutePos(3, 567);
+    fKnobCubic->setRange(0.0f, 25.0f);
+    fKnobCubic->setDefault(0.0f);
+    fKnobCubic->setRotationAngle(270);
+    fKnobCubic->setCallback(this);
 
     // drawing area
     fCanvasArea.setPos(130,195);
@@ -175,6 +184,9 @@ void DistoTVUI::parameterChanged(uint32_t index, float value)
     case DistoTVPlugin::paramHigh:
         fKnobHigh->setValue(value);
         break;
+    case DistoTVPlugin::paramCub:
+        fKnobCubic->setValue(value);
+        break;
     case DistoTVPlugin::paramMaster:
         fKnobMaster->setValue(value);
         break;
@@ -193,6 +205,7 @@ void DistoTVUI::programLoaded(uint32_t index)
     fKnobLow->setValue(0.0f);
     fKnobMid->setValue(0.0f);
     fKnobHigh->setValue(0.0f);
+    fKnobCubic->setValue(0.0f);
     fKnobMaster->setValue(0.0f);
     }
     if (index == 1){
@@ -205,6 +218,7 @@ void DistoTVUI::programLoaded(uint32_t index)
     fKnobLow->setValue(0.0f);
     fKnobMid->setValue(0.0f);
     fKnobHigh->setValue(0.0f);
+    fKnobCubic->setValue(0.0f);
     fKnobMaster->setValue(0.0f);
     }
 }

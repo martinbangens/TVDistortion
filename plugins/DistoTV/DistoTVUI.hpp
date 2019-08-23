@@ -87,7 +87,7 @@ private:
       
     
     
-    ScopedPointer<ImageKnob> fKnobLow, fKnobMid, fKnobHigh, fKnobMaster, fKnobDist, fKnobBit, fKnobTVNoise;
+    ScopedPointer<ImageKnob> fKnobLow, fKnobMid, fKnobHigh, fKnobMaster, fKnobDist, fKnobBit, fKnobTVNoise, fKnobCubic;
     ScopedPointer<ImageSlider> fSliderWet;
     
 

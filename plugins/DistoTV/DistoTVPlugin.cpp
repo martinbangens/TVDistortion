@@ -114,7 +114,17 @@ void DistoTVPlugin::initParameter(uint32_t index, Parameter& parameter)
         parameter.ranges.min = -24.0f;
         parameter.ranges.max = 24.0f;
         break;
-
+	
+    case paramCub:
+        parameter.hints      = kParameterIsAutomable;
+        parameter.name       = "Cubz";
+        parameter.symbol     = "cubz";
+        parameter.unit       = "%";
+        parameter.ranges.def = 0.0f;
+        parameter.ranges.min = 0.0f;
+        parameter.ranges.max = 25.0f; // 100000000000.0
+        break;
+	
     case paramMaster:
         parameter.hints      = kParameterIsAutomable;
         parameter.name       = "Master";
@@ -150,6 +160,8 @@ float DistoTVPlugin::getParameterValue(uint32_t index) const
         return fMid;
     case paramHigh:
         return fHigh;
+    case paramCub:
+        return fCub;
     case paramMaster:
         return fMaster;
     default:
@@ -177,6 +189,9 @@ void DistoTVPlugin::setParameterValue(uint32_t index, float value)
     case paramDist:
         fDist = value;
         break;
+    case paramCub:
+        fCub = pow(10,value);
+        break;	
     case paramLow:
         fLow   = value;
         lowVol = std::exp( (fLow/48.0f) * 48.0f / kAMP_DB);
@@ -269,7 +284,7 @@ void DistoTVPlugin::loadProgram(uint32_t index)
     fMid = 0.0f;
     fHigh = 0.0f;
     fMaster = 0.0f;
-    fDist = 0.0f;
+    fCub = 0.0f;
     fLowMidFreq = 220.0f;
     fMidHighFreq = 2000.0f;
 
@@ -341,42 +356,45 @@ void DistoTVPlugin::run(const float** inputs, float** outputs, uint32_t frames)
     {
         sigDryL1 = sigL1 = in1[i];
         sigDryR2 = sigR2 = in2[i];
+
+	//Count the graph samples
 	graph++;
 	if (graph == 190)
 	  graph = 0;
-	
-	// Got basic clipping for testing
-	// Need some warm tube amp for this
-	// then parralell drive-sig with dry
+
 	
 	//amplitude
 	
 	sigL1 = tube(sigL1, 0.14*fDist);
 	sigR2 = tube(sigR2, 0.14*fDist);
 	
+	
+	// The HairCutter
+	// 
 	// signal is sterio and the clipping can be done on 4 places separetly
 	// left+ and left- and right+ and right-
-	
+	//
+	// cubicSampels
 	
 	if (sigL1 >= 0.5+wave_y[graph]){
 	  sigL1 = 0.5+wave_y[graph];
 	  if(cubicSampels)
-	     sigL1 = sigL1 + 0.000000000000000000000001;
+	     sigL1 = sigL1 + (0.000000000000000000000001 * fCub); // need new knob
 	}
 	if (sigL1 <=-0.5-wave_y[graph]){
 	  sigL1 = -0.5-wave_y[graph];
 	  if(cubicSampels==false)
-	     sigL1 = sigL1 + 0.000000000000000000000001;
+	     sigL1 = sigL1 + (0.000000000000000000000001 * fCub);
 	}
 	if (sigR2 >= 0.5+wave_y[graph]){
 	  sigR2 = 0.5+wave_y[graph];
 	  if(cubicSampels)
-	     sigR2 = sigR2 + 0.000000000000000000000001;
+	     sigR2 = sigR2 + (0.000000000000000000000001 * fCub);
 	}
 	if (sigR2 <=-0.5-wave_y[graph]){
 	  sigR2 = -0.5-wave_y[graph];
 	  if(cubicSampels==false)
-	     sigL1 = sigL1 + 0.000000000000000000000001;
+	     sigL1 = sigL1 + (0.000000000000000000000001 * fCub);
 	}
 	cubicSampels++;
 
@@ -386,14 +404,23 @@ void DistoTVPlugin::run(const float** inputs, float** outputs, uint32_t frames)
 	  graph--;
 	}
 	
+	
 	//sigL1 = sigL1  /2/(fDist* 0.15);
 	//sigR2 = sigR2  /2/(fDist* 0.15);
 	
-	sigL1 = sigL1 + rnd[graph];
 	
+	//extra tv noise, need work
+	sigL1 = sigL1 + rnd[graph];
+	sigR2 = sigR2 + rnd[graph];
+	
+	
+	
+	
+	// Dist knob final blend in
 	sigL1 = sigDryL1 - (sigDryL1 * 0.01 *fDist) + (sigL1 * 0.01 * fDist);
 	sigR2 = sigDryR2 - (sigDryR2 * 0.01 *fDist) + (sigL1 * 0.01 * fDist);
 	
+	// Filter
         tmp1LP = a0LP * sigL1 - b1LP * tmp1LP + kDC_ADD;
         tmp2LP = a0LP * sigR2 - b1LP * tmp2LP + kDC_ADD;
         out1LP = tmp1LP - kDC_ADD;

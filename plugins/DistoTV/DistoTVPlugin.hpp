@@ -36,6 +36,7 @@ public:
         paramLow, 
         paramMid,
         paramHigh,
+	paramCub,
         paramMaster,
         paramCount
     };
@@ -120,7 +121,7 @@ private:
     
     float sigL1, sigR2, sigDryL1, sigDryR2, outVol;
     
-    float fWet, fTVNoise, fBit, fDist;
+    float fWet, fTVNoise, fBit, fDist, fCub;
     
     float fLow, fMid, fHigh, fMaster, fLowMidFreq, fMidHighFreq;
 
