@@ -42,8 +42,8 @@ DistoTVUI::DistoTVUI() // constructor definition.
     fSliderWet->setInverted(false); //not sure
     fSliderWet->setStartPos(20,1);
     fSliderWet->setEndPos(402,1);
-    fSliderWet->setRange(0.0f, 100.0f);
-    fSliderWet->setDefault(50.0f);
+    fSliderWet->setRange(0.0f, 10000.0f);
+    fSliderWet->setDefault(5000.0f);
     fSliderWet->setCallback(this);
 
     // knobs Gett Imgage data
@@ -198,7 +198,7 @@ void DistoTVUI::programLoaded(uint32_t index)
     if (index == 0){
 
     // Default values
-    fSliderWet->setValue(50.0f);
+    fSliderWet->setValue(5000.0f);
     fKnobTVNoise->setValue(0.0f);
     fKnobBit->setValue(0.0f);
     fKnobDist->setValue(0.0f);
@@ -211,7 +211,7 @@ void DistoTVUI::programLoaded(uint32_t index)
     if (index == 1){
 
     // Default values
-    fSliderWet->setValue(50.0f);
+    fSliderWet->setValue(5000.0f);
     fKnobTVNoise->setValue(0.0f);
     fKnobBit->setValue(0.0f);
     fKnobDist->setValue(0.0f);

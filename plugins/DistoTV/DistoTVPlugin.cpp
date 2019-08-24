@@ -18,7 +18,7 @@
 
 #include <cmath>
 #include <lo/lo_osc_types.h>
-#include "DistoTV-DSP.hpp"
+
 
 static const float kAMP_DB = 8.656170245f; 
 static const float kDC_ADD = 1e-30f; 	   
@@ -49,10 +49,10 @@ void DistoTVPlugin::initParameter(uint32_t index, Parameter& parameter)
         parameter.hints      = kParameterIsAutomable;
         parameter.name       = "Wet";
         parameter.symbol     = "wet";
-        parameter.unit       = "%";
-        parameter.ranges.def = 50.0f;
+        parameter.unit       = "wt";
+        parameter.ranges.def = 5000.0f;
         parameter.ranges.min = 0.0f;
-        parameter.ranges.max = 100.0f;
+        parameter.ranges.max = 10000.0f;
         break;
 
     case paramTVNoise:
@@ -276,7 +276,7 @@ void DistoTVPlugin::loadProgram(uint32_t index)
     if (index == 0){
 
     // Default values
-    fWet = 50.0f;
+    fWet = 5000.0f;
     fTVNoise = 0.0f;
     fBit = 0.0f;
     fDist = 0.0f;
@@ -339,7 +339,26 @@ void DistoTVPlugin::deactivate()
     out1LP = out2LP = out1HP = out2HP = 0.0f;
     tmp1LP = tmp2LP = tmp1HP = tmp2HP = 0.0f;
 }
+float DistoTVPlugin::tube(float sig, float gain)
+{
+ 
+  sig = sig * (2*gain);
+  
+  if (sig < 0.000000001f and sig > -0.000000001f){
+   sig = sin(sig);
+  }
+  sig = sig + sin(0.000000000000000000000000001f);
+  return sig;
+}
 
+float DistoTVPlugin::tvnoise(float sig, float knob)
+{ // need work
+  sig = sig +(sin(sig*0.1*knob));
+  sig = sig +(sin(sig*0.01*knob));
+  sig = sig +(sin(sig*0.001*knob));
+  sig = sig +(sin(sig*0.00001*knob));
+  return sig;
+}
 
 void DistoTVPlugin::run(const float** inputs, float** outputs, uint32_t frames)
 {
@@ -439,8 +458,8 @@ void DistoTVPlugin::run(const float** inputs, float** outputs, uint32_t frames)
         sigR2 = (out2LP*lowVol + (sigR2 - out2LP - out2HP)*midVol + out2HP*highVol) * outVol;
         
         // Wet knob final blend in
-        out1[i] = (sigL1*0.01*fWet) + sigDryL1 - (sigDryL1*0.01*fWet);
-        out2[i] = (sigR2*0.01*fWet) + sigDryR2 - (sigDryR2*0.01*fWet);
+        out1[i] = (sigL1*0.0001*fWet) + sigDryL1 - (sigDryL1*0.0001*fWet);
+        out2[i] = (sigR2*0.0001*fWet) + sigDryR2 - (sigDryR2*0.0001*fWet);
     }
 }
 

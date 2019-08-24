@@ -105,7 +105,8 @@ protected:
     void initState(unsigned int index, String& key, String& defval) override;
     String getState(const char* key) const override;
     
-     
+     float tvnoise(float sig, float knob);
+     float tube(float sig, float gain);
     
 // -------------------------------------------------------------------
 
