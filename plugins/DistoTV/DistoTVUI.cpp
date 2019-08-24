@@ -117,7 +117,7 @@ DistoTVUI::DistoTVUI() // constructor definition.
     fKnobCubic = new ImageKnob(this, knobSmallImage);
     fKnobCubic->setId(DistoTVPlugin::paramCub);
     fKnobCubic->setAbsolutePos(3, 567);
-    fKnobCubic->setRange(0.0f, 25.0f);
+    fKnobCubic->setRange(0.0f, 24.0f);
     fKnobCubic->setDefault(0.0f);
     fKnobCubic->setRotationAngle(270);
     fKnobCubic->setCallback(this);

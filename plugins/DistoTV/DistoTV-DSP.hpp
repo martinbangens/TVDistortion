@@ -12,5 +12,9 @@ float tube(float sig, float gain)
 
 float tvnoise(float sig, float knob)
 {
+  sig = sig +(sin(sig*0.1*knob));
+  sig = sig +(sin(sig*0.01*knob));
+  sig = sig +(sin(sig*0.001*knob));
+  sig = sig +(sin(sig*0.00001*knob));
   return sig;
 }

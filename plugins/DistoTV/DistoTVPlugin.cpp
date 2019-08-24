@@ -119,10 +119,10 @@ void DistoTVPlugin::initParameter(uint32_t index, Parameter& parameter)
         parameter.hints      = kParameterIsAutomable;
         parameter.name       = "Cubz";
         parameter.symbol     = "cubz";
-        parameter.unit       = "%";
+        parameter.unit       = "cp";
         parameter.ranges.def = 0.0f;
         parameter.ranges.min = 0.0f;
-        parameter.ranges.max = 25.0f; // 100000000000.0
+        parameter.ranges.max = 24.0f; // 100000000000.0
         break;
 	
     case paramMaster:
@@ -376,25 +376,29 @@ void DistoTVPlugin::run(const float** inputs, float** outputs, uint32_t frames)
 	//
 	// cubicSampels
 	
-	if (sigL1 >= 0.5+wave_y[graph]){
-	  sigL1 = 0.5+wave_y[graph];
-	  if(cubicSampels)
-	     sigL1 = sigL1 + (0.000000000000000000000001 * fCub); // need new knob
+	if (sigL1 >= 0.5+wave_y[graph]){ /// bug /// im hitting the 0 line here making the plugin syntizye the lowest sample in graph with cubz
+	  sigL1 = 0.5+wave_y[graph]+tvnoise(sigL1,fTVNoise);
+	  if(cubicSampels){
+	     sigL1 = sigL1 + (0.000000000000000000000001 * fCub);
+	  }
 	}
 	if (sigL1 <=-0.5-wave_y[graph]){
-	  sigL1 = -0.5-wave_y[graph];
-	  if(cubicSampels==false)
+	  sigL1 = -0.5-wave_y[graph]-tvnoise(sigL1,fTVNoise);
+	  if(cubicSampels==false){
 	     sigL1 = sigL1 + (0.000000000000000000000001 * fCub);
+	  }
 	}
 	if (sigR2 >= 0.5+wave_y[graph]){
-	  sigR2 = 0.5+wave_y[graph];
-	  if(cubicSampels)
+	  sigR2 = 0.5+wave_y[graph]+tvnoise(sigR2,fTVNoise);
+	  if(cubicSampels){
 	     sigR2 = sigR2 + (0.000000000000000000000001 * fCub);
+	  }
 	}
 	if (sigR2 <=-0.5-wave_y[graph]){
-	  sigR2 = -0.5-wave_y[graph];
-	  if(cubicSampels==false)
+	  sigR2 = -0.5-wave_y[graph]-tvnoise(sigR2,fTVNoise);
+	  if(cubicSampels==false){
 	     sigL1 = sigL1 + (0.000000000000000000000001 * fCub);
+	  }
 	}
 	cubicSampels++;
 
@@ -418,7 +422,7 @@ void DistoTVPlugin::run(const float** inputs, float** outputs, uint32_t frames)
 	
 	// Dist knob final blend in
 	sigL1 = sigDryL1 - (sigDryL1 * 0.01 *fDist) + (sigL1 * 0.01 * fDist);
-	sigR2 = sigDryR2 - (sigDryR2 * 0.01 *fDist) + (sigL1 * 0.01 * fDist);
+	sigR2 = sigDryR2 - (sigDryR2 * 0.01 *fDist) + (sigR2 * 0.01 * fDist);
 	
 	// Filter
         tmp1LP = a0LP * sigL1 - b1LP * tmp1LP + kDC_ADD;
@@ -434,8 +438,9 @@ void DistoTVPlugin::run(const float** inputs, float** outputs, uint32_t frames)
         sigL1 = (out1LP*lowVol + (sigL1 - out1LP - out1HP)*midVol + out1HP*highVol) * outVol;
         sigR2 = (out2LP*lowVol + (sigR2 - out2LP - out2HP)*midVol + out2HP*highVol) * outVol;
         
-        out1[i] = sigL1;
-        out2[i] = sigR2;
+        // Wet knob final blend in
+        out1[i] = (sigL1*0.01*fWet) + sigDryL1 - (sigDryL1*0.01*fWet);
+        out2[i] = (sigR2*0.01*fWet) + sigDryR2 - (sigDryR2*0.01*fWet);
     }
 }
 
