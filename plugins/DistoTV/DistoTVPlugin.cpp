@@ -16,10 +16,10 @@
  */
 #include "DistoTVPlugin.hpp"
 
+
 #include <cmath>
-#include <lo/lo_osc_types.h>
 
-
+static const float kCUBS   = 1e20f;
 static const float kAMP_DB = 8.656170245f; 
 static const float kDC_ADD = 1e-30f; 	   
 static const float kPI     = 3.141592654f;
@@ -29,7 +29,7 @@ START_NAMESPACE_DISTRHO
 // -----------------------------------------------------------------------
 
 DistoTVPlugin::DistoTVPlugin()
-    : Plugin(paramCount, 2, 1) //  program, states
+    : Plugin(paramCount, 1, 1) //  program, states
 {
     // set default values
     loadProgram(0);
@@ -49,10 +49,10 @@ void DistoTVPlugin::initParameter(uint32_t index, Parameter& parameter)
         parameter.hints      = kParameterIsAutomable;
         parameter.name       = "Wet";
         parameter.symbol     = "wet";
-        parameter.unit       = "wt";
-        parameter.ranges.def = 5000.0f;
+        parameter.unit       = "W";
+        parameter.ranges.def = 50000.0f;
         parameter.ranges.min = 0.0f;
-        parameter.ranges.max = 10000.0f;
+        parameter.ranges.max = 100000.0f;
         break;
 
     case paramTVNoise:
@@ -122,7 +122,7 @@ void DistoTVPlugin::initParameter(uint32_t index, Parameter& parameter)
         parameter.unit       = "cp";
         parameter.ranges.def = 0.0f;
         parameter.ranges.min = 0.0f;
-        parameter.ranges.max = 24.0f; // 100000000000.0
+        parameter.ranges.max = 24.0f;
         break;
 	
     case paramMaster:
@@ -190,7 +190,7 @@ void DistoTVPlugin::setParameterValue(uint32_t index, float value)
         fDist = value;
         break;
     case paramCub:
-        fCub = pow(10,value);
+        fCub = pow(value,10);
         break;	
     case paramLow:
         fLow   = value;
@@ -220,7 +220,7 @@ void DistoTVPlugin::setState(const char* key, const char* value)
                 char tmpbuf[4*AREAHEIGHT+1] = {0};
                 snprintf(tmpbuf, 4*AREAHEIGHT+1, "%s", value);
                 //printf("\nthe value of tmpbuf\n%s", tmpbuf);
-                tmp = strtok(tmpbuf, " "); // take me word for word baby
+                tmp = strtok(tmpbuf, " ");
                 while ((tmp != NULL) && (i < AREAHEIGHT)) {
                         wave_y[i] = ((float) atoi(tmp))/AREAHEIGHT - 0.5; // take float values of the strings and put in wave_y
                         //printf("dsp wave_y[%d]=%.2f \n", i, wave_y[i]);
@@ -243,6 +243,7 @@ String DistoTVPlugin::getState(const char * key)const {
      strcat(tmpbuf,word);     
      i++; 
    }
+   
    //printf("\nthis is getState string\n%s",tmpbuf);
    return String(tmpbuf);
    }
@@ -256,9 +257,6 @@ void DistoTVPlugin::initProgramName(uint32_t index, String& programName)
   switch (index) {
         case 0:
             programName = "DefaultName";
-            break;
-        case 1:
-            programName = "First";
             break;
     }
 }
@@ -276,7 +274,7 @@ void DistoTVPlugin::loadProgram(uint32_t index)
     if (index == 0){
 
     // Default values
-    fWet = 5000.0f;
+    fWet = 50000.0f;
     fTVNoise = 0.0f;
     fBit = 0.0f;
     fDist = 0.0f;
@@ -285,8 +283,6 @@ void DistoTVPlugin::loadProgram(uint32_t index)
     fHigh = 0.0f;
     fMaster = 0.0f;
     fCub = 0.0f;
-    fLowMidFreq = 220.0f;
-    fMidHighFreq = 2000.0f;
 
     // Internal stuff
     lowVol = midVol = highVol = outVol = 1.0f;
@@ -297,11 +293,7 @@ void DistoTVPlugin::loadProgram(uint32_t index)
     activate();
 
     }
-    switch (index) {
-        case 1:
-            setParameterValue(paramWet, 30.0f);
-            break;
-    }
+
 }
 
 // -----------------------------------------------------------------------
@@ -338,13 +330,17 @@ void DistoTVPlugin::deactivate()
 {
     out1LP = out2LP = out1HP = out2HP = 0.0f;
     tmp1LP = tmp2LP = tmp1HP = tmp2HP = 0.0f;
+    //printf("\nhad_Inf=%d\n""had_NuN=%d\n",had_Inf,had_NuN);
 }
 float DistoTVPlugin::tube(float sig, float gain)
 {
  
   sig = sig * (2*gain);
   
-  if (sig < 0.000000001f and sig > -0.000000001f){
+  if (sig < 0.00000000001f and sig > 0.0000000000000000000000000001f){
+   sig = sin(sig);
+  }
+  if (sig > -0.00000000001f and sig < -0.0000000000000000000000000001f){
    sig = sin(sig);
   }
   sig = sig + sin(0.000000000000000000000000001f);
@@ -357,6 +353,7 @@ float DistoTVPlugin::tvnoise(float sig, float knob)
   sig = sig +(sin(sig*0.01*knob));
   sig = sig +(sin(sig*0.001*knob));
   sig = sig +(sin(sig*0.00001*knob));
+  
   return sig;
 }
 
@@ -375,17 +372,21 @@ void DistoTVPlugin::run(const float** inputs, float** outputs, uint32_t frames)
     {
         sigDryL1 = sigL1 = in1[i];
         sigDryR2 = sigR2 = in2[i];
-
-	//Count the graph samples
+        
+        //graph wheel
 	graph++;
-	if (graph == 190)
-	  graph = 0;
+	
+	if (graph == 190) {graph = 0; memcpy(wave_y_DSP,  wave_y, 4*(AREAHEIGHT+1));}
+
+	//Count the graph samples // bug this brakes the vst NuN
+	
+	
 
 	
 	//amplitude
 	
-	sigL1 = tube(sigL1, 0.14*fDist);
-	sigR2 = tube(sigR2, 0.14*fDist);
+sigL1 = tube(sigL1,0.14 * fDist);
+sigR2 = tube(sigR2, 0.14 * fDist);
 	
 	
 	// The HairCutter
@@ -395,32 +396,33 @@ void DistoTVPlugin::run(const float** inputs, float** outputs, uint32_t frames)
 	//
 	// cubicSampels
 	
-	if (sigL1 >= 0.5+wave_y[graph]){ /// bug /// im hitting the 0 line here making the plugin syntizye the lowest sample in graph with cubz
-	  sigL1 = 0.5+wave_y[graph]+tvnoise(sigL1,fTVNoise);
-	  if(cubicSampels){
-	     sigL1 = sigL1 + (0.000000000000000000000001 * fCub);
-	  }
+	if (sigL1 >= 0.5+wave_y_DSP[graph]){
+	  sigL1 = 0.5+wave_y_DSP[graph]+tvnoise(sigL1,fTVNoise);
+	  //if(cubicSampels){
+	  //   sigL1 = sigL1 + (kCUBS * fCub);
+	  //}
 	}
-	if (sigL1 <=-0.5-wave_y[graph]){
-	  sigL1 = -0.5-wave_y[graph]-tvnoise(sigL1,fTVNoise);
-	  if(cubicSampels==false){
-	     sigL1 = sigL1 + (0.000000000000000000000001 * fCub);
-	  }
+	if (sigL1 <=-0.5-wave_y_DSP[graph]){
+	  sigL1 = -0.5-wave_y_DSP[graph]-tvnoise(sigL1,fTVNoise);
+	  //if(cubicSampels==false){
+	  //   sigL1 = sigL1 + (kCUBS * fCub);
+	  //}
 	}
-	if (sigR2 >= 0.5+wave_y[graph]){
-	  sigR2 = 0.5+wave_y[graph]+tvnoise(sigR2,fTVNoise);
-	  if(cubicSampels){
-	     sigR2 = sigR2 + (0.000000000000000000000001 * fCub);
-	  }
+	if (sigR2 >= 0.5+wave_y_DSP[graph]){
+	  sigR2 = 0.5+wave_y_DSP[graph]+tvnoise(sigR2,fTVNoise);
+	  //if(cubicSampels){
+	  //   sigR2 = sigR2 + (kCUBS * fCub);
+	  //}
 	}
-	if (sigR2 <=-0.5-wave_y[graph]){
-	  sigR2 = -0.5-wave_y[graph]-tvnoise(sigR2,fTVNoise);
-	  if(cubicSampels==false){
-	     sigL1 = sigL1 + (0.000000000000000000000001 * fCub);
-	  }
+	if (sigR2 <=-0.5-wave_y_DSP[graph]){
+	  sigR2 = -0.5-wave_y_DSP[graph]-tvnoise(sigR2,fTVNoise);
+	  //if(cubicSampels==false){
+	  //   sigL1 = sigL1 + (kCUBS * fCub);
+	  //}
 	}
-	cubicSampels++;
-
+	//cubicSampels++;
+        
+	//bit
 	if (fBit > 0){
 	  if (bit == 0){bit = fBit; graph++;}
 	  bit--;
@@ -428,13 +430,11 @@ void DistoTVPlugin::run(const float** inputs, float** outputs, uint32_t frames)
 	}
 	
 	
-	//sigL1 = sigL1  /2/(fDist* 0.15);
-	//sigR2 = sigR2  /2/(fDist* 0.15);
 	
 	
 	//extra tv noise, need work
-	sigL1 = sigL1 + rnd[graph];
-	sigR2 = sigR2 + rnd[graph];
+	//sigL1 = sigL1 + rnd[graph];
+	//sigR2 = sigR2 + rnd[graph];
 	
 	
 	
@@ -458,8 +458,22 @@ void DistoTVPlugin::run(const float** inputs, float** outputs, uint32_t frames)
         sigR2 = (out2LP*lowVol + (sigR2 - out2LP - out2HP)*midVol + out2HP*highVol) * outVol;
         
         // Wet knob final blend in
-        out1[i] = (sigL1*0.0001*fWet) + sigDryL1 - (sigDryL1*0.0001*fWet);
-        out2[i] = (sigR2*0.0001*fWet) + sigDryR2 - (sigDryR2*0.0001*fWet);
+        outFinalL = (sigL1*0.00001*fWet) + sigDryL1 - (sigDryL1*0.00001*fWet);
+        outFinalR = (sigR2*0.00001*fWet) + sigDryR2 - (sigDryR2*0.00001*fWet);
+        
+	// Limit
+	if(outFinalL < -1.){ outFinalL = -1.; } if(outFinalL > 1.){ outFinalL = 1.; }
+	if(outFinalR < -1.){ outFinalR = -1.; } if(outFinalR > 1.){ outFinalR = 1.; }
+
+	//if (outFinalL != outFinalL){outFinalL = 0;}
+	//if (outFinalR != outFinalR){outFinalR = 0;}
+	
+	
+	
+	//out1[i] = CheckForBadEggs(sigL1);
+	//out2[i] = CheckForBadEggs(sigR2);
+	out1[i] = outFinalL;
+	out2[i] = outFinalR;
     }
 }
 

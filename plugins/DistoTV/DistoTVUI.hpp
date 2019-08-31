@@ -26,7 +26,7 @@
 START_NAMESPACE_DISTRHO
 using DGL::Image;
 using DGL::ImageKnob;
-using DGL::ImageSwitch;
+using DGL::ImageSlider;
 
 
 
@@ -84,10 +84,10 @@ private:
     bool fWaveUpdated;
     char fWaveState[4*AREAHEIGHT+1]; // 4 char(3 values and 1 space for every pixel) +1 extra for "NULL" terminator = The State Wave String :D
 
-      
     
     
-    ScopedPointer<ImageKnob> fKnobLow, fKnobMid, fKnobHigh, fKnobMaster, fKnobDist, fKnobBit, fKnobTVNoise, fKnobCubic;
+    
+    ScopedPointer<ImageKnob> fKnobLow, fKnobMid, fKnobHigh, fKnobMaster, fKnobDist, fKnobPreAMP, fKnobBit, fKnobBitTilt, fKnobTVNoise, fKnobCubic;
     ScopedPointer<ImageSlider> fSliderWet;
     
 

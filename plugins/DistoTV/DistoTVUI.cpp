@@ -16,7 +16,7 @@
 
 #include "DistoTVPlugin.hpp"
 #include "DistoTVUI.hpp"
-#include <Widget.hpp>
+//#include <Widget.hpp>
 
 START_NAMESPACE_DISTRHO
 
@@ -42,8 +42,8 @@ DistoTVUI::DistoTVUI() // constructor definition.
     fSliderWet->setInverted(false); //not sure
     fSliderWet->setStartPos(20,1);
     fSliderWet->setEndPos(402,1);
-    fSliderWet->setRange(0.0f, 10000.0f);
-    fSliderWet->setDefault(5000.0f);
+    fSliderWet->setRange(0.0f, 100000.0f);
+    fSliderWet->setDefault(50000.0f);
     fSliderWet->setCallback(this);
 
     // knobs Gett Imgage data
@@ -59,6 +59,15 @@ DistoTVUI::DistoTVUI() // constructor definition.
     fKnobTVNoise->setRotationAngle(270);
     fKnobTVNoise->setCallback(this);
     
+    //knob Cubics
+    fKnobCubic = new ImageKnob(this, knobSmallImage);
+    fKnobCubic->setId(DistoTVPlugin::paramCub);
+    fKnobCubic->setAbsolutePos(3, 104);
+    fKnobCubic->setRange(0.0f, 24.0f);
+    fKnobCubic->setDefault(0.0f);
+    fKnobCubic->setRotationAngle(270);
+    fKnobCubic->setCallback(this);
+    
     // knob Bit
     fKnobBit = new ImageKnob(this, knobImage, ImageKnob::Vertical);
     fKnobBit->setId(DistoTVPlugin::paramBit);
@@ -68,6 +77,15 @@ DistoTVUI::DistoTVUI() // constructor definition.
     fKnobBit->setRotationAngle(270);
     fKnobBit->setCallback(this);
 
+    //knob Tilt bits
+    fKnobBitTilt = new ImageKnob(this, knobSmallImage);
+    fKnobBitTilt->setId(DistoTVPlugin::paramTilt);
+    fKnobBitTilt->setAbsolutePos(3, 204);
+    fKnobBitTilt->setRange(0.0f, 24.0f);
+    fKnobBitTilt->setDefault(0.0f);
+    fKnobBitTilt->setRotationAngle(270);
+    fKnobBitTilt->setCallback(this);
+    
     // knob Dist
     fKnobDist = new ImageKnob(this, knobImage, ImageKnob::Vertical);
     fKnobDist->setId(DistoTVPlugin::paramDist);
@@ -77,6 +95,15 @@ DistoTVUI::DistoTVUI() // constructor definition.
     fKnobDist->setRotationAngle(270);
     fKnobDist->setCallback(this);
 
+    //knob PreAMP
+    fKnobPreAMP = new ImageKnob(this, knobSmallImage);
+    fKnobPreAMP->setId(DistoTVPlugin::paramPre);
+    fKnobPreAMP->setAbsolutePos(3, 298);
+    fKnobPreAMP->setRange(0.0f, 24.0f);
+    fKnobPreAMP->setDefault(0.0f);
+    fKnobPreAMP->setRotationAngle(270);
+    fKnobPreAMP->setCallback(this);
+    
     // knob Master
     fKnobMaster = new ImageKnob(this, knobImage, ImageKnob::Vertical);
     fKnobMaster->setId(DistoTVPlugin::paramMaster);
@@ -113,18 +140,11 @@ DistoTVUI::DistoTVUI() // constructor definition.
     fKnobHigh->setRotationAngle(270);
     fKnobHigh->setCallback(this);
     
-    //knob Cubics
-    fKnobCubic = new ImageKnob(this, knobSmallImage);
-    fKnobCubic->setId(DistoTVPlugin::paramCub);
-    fKnobCubic->setAbsolutePos(3, 567);
-    fKnobCubic->setRange(0.0f, 24.0f);
-    fKnobCubic->setDefault(0.0f);
-    fKnobCubic->setRotationAngle(270);
-    fKnobCubic->setCallback(this);
+
 
     // drawing area
     fCanvasArea.setPos(130,195);
-    fCanvasArea.setSize(AREAHEIGHT,AREAHEIGHT); // this my be what brakes the program... the ui should only read from the plugin when init
+    fCanvasArea.setSize(AREAHEIGHT,AREAHEIGHT);
     for (int i = 0; i < AREAHEIGHT; i++) {
         wave_y[i] = /*-(AREAHEIGHT*(sin(2.*i*M_PI/AREAHEIGHT)-1.0))/2.; */95;
     }
@@ -137,7 +157,7 @@ DistoTVUI::DistoTVUI() // constructor definition.
 
 void DistoTVUI::stateChanged(const char* key, const char* value)
 {
-  //printf("Im here at StateChanged\n");
+  printf("Im here at StateChanged\n");
   
         if (strcmp(key, "waveform") == 0) {
 	        char* tmp;
@@ -148,7 +168,7 @@ void DistoTVUI::stateChanged(const char* key, const char* value)
 	        while ((tmp != NULL) && (i < AREAHEIGHT)) {
 	                wave_y[i] = AREAHEIGHT-((float)atoi(tmp));
 	                i++;
-	                //printf("%03d ", (int)wave_y[i]);
+	                printf("%03d ", (int)wave_y[i]);
 	                tmp = strtok(NULL, " ");
 	        }
 	} 
@@ -198,7 +218,7 @@ void DistoTVUI::programLoaded(uint32_t index)
     if (index == 0){
 
     // Default values
-    fSliderWet->setValue(5000.0f);
+    fSliderWet->setValue(50000.0f);
     fKnobTVNoise->setValue(0.0f);
     fKnobBit->setValue(0.0f);
     fKnobDist->setValue(0.0f);
@@ -208,19 +228,7 @@ void DistoTVUI::programLoaded(uint32_t index)
     fKnobCubic->setValue(0.0f);
     fKnobMaster->setValue(0.0f);
     }
-    if (index == 1){
 
-    // Default values
-    fSliderWet->setValue(5000.0f);
-    fKnobTVNoise->setValue(0.0f);
-    fKnobBit->setValue(0.0f);
-    fKnobDist->setValue(0.0f);
-    fKnobLow->setValue(0.0f);
-    fKnobMid->setValue(0.0f);
-    fKnobHigh->setValue(0.0f);
-    fKnobCubic->setValue(0.0f);
-    fKnobMaster->setValue(0.0f);
-    }
 }
 
 // -----------------------------------------------------------------------
@@ -299,21 +307,22 @@ bool DistoTVUI::onMotion (const MotionEvent & ev) // this gets called when mouse
     if (y > 385) y = 385;// outside bottom
     if (y < 195) y = 195;// outside top
   
-    float *gr; 
-    gr = wave_y;
+    //float *gr; // <---- hmmmmm thid adress my not be 
+    //gr = wave_y;
 
-    if (gr[x-130] != (y-195)) { // if wave_y is not the same as getY(), then update
-        char* tmp =  fWaveState;
-        memset(tmp, 0, sizeof(fWaveState));// fill fWaveState whit 0
-
+    if (wave_y[x-130] != (y-195)) { // if wave_y is not the same as getY(), then update
+        memset(fWaveState, 0, sizeof(fWaveState));// fill fWaveState whit 0
         int i;// make new string and put it back in fWaveState
+        //for (i = 0; i <= 4*AREAHEIGHT+1; i++){fWaveState[i] = 0;}
+      
+        //i=0;
         for(i = 0; i < AREAHEIGHT; i++) {
             char wavestr[5] = {0};
-            snprintf(wavestr, sizeof(wavestr), "%03d ", (int) (fCanvasArea.getHeight()-gr[i]));
-            strcat(tmp, wavestr);
+            snprintf(wavestr, sizeof(wavestr), "%03d ", (int) (fCanvasArea.getHeight()-wave_y[i]));
+            strcat(fWaveState, wavestr);
         }
 
-        gr[x-130] = y-195; // give wave_y the new value
+        wave_y[x-130] = y-195; // give wave_y the new value  <--- this one look a bit guilty
 
         fWaveUpdated = true; // then uiIdle() will setState()
 
@@ -335,15 +344,15 @@ void DistoTVUI::onDisplay()
     glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
 
     glLineWidth(2);
-    float *gr;
-    gr = wave_y;
+    //float *gr; // and
+    //gr = wave_y;
 
     int i;
         glColor4f(0.235f, 1.f, 0.235f, 1.0f);
         for (i = 2; i < AREAHEIGHT; ++i) {
             glBegin(GL_LINES);
-                    glVertex2i(i-1+fCanvasArea.getX(), gr[i-1]+fCanvasArea.getY());
-                    glVertex2i(i+fCanvasArea.getX(), gr[i]+fCanvasArea.getY());
+                    glVertex2i(i-1+fCanvasArea.getX(), wave_y[i-1]+fCanvasArea.getY());
+                    glVertex2i(i+fCanvasArea.getX(), wave_y[i]+fCanvasArea.getY());
             glEnd();
         }
     // reset color

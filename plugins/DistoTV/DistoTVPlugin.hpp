@@ -18,6 +18,8 @@
 #pragma once
 
 #include "DistrhoPlugin.hpp"
+#include <math.h>
+
 
 #define AREAHEIGHT 190
 START_NAMESPACE_DISTRHO
@@ -31,12 +33,14 @@ public:
     {
         paramWet= 0,
         paramTVNoise,
+	paramCub,
         paramBit,
+	paramTilt,
         paramDist,
+	paramPre,
         paramLow, 
         paramMid,
         paramHigh,
-	paramCub,
         paramMaster,
         paramCount
     };
@@ -105,29 +109,50 @@ protected:
     void initState(unsigned int index, String& key, String& defval) override;
     String getState(const char* key) const override;
     
-     float tvnoise(float sig, float knob);
-     float tube(float sig, float gain);
+    //DSP
+    
+    float tvnoise(float sig, float knob);
+    float tube(float sig, float gain);
+    float CheckForBadEggs(float input);
     
 // -------------------------------------------------------------------
+    /*float CheckForBadEggs(float input){
+    switch(std::fpclassify(input)){
+        case FP_INFINITE:
+	  had_Inf = true;
+	  return 0.0;
+        case FP_NAN:
+	  had_NuN = true;
+	  return 0.0;
 
-
+        default:
+	  return input;
+   }
+}
+*/
 private:
     
+  
+    bool had_NuN = false;
+    bool had_Inf = false;
+  
     int graph = 0;
+    bool updatebuff = false;
     bool cubicSampels = false;
     
     float rnd[191];
     float bit; 
     float wave_y[AREAHEIGHT+1] = {0};
+    float wave_y_DSP[AREAHEIGHT+1] = {0};
     
-    float sigL1, sigR2, sigDryL1, sigDryR2, outVol;
+    float sigL1, sigR2, sigDryL1, sigDryR2, outFinalL, outFinalR;
     
     float fWet, fTVNoise, fBit, fDist, fCub;
     
-    float fLow, fMid, fHigh, fMaster, fLowMidFreq, fMidHighFreq;
+    float fLow, fMid, fHigh, fMaster;
 
     float lowVol, midVol, highVol;
-    float freqLP, freqHP;
+    float freqLP, freqHP, outVol;
 
     float xLP, a0LP, b1LP;
     float xHP, a0HP, b1HP;
