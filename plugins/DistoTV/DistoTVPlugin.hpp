@@ -147,7 +147,7 @@ private:
     
     float sigL1, sigR2, sigDryL1, sigDryR2, outFinalL, outFinalR;
     
-    float fWet, fTVNoise, fBit, fDist, fCub;
+    float fWet, fTVNoise, fBit, fDist, fCub, fTilt, fPre;
     
     float fLow, fMid, fHigh, fMaster;
 

@@ -19,7 +19,7 @@
 
 #include <cmath>
 
-static const float kCUBS   = 1e20f;
+static const float kCUBS   = 1e-14f;
 static const float kAMP_DB = 8.656170245f; 
 static const float kDC_ADD = 1e-30f; 	   
 static const float kPI     = 3.141592654f;
@@ -124,7 +124,28 @@ void DistoTVPlugin::initParameter(uint32_t index, Parameter& parameter)
         parameter.ranges.min = 0.0f;
         parameter.ranges.max = 24.0f;
         break;
+
+    case paramTilt:
+        parameter.hints      = kParameterIsAutomable;
+        parameter.name       = "Tilt";
+        parameter.symbol     = "tilt";
+        parameter.unit       = "t";
+        parameter.ranges.def = 0.0f;
+        parameter.ranges.min = 0.0f;
+        parameter.ranges.max = 24.0f;
+        break;
+
 	
+    case paramPre:
+        parameter.hints      = kParameterIsAutomable;
+        parameter.name       = "PreAMP";
+        parameter.symbol     = "pre";
+        parameter.unit       = "p";
+        parameter.ranges.def = 0.0f;
+        parameter.ranges.min = 0.0f;
+        parameter.ranges.max = 24.0f;
+        break;
+
     case paramMaster:
         parameter.hints      = kParameterIsAutomable;
         parameter.name       = "Master";
@@ -162,6 +183,10 @@ float DistoTVPlugin::getParameterValue(uint32_t index) const
         return fHigh;
     case paramCub:
         return fCub;
+    case paramTilt:
+        return fTilt;
+    case paramPre:
+        return fPre;
     case paramMaster:
         return fMaster;
     default:
@@ -184,14 +209,20 @@ void DistoTVPlugin::setParameterValue(uint32_t index, float value)
         break;
     case paramBit:
         fBit   = (int)value;
-	bit = fBit;
+        bit = fBit;
         break;
     case paramDist:
         fDist = value;
         break;
     case paramCub:
         fCub = pow(value,10);
-        break;	
+        break;
+    case paramTilt:
+        fTilt = value;
+        break;
+    case paramPre:
+        fPre = value;
+        break;
     case paramLow:
         fLow   = value;
         lowVol = std::exp( (fLow/48.0f) * 48.0f / kAMP_DB);
@@ -283,6 +314,8 @@ void DistoTVPlugin::loadProgram(uint32_t index)
     fHigh = 0.0f;
     fMaster = 0.0f;
     fCub = 0.0f;
+    fTilt = 0.0f;
+    fPre = 0.0f;
 
     // Internal stuff
     lowVol = midVol = highVol = outVol = 1.0f;
@@ -364,63 +397,54 @@ void DistoTVPlugin::run(const float** inputs, float** outputs, uint32_t frames)
     float*       out1 = outputs[0];
     float*       out2 = outputs[1];
     
-
-    /*
-      I borrowed code from 3BandEQ used it as a starting point
-      */
+    
     for (uint32_t i=0; i < frames; ++i)
     {
         sigDryL1 = sigL1 = in1[i];
         sigDryR2 = sigR2 = in2[i];
         
         //graph wheel
-	graph++;
-	
-	if (graph == 190) {graph = 0; memcpy(wave_y_DSP,  wave_y, 4*(AREAHEIGHT+1));}
+        graph++;
+        if (graph == 190) {graph = 0; memcpy(wave_y_DSP,  wave_y, 4*(AREAHEIGHT+1));}
+        
 
-	//Count the graph samples // bug this brakes the vst NuN
-	
-	
-
-	
-	//amplitude
-	
-sigL1 = tube(sigL1,0.14 * fDist);
-sigR2 = tube(sigR2, 0.14 * fDist);
-	
-	
-	// The HairCutter
-	// 
-	// signal is sterio and the clipping can be done on 4 places separetly
-	// left+ and left- and right+ and right-
-	//
-	// cubicSampels
-	
-	if (sigL1 >= 0.5+wave_y_DSP[graph]){
-	  sigL1 = 0.5+wave_y_DSP[graph]+tvnoise(sigL1,fTVNoise);
-	  //if(cubicSampels){
-	  //   sigL1 = sigL1 + (kCUBS * fCub);
-	  //}
+        //amplitude
+        sigL1 = tube(sigL1,0.14 * fDist);
+        sigR2 = tube(sigR2, 0.14 * fDist);
+        
+        
+        // The HairCutter
+        // 
+        // signal is sterio and the clipping can be done on 4 places separetly
+        // left+ and left- and right+ and right-
+        //
+        // cubicSampels
+        
+        if (sigL1 >= 0.51+wave_y_DSP[graph]){
+          sigL1 = 0.51+wave_y_DSP[graph]+tvnoise(sigL1,fTVNoise);
+	  if(cubicSampels==true){
+	     sigL1 = sigL1 + (kCUBS * fCub);
+	  }
 	}
-	if (sigL1 <=-0.5-wave_y_DSP[graph]){
-	  sigL1 = -0.5-wave_y_DSP[graph]-tvnoise(sigL1,fTVNoise);
-	  //if(cubicSampels==false){
-	  //   sigL1 = sigL1 + (kCUBS * fCub);
-	  //}
+	if (sigL1 <=-0.51-wave_y_DSP[graph]){
+	  sigL1 = -0.51-wave_y_DSP[graph]-tvnoise(sigL1,fTVNoise);
+	  if(cubicSampels==false){
+	     sigL1 = sigL1 + (kCUBS * fCub);
+	  }
 	}
-	if (sigR2 >= 0.5+wave_y_DSP[graph]){
-	  sigR2 = 0.5+wave_y_DSP[graph]+tvnoise(sigR2,fTVNoise);
-	  //if(cubicSampels){
-	  //   sigR2 = sigR2 + (kCUBS * fCub);
-	  //}
+	if (sigR2 >= 0.51+wave_y_DSP[graph]){
+	  sigR2 = 0.51+wave_y_DSP[graph]+tvnoise(sigR2,fTVNoise);
+	  if(cubicSampels==true){
+	     sigR2 = sigR2 + (kCUBS * fCub);
+	  }
 	}
-	if (sigR2 <=-0.5-wave_y_DSP[graph]){
-	  sigR2 = -0.5-wave_y_DSP[graph]-tvnoise(sigR2,fTVNoise);
-	  //if(cubicSampels==false){
-	  //   sigL1 = sigL1 + (kCUBS * fCub);
-	  //}
+	if (sigR2 <=-0.51-wave_y_DSP[graph]){
+	  sigR2 = -0.51-wave_y_DSP[graph]-tvnoise(sigR2,fTVNoise);
+	  if(cubicSampels==false){
+	     sigL1 = sigL1 + (kCUBS * fCub);
+	  }
 	}
-	//cubicSampels++;
+	cubicSampels++;
         
 	//bit
 	if (fBit > 0){
@@ -465,8 +489,7 @@ sigR2 = tube(sigR2, 0.14 * fDist);
 	if(outFinalL < -1.){ outFinalL = -1.; } if(outFinalL > 1.){ outFinalL = 1.; }
 	if(outFinalR < -1.){ outFinalR = -1.; } if(outFinalR > 1.){ outFinalR = 1.; }
 
-	//if (outFinalL != outFinalL){outFinalL = 0;}
-	//if (outFinalR != outFinalR){outFinalR = 0;}
+
 	
 	
 	
