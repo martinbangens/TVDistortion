@@ -338,7 +338,7 @@ void DistoTVPlugin::activate()
     int rndnum;
     for (int i = 0; i <= 100; i++){
         rndnum =  rand() % 100 + 1;
-	rnd[i] = rndnum * 0.00000000000000000000000000001f;
+	rnd[i] = rndnum * 0.0000000000000000000000000000001f;
     }
   
     const float sr = (float)getSampleRate();
@@ -462,8 +462,9 @@ void DistoTVPlugin::run(const float** inputs, float** outputs, uint32_t frames)
 	
 	
 	//extra tv noise, need work
-	//sigL1 = sigL1 + rnd[graph];
-	//sigR2 = sigR2 + rnd[graph];
+	// need work
+	sigL1 = sigL1 + rnd[graph];
+	sigR2 = sigR2 + rnd[graph];
 	
 	
 	
