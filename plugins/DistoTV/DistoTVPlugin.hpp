@@ -112,7 +112,7 @@ protected:
     //DSP
     
     float tvnoise(float sig, float knob);
-    float tube(float sig, float gain);
+    float tube(float sig, float gain, float pregain);
     float CheckForBadEggs(float input);
     
 // -------------------------------------------------------------------

@@ -36,7 +36,7 @@ DistoTVUI::DistoTVUI() // constructor definition.
     // sliders
     Image sliderImage(Art::sliderData, Art::sliderWidth, Art::sliderHeight);
 
-    
+    // Wet slider
     fSliderWet = new ImageSlider(this, sliderImage);
     fSliderWet->setId(DistoTVPlugin::paramWet);
     fSliderWet->setInverted(false); //not sure
@@ -81,8 +81,8 @@ DistoTVUI::DistoTVUI() // constructor definition.
     fKnobBitTilt = new ImageKnob(this, knobSmallImage);
     fKnobBitTilt->setId(DistoTVPlugin::paramTilt);
     fKnobBitTilt->setAbsolutePos(3, 204);
-    fKnobBitTilt->setRange(0.0f, 24.0f);
-    fKnobBitTilt->setDefault(0.0f);
+    fKnobBitTilt->setRange(0.0f, 100.0f);
+    fKnobBitTilt->setDefault(50.0f);
     fKnobBitTilt->setRotationAngle(270);
     fKnobBitTilt->setCallback(this);
     
@@ -99,16 +99,16 @@ DistoTVUI::DistoTVUI() // constructor definition.
     fKnobPreAMP = new ImageKnob(this, knobSmallImage);
     fKnobPreAMP->setId(DistoTVPlugin::paramPre);
     fKnobPreAMP->setAbsolutePos(3, 298);
-    fKnobPreAMP->setRange(0.0f, 24.0f);
+    fKnobPreAMP->setRange(-14.0f, 14.0f);
     fKnobPreAMP->setDefault(0.0f);
     fKnobPreAMP->setRotationAngle(270);
     fKnobPreAMP->setCallback(this);
     
-    // knob Master
+    // knob Master Volume
     fKnobMaster = new ImageKnob(this, knobImage, ImageKnob::Vertical);
     fKnobMaster->setId(DistoTVPlugin::paramMaster);
     fKnobMaster->setAbsolutePos(20, 408);
-    fKnobMaster->setRange(-24.0f, 24.0f);
+    fKnobMaster->setRange(-48.0f, 6.0f);
     fKnobMaster->setDefault(0.0f);
     fKnobMaster->setRotationAngle(270);
     fKnobMaster->setCallback(this);
@@ -207,6 +207,12 @@ void DistoTVUI::parameterChanged(uint32_t index, float value)
     case DistoTVPlugin::paramCub:
         fKnobCubic->setValue(value);
         break;
+    case DistoTVPlugin::paramTilt:
+        fKnobBitTilt->setValue(value);
+        break;
+    case DistoTVPlugin::paramPre:
+        fKnobPreAMP->setValue(value);
+        break;
     case DistoTVPlugin::paramMaster:
         fKnobMaster->setValue(value);
         break;
@@ -226,6 +232,8 @@ void DistoTVUI::programLoaded(uint32_t index)
     fKnobMid->setValue(0.0f);
     fKnobHigh->setValue(0.0f);
     fKnobCubic->setValue(0.0f);
+    fKnobBitTilt->setValue(50.0f);
+    fKnobPreAMP->setValue(0.0f);
     fKnobMaster->setValue(0.0f);
     }
 

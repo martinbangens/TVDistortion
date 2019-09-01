@@ -129,10 +129,10 @@ void DistoTVPlugin::initParameter(uint32_t index, Parameter& parameter)
         parameter.hints      = kParameterIsAutomable;
         parameter.name       = "Tilt";
         parameter.symbol     = "tilt";
-        parameter.unit       = "t";
+        parameter.unit       = "%";
         parameter.ranges.def = 0.0f;
-        parameter.ranges.min = 0.0f;
-        parameter.ranges.max = 24.0f;
+        parameter.ranges.min = 50.0f;
+        parameter.ranges.max = 100.0f;
         break;
 
 	
@@ -142,8 +142,8 @@ void DistoTVPlugin::initParameter(uint32_t index, Parameter& parameter)
         parameter.symbol     = "pre";
         parameter.unit       = "p";
         parameter.ranges.def = 0.0f;
-        parameter.ranges.min = 0.0f;
-        parameter.ranges.max = 24.0f;
+        parameter.ranges.min = -14.0f;
+        parameter.ranges.max = 14.0f;
         break;
 
     case paramMaster:
@@ -152,8 +152,8 @@ void DistoTVPlugin::initParameter(uint32_t index, Parameter& parameter)
         parameter.symbol     = "master";
         parameter.unit       = "dB";
         parameter.ranges.def = 0.0f;
-        parameter.ranges.min = -24.0f;
-        parameter.ranges.max = 24.0f;
+        parameter.ranges.min = -48.0f;
+        parameter.ranges.max = 6.0f;
         break;
     }
 }
@@ -314,7 +314,7 @@ void DistoTVPlugin::loadProgram(uint32_t index)
     fHigh = 0.0f;
     fMaster = 0.0f;
     fCub = 0.0f;
-    fTilt = 0.0f;
+    fTilt = 50.0f;
     fPre = 0.0f;
 
     // Internal stuff
@@ -365,10 +365,9 @@ void DistoTVPlugin::deactivate()
     tmp1LP = tmp2LP = tmp1HP = tmp2HP = 0.0f;
     //printf("\nhad_Inf=%d\n""had_NuN=%d\n",had_Inf,had_NuN);
 }
-float DistoTVPlugin::tube(float sig, float gain)
+float DistoTVPlugin::tube(float sig, float gain, float pregain)
 {
- 
-  sig = sig * (2*gain);
+  sig = sig * (2*gain+pregain); 
   
   if (sig < 0.00000000001f and sig > 0.0000000000000000000000000001f){
    sig = sin(sig);
@@ -409,9 +408,10 @@ void DistoTVPlugin::run(const float** inputs, float** outputs, uint32_t frames)
         
 
         //amplitude
-        sigL1 = tube(sigL1,0.14 * fDist);
-        sigR2 = tube(sigR2, 0.14 * fDist);
+        sigL1 = tube(sigL1,0.14 * fDist, fPre);
+        sigR2 = tube(sigR2, 0.14 * fDist, fPre);
         
+
         
         // The HairCutter
         // 
