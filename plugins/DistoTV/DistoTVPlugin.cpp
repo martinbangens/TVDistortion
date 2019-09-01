@@ -131,8 +131,8 @@ void DistoTVPlugin::initParameter(uint32_t index, Parameter& parameter)
         parameter.symbol     = "tilt";
         parameter.unit       = "%";
         parameter.ranges.def = 0.0f;
-        parameter.ranges.min = 50.0f;
-        parameter.ranges.max = 100.0f;
+        parameter.ranges.min = 0.0f;
+        parameter.ranges.max = 190.0f;
         break;
 
 	
@@ -218,7 +218,7 @@ void DistoTVPlugin::setParameterValue(uint32_t index, float value)
         fCub = pow(value,10);
         break;
     case paramTilt:
-        fTilt = value;
+        fTilt = (int)value;
         break;
     case paramPre:
         fPre = value;
@@ -314,7 +314,7 @@ void DistoTVPlugin::loadProgram(uint32_t index)
     fHigh = 0.0f;
     fMaster = 0.0f;
     fCub = 0.0f;
-    fTilt = 50.0f;
+    fTilt = 0.0f;
     fPre = 0.0f;
 
     // Internal stuff
@@ -403,9 +403,9 @@ void DistoTVPlugin::run(const float** inputs, float** outputs, uint32_t frames)
         sigDryR2 = sigR2 = in2[i];
         
         //graph wheel
-        graph++;
-        if (graph == 190) {graph = 0; memcpy(wave_y_DSP,  wave_y, 4*(AREAHEIGHT+1));}
         
+        if (graph == 190) {graph = 0; memcpy(wave_y_DSP,  wave_y, 4*(AREAHEIGHT+1));}
+        graph++;
 
         //amplitude
         sigL1 = tube(sigL1,0.14 * fDist, fPre);
@@ -448,7 +448,12 @@ void DistoTVPlugin::run(const float** inputs, float** outputs, uint32_t frames)
         
 	//bit
 	if (fBit > 0){
-	  if (bit == 0){bit = fBit; graph++;}
+	  if (bit == 0){
+	    bit = fBit;
+	    if (fTilt > 0){bit = bit + graph;}
+	      if (graph<fTilt){bit= bit -graph;}
+	    graph++;
+	  }
 	  bit--;
 	  graph--;
 	}

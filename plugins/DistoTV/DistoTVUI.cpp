@@ -81,8 +81,8 @@ DistoTVUI::DistoTVUI() // constructor definition.
     fKnobBitTilt = new ImageKnob(this, knobSmallImage);
     fKnobBitTilt->setId(DistoTVPlugin::paramTilt);
     fKnobBitTilt->setAbsolutePos(3, 204);
-    fKnobBitTilt->setRange(0.0f, 100.0f);
-    fKnobBitTilt->setDefault(50.0f);
+    fKnobBitTilt->setRange(0.0f, 190.0f);
+    fKnobBitTilt->setDefault(0.0f);
     fKnobBitTilt->setRotationAngle(270);
     fKnobBitTilt->setCallback(this);
     
@@ -232,7 +232,7 @@ void DistoTVUI::programLoaded(uint32_t index)
     fKnobMid->setValue(0.0f);
     fKnobHigh->setValue(0.0f);
     fKnobCubic->setValue(0.0f);
-    fKnobBitTilt->setValue(50.0f);
+    fKnobBitTilt->setValue(0.0f);
     fKnobPreAMP->setValue(0.0f);
     fKnobMaster->setValue(0.0f);
     }
