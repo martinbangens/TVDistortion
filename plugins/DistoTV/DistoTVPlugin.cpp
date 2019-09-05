@@ -19,7 +19,7 @@
 
 #include <cmath>
 
-static const float kCUBS   = 1e-14f;
+static const float kCUBS   = 1e-13f;
 static const float kAMP_DB = 8.656170245f; 
 static const float kDC_ADD = 1e-30f; 	   
 static const float kPI     = 3.141592654f;
@@ -429,7 +429,7 @@ void DistoTVPlugin::run(const float** inputs, float** outputs, uint32_t frames)
 	if (sigL1 <=-0.51-wave_y_DSP[graph]){
 	  sigL1 = -0.51-wave_y_DSP[graph]-tvnoise(sigL1,fTVNoise);
 	  if(cubicSampels==false){
-	     sigL1 = sigL1 + (kCUBS * fCub);
+	     sigL1 = sigL1 - (kCUBS * fCub);
 	  }
 	}
 	if (sigR2 >= 0.51+wave_y_DSP[graph]){
@@ -441,7 +441,7 @@ void DistoTVPlugin::run(const float** inputs, float** outputs, uint32_t frames)
 	if (sigR2 <=-0.51-wave_y_DSP[graph]){
 	  sigR2 = -0.51-wave_y_DSP[graph]-tvnoise(sigR2,fTVNoise);
 	  if(cubicSampels==false){
-	     sigL1 = sigL1 + (kCUBS * fCub);
+	     sigL1 = sigL1 - (kCUBS * fCub);
 	  }
 	}
 	cubicSampels++;
