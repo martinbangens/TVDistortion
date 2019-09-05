@@ -335,11 +335,11 @@ void DistoTVPlugin::loadProgram(uint32_t index)
 void DistoTVPlugin::activate()
 {
     
-  //  int rndnum;
-  //  for (int i = 0; i <= 100; i++){
-  //      rndnum =  rand() % 100 + 1;
-//	rnd[i] = rndnum * 0.0000000000000000000000000000001f;
-//    }
+    int rndnum;
+    for (int i = 0; i <= 100; i++){
+        rndnum =  rand() % 100 + 1;
+	rnd[i] = rndnum * 0.0000000000000000000000000000001f;
+    }
   
     const float sr = (float)getSampleRate();
 
@@ -461,10 +461,7 @@ void DistoTVPlugin::run(const float** inputs, float** outputs, uint32_t frames)
 	
 	
 	
-	//extra tv noise, need work
-	// need work
-	//sigL1 = sigL1 + rnd[graph];
-	//sigR2 = sigR2 + rnd[graph];
+
 	
 	
 	
@@ -487,6 +484,9 @@ void DistoTVPlugin::run(const float** inputs, float** outputs, uint32_t frames)
         sigL1 = (out1LP*lowVol + (sigL1 - out1LP - out1HP)*midVol + out1HP*highVol) * outVol;
         sigR2 = (out2LP*lowVol + (sigR2 - out2LP - out2HP)*midVol + out2HP*highVol) * outVol;
         
+	sigDryL1 = sigDryL1 * outVol;
+	sigDryR2 = sigDryR2 * outVol;
+	
         // Wet knob final blend in
         outFinalL = (sigL1*0.00001*fWet) + sigDryL1 - (sigDryL1*0.00001*fWet);
         outFinalR = (sigR2*0.00001*fWet) + sigDryR2 - (sigDryR2*0.00001*fWet);
@@ -494,7 +494,11 @@ void DistoTVPlugin::run(const float** inputs, float** outputs, uint32_t frames)
 	// Limit
 	if(outFinalL < -1.){ outFinalL = -1.; } if(outFinalL > 1.){ outFinalL = 1.; }
 	if(outFinalR < -1.){ outFinalR = -1.; } if(outFinalR > 1.){ outFinalR = 1.; }
-
+	
+	//extra tv noise, need work
+	// need work
+	sigL1 = sigL1 + rnd[graph];
+	sigR2 = sigR2 + rnd[graph];
 
 	
 	
