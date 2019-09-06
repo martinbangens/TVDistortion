@@ -367,15 +367,22 @@ void DistoTVPlugin::deactivate()
 }
 float DistoTVPlugin::tube(float sig, float gain, float pregain)
 {
-  sig = sig * (2*gain+pregain); 
+  float endgain = gain+pregain;
+  
+  if (endgain < 0) { endgain = 0; }
+  
+  sig = sig * (2*endgain); 
   
   if (sig < 0.00000000001f and sig > 0.0000000000000000000000000001f){
    sig = sin(sig);
   }
+  
   if (sig > -0.00000000001f and sig < -0.0000000000000000000000000001f){
    sig = sin(sig);
   }
+  
   sig = sig + sin(0.000000000000000000000000001f);
+  
   return sig;
 }
 
