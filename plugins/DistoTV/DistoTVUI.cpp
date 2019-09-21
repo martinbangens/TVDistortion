@@ -16,7 +16,7 @@
 
 #include "DistoTVPlugin.hpp"
 #include "DistoTVUI.hpp"
-//#include <Widget.hpp>
+
 
 START_NAMESPACE_DISTRHO
 
@@ -63,7 +63,7 @@ DistoTVUI::DistoTVUI() // constructor definition.
     fKnobCubic = new ImageKnob(this, knobSmallImage);
     fKnobCubic->setId(DistoTVPlugin::paramCub);
     fKnobCubic->setAbsolutePos(3, 104);
-    fKnobCubic->setRange(0.0f, 24.0f);
+    fKnobCubic->setRange(0.0f, 100.0f);
     fKnobCubic->setDefault(0.0f);
     fKnobCubic->setRotationAngle(270);
     fKnobCubic->setCallback(this);
@@ -141,12 +141,12 @@ DistoTVUI::DistoTVUI() // constructor definition.
     fKnobHigh->setCallback(this);
     
 
-
     // drawing area
     fCanvasArea.setPos(130,195);
     fCanvasArea.setSize(AREAHEIGHT,AREAHEIGHT);
-    for (int i = 0; i < AREAHEIGHT; i++) {
-        wave_y[i] = /*-(AREAHEIGHT*(sin(2.*i*M_PI/AREAHEIGHT)-1.0))/2.; */95;
+    for (int i = 0; i < AREAHEIGHT; i++
+    ) {
+        wave_y[i] = -(AREAHEIGHT*(atan(4.*i*M_PI/AREAHEIGHT)-2.0))/4.; // 95;
     }
     
     
@@ -280,6 +280,7 @@ bool DistoTVUI::onMouse(const MouseEvent & ev) // this gets called when the mous
 
     if (ev.press)
     {
+      //need to do if graph tab true
         if (! fCanvasArea.contains(ev.pos)) {
             //fDragValid = false;
             return false;
@@ -315,16 +316,13 @@ bool DistoTVUI::onMotion (const MotionEvent & ev) // this gets called when mouse
     if (y > 385) y = 385;// outside bottom
     if (y < 195) y = 195;// outside top
   
-    //float *gr; // <---- hmmmmm thid adress my not be 
-    //gr = wave_y;
 
     if (wave_y[x-130] != (y-195)) { // if wave_y is not the same as getY(), then update
+        
         memset(fWaveState, 0, sizeof(fWaveState));// fill fWaveState whit 0
-        int i;// make new string and put it back in fWaveState
-        //for (i = 0; i <= 4*AREAHEIGHT+1; i++){fWaveState[i] = 0;}
-      
-        //i=0;
-        for(i = 0; i < AREAHEIGHT; i++) {
+        
+
+        for(int i = 0; i < AREAHEIGHT; i++) {
             char wavestr[5] = {0};
             snprintf(wavestr, sizeof(wavestr), "%03d ", (int) (fCanvasArea.getHeight()-wave_y[i]));
             strcat(fWaveState, wavestr);
@@ -341,30 +339,33 @@ bool DistoTVUI::onMotion (const MotionEvent & ev) // this gets called when mouse
   return true;
 }
 
-void DistoTVUI::onDisplay()
+void DistoTVUI::onNanoDisplay()
 {
   fImgBackground.draw();
-     //background
+  
+  
+  //Line eye sugar
+  glEnable(GL_BLEND);// blend the color with current pixel buffer
+  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+  glEnable(GL_LINE_SMOOTH);// draw lines whit filtering
+  glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
+  glLineWidth(2);
+  
+
     
-    glEnable(GL_BLEND);// blend the color with current pixel buffer
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    glEnable(GL_LINE_SMOOTH);// draw lines whit filtering
-    glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
-
-    glLineWidth(2);
-    //float *gr; // and
-    //gr = wave_y;
-
-    int i;
-        glColor4f(0.235f, 1.f, 0.235f, 1.0f);
-        for (i = 2; i < AREAHEIGHT; ++i) {
-            glBegin(GL_LINES);
-                    glVertex2i(i-1+fCanvasArea.getX(), wave_y[i-1]+fCanvasArea.getY());
-                    glVertex2i(i+fCanvasArea.getX(), wave_y[i]+fCanvasArea.getY());
-            glEnd();
-        }
-    // reset color
-    glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+    
+  //line loop
+  int i;
+      glColor4f(0.235f, 1.f, 0.235f, 1.0f);
+      for (i = 2; i < AREAHEIGHT; ++i) {
+          glBegin(GL_LINES);
+                  glVertex2i(i-1+fCanvasArea.getX(), wave_y[i-1]+fCanvasArea.getY());
+                  glVertex2i(i+fCanvasArea.getX(), wave_y[i]+fCanvasArea.getY());
+          glEnd();
+      }
+      
+  // reset color
+  glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
 
 }
 

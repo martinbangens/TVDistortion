@@ -63,7 +63,7 @@ protected:
     void imageSliderValueChanged(ImageSlider* slider, float value) override;
     
     // Display
-    void onDisplay()  override;
+    void onNanoDisplay()  override;
     void uiIdle() override;
     
     // Mouse
