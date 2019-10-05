@@ -18,6 +18,7 @@
 
 
 #include <cmath>
+#include <lo/lo_osc_types.h>
 
 static const float kCUBS   = 1e-14f;
 static const float kAMP_DB = 8.656170245f; 
@@ -414,10 +415,9 @@ void DistoTVPlugin::run(const float** inputs, float** outputs, uint32_t frames)
         sigDryR2 = sigR2 = in2[i];
         
         //graph wheel
-        
-	
 	//
-	//scaling is done only posetive frome one point and up 
+	//scaling is done only posetive frome one point and up, later mirrored to negative
+	
         if (graph == 190) {graph = 0; /*memcpy(wave_y_DSP,  wave_y, 4*(AREAHEIGHT+1));*/}
         graph++;
 	wave_y_DSP[graph] = wave_y[graph]/2 + 0.25;// scale here now better then memcpy
@@ -438,16 +438,19 @@ void DistoTVPlugin::run(const float** inputs, float** outputs, uint32_t frames)
 	//sigL1 = sin(sigL1*sigL1*sigL1);
 	//sigR2 = sin(sigR2*sigR2*sigR2);
 	
+	cubclipL = sigL1;
+	cubclipR = sigR2;
 	
-	cubclipL = (2.f/ kPI) * (1.5 * sigL1 - 0.5 * sigL1 * sigL1 * sigL1);
-	cubclipR = (2.f/ kPI) * (1.5 * sigR2 - 0.5 * sigR2 * sigR2 * sigR2);
+	  if( cubclipL > 0.7){ cubclipL = 0.7; }
+	  if( cubclipL < -0.7){ cubclipL = -0.7; }
 	
-        // Hard clipping from graph
-        // 
-        // signal is sterio and the clipping can be done on 4 places separetly
-        // left+ and left- and right+ and right-
-        //
-       
+	  if(cubclipR >0.7){ cubclipR = 0.7; }
+	  if(cubclipR < -0.7){ cubclipR = -0.7;}	
+	
+	cubclipL = (2.f/ kPI) * (1.5 * cubclipL - 0.5 * cubclipL * cubclipL * cubclipL);
+	cubclipR = (2.f/ kPI) * (1.5 * cubclipR - 0.5 * cubclipR * cubclipR * cubclipR);
+
+	
 	//Polarity switch resets the graph. Work for natural sounds 
 /*	    
 	if( sigL1 < 0){
@@ -459,9 +462,7 @@ void DistoTVPlugin::run(const float** inputs, float** outputs, uint32_t frames)
 	   PolarityL = 1;
 	   if (PrePolarityL==0) {graph=0;}
 	   }
-	    
-	    
-	    
+	      
 	    
          if (sigR2 < 0){
 	    PolarityR = 0;
@@ -476,24 +477,32 @@ void DistoTVPlugin::run(const float** inputs, float** outputs, uint32_t frames)
         PrePolarityL = PolarityL;
 	PrePolarityR = PolarityR;
 */	
- 
+ 	
+        // Hard clipping from graph
+        // 
+        // signal is sterio and the clipping can be done on 4 places separetly
+        // left+ and left- and right+ and right-
+        //
+       
+
 
         // need Interpolation methods for wave_y_DSP
 
         if (sigL1 >= 0.5+wave_y_DSP[graph]){
-          sigL1 =  0.5+wave_y_DSP[graph];//+tvnoise(sigL1,fTVNoise);
+          sigL1 =  0.5+wave_y_DSP[graph];
 	}
 	if (sigL1 <= -0.5-wave_y_DSP[graph]){
-	  sigL1 = -0.5-wave_y_DSP[graph];//+tvnoise(sigL1,fTVNoise);
+	  sigL1 = -0.5-wave_y_DSP[graph];
 	}
 	if (sigR2 >= 0.5+wave_y_DSP[graph]){
-	  sigR2 = 0.5+wave_y_DSP[graph];//+tvnoise(sigR2,fTVNoise);
+	  sigR2 = 0.5+wave_y_DSP[graph];
 	}
 	if (sigR2 <= -0.5-wave_y_DSP[graph]){
-	  sigR2 = -0.5-wave_y_DSP[graph]; //+tvnoise(sigR2,fTVNoise);
+	  sigR2 = -0.5-wave_y_DSP[graph];
 	}
         
-        
+
+	
 	//bit
 	// this was supposed to be bit dist but it became graph length manipulator
 	if (fBit > 0){
@@ -512,8 +521,8 @@ void DistoTVPlugin::run(const float** inputs, float** outputs, uint32_t frames)
 	
 	// Bug make Cubic Dist with fixed volume, its on max volume an needs a limiter
 	// Dist knob final blend in
-	sigL1 = sigDryL1 - (sigDryL1 * 0.01 *fDist)  + (sigL1 * 0.01 * fDist) + (softclipL * 0.01 * fTVNoise);// + (cubclipL * 0.01 * fCub);
-	sigR2 = sigDryR2 - (sigDryR2 * 0.01 *fDist)  + (sigR2 * 0.01 * fDist) + (softclipR * 0.01 * fTVNoise);// + (cubclipR * 0.01 * fCub);
+	sigL1 = sigDryL1 - (sigDryL1 * 0.01 *fDist)  + (sigL1 * 0.01 * fDist) + (softclipL * 0.01 * fTVNoise) + (cubclipL * 0.01 * fCub);
+	sigR2 = sigDryR2 - (sigDryR2 * 0.01 *fDist)  + (sigR2 * 0.01 * fDist) + (softclipR * 0.01 * fTVNoise) + (cubclipR * 0.01 * fCub);
 
 	// Filter
         tmp1LP = a0LP * sigL1 - b1LP * tmp1LP + kDC_ADD;
