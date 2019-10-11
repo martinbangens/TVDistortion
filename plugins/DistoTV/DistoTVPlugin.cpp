@@ -417,15 +417,15 @@ void DistoTVPlugin::run(const float** inputs, float** outputs, uint32_t frames)
         //graph wheel
 	//
 	//scaling is done only posetive frome one point and up, later mirrored to negative
-	
+	graph++;
         if (graph == 190) {graph = 0; /*memcpy(wave_y_DSP,  wave_y, 4*(AREAHEIGHT+1));*/}
-        graph++;
+        
 	wave_y_DSP[graph] = sin(wave_y[graph]/2 + 0.25);// scale here now better then memcpy
         // need a funktion for Interpolation methods to wave_y_DSP, right now its a sine.
 	
 	// noise wheel
-	if(NoiseSeq == 5){NoiseSeq = 0;}
-	NoiseSeq++;
+	NoiseSeq++; if(NoiseSeq == 5){NoiseSeq = 0;}
+	
 	
 	
         //amplitude

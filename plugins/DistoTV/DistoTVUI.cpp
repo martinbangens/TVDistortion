@@ -311,7 +311,7 @@ bool DistoTVUI::onMotion (const MotionEvent & ev) // this gets called when mouse
     int x = ev.pos.getX();
     int y = ev.pos.getY();
  
-    if (x > 320) x = 320;// outside right
+    if (x > 319) x = 319;// outside right
     if (x < 130) x = 130;// outside left
     if (y > 385) y = 385;// outside bottom
     if (y < 195) y = 195;// outside top
@@ -328,7 +328,7 @@ bool DistoTVUI::onMotion (const MotionEvent & ev) // this gets called when mouse
             strcat(fWaveState, wavestr);
         }
 
-        wave_y[x-130] = y-195; // give wave_y the new value  <--- this one look a bit guilty
+        wave_y[x-130] = y-195;
 
         fWaveUpdated = true; // then uiIdle() will setState()
 
