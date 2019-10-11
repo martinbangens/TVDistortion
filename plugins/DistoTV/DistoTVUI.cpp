@@ -157,7 +157,7 @@ DistoTVUI::DistoTVUI() // constructor definition.
 
 void DistoTVUI::stateChanged(const char* key, const char* value)
 {
-  printf("Im here at StateChanged\n");
+  //printf("Im here at StateChanged\n");
   
         if (strcmp(key, "waveform") == 0) {
 	        char* tmp;
@@ -168,7 +168,7 @@ void DistoTVUI::stateChanged(const char* key, const char* value)
 	        while ((tmp != NULL) && (i < AREAHEIGHT)) {
 	                wave_y[i] = AREAHEIGHT-((float)atoi(tmp));
 	                i++;
-	                printf("%03d ", (int)wave_y[i]);
+	                //printf("%03d ", (int)wave_y[i]);
 	                tmp = strtok(NULL, " ");
 	        }
 	} 
@@ -357,7 +357,7 @@ void DistoTVUI::onNanoDisplay()
   //line loop
   int i;
       glColor4f(0.235f, 1.f, 0.235f, 1.0f);
-      for (i = 2; i < AREAHEIGHT; ++i) {
+      for (i = 1; i < AREAHEIGHT; ++i) {
           glBegin(GL_LINES);
                   glVertex2i(i-1+fCanvasArea.getX(), wave_y[i-1]+fCanvasArea.getY());
                   glVertex2i(i+fCanvasArea.getX(), wave_y[i]+fCanvasArea.getY());

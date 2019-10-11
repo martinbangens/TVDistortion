@@ -110,8 +110,8 @@ protected:
     String getState(const char* key) const override;
     
     //DSP
-    float cubdist(float in, float amount);
-    float tvnoise(float sig, float knob);
+    
+    float tvnoise(float sig, float knob, float NoiseSample);
     float tube(float sig, float gain, float pregain);
     float CheckForBadEggs(float input);
     
@@ -136,7 +136,7 @@ private:
     bool had_NuN = false;
     bool had_Inf = false;
   
-    int graph = 0;
+    int graph = 0, NoiseSeq = 0;
     bool updatebuff = false;
     bool cubicSampels = false;
     
@@ -146,6 +146,7 @@ private:
     float bit; 
     float wave_y[AREAHEIGHT+1] = {0};
     float wave_y_DSP[AREAHEIGHT+1] = {0};
+    float NoiseSample[6] = {0.00000001,0.000000000002,0.0000000002,0.00000000001,0.0000000001,0};
     
     float softclipL, softclipR, cubclipL, cubclipR;
     

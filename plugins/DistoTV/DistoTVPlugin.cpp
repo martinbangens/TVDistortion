@@ -133,7 +133,7 @@ void DistoTVPlugin::initParameter(uint32_t index, Parameter& parameter)
         parameter.unit       = "%";
         parameter.ranges.def = 0.0f;
         parameter.ranges.min = 0.0f;
-        parameter.ranges.max = 190.0f;
+        parameter.ranges.max = 189.0f;
         break;
 
 	
@@ -255,7 +255,8 @@ void DistoTVPlugin::setState(const char* key, const char* value)
                 tmp = strtok(tmpbuf, " ");
                 while ((tmp != NULL) && (i < AREAHEIGHT)) {
                         wave_y[i] = ((float) atoi(tmp))/AREAHEIGHT - 0.5; // take float values of the strings and put in wave_y
-                        printf("wave_y[%d]=%.2f \n", i, wave_y[i]);
+                        
+                        //printf("wave_y[%d]=%.2f \n", i, wave_y[i]);
                         tmp = strtok(NULL, " ");
                         i++;
                 }
@@ -276,7 +277,7 @@ String DistoTVPlugin::getState(const char * key)const {
      i++; 
    }
    
-   printf("\nthis is getState string\n%s",tmpbuf);
+   //printf("\nthis is getState string\n%s",tmpbuf);
    return String(tmpbuf);
    }
    
@@ -342,6 +343,7 @@ void DistoTVPlugin::activate()
     	rnd[i] = rndnum * 0.0000000000000000000000000000001f;
     }
   
+    
     const float sr = (float)getSampleRate();
 
     xLP  = std::exp(-2.0f * kPI * freqLP / sr);
@@ -386,17 +388,15 @@ float DistoTVPlugin::tube(float sig, float gain, float pregain)
   
   return sig;
 }
-float DistoTVPlugin::cubdist(float in, float amount){
-  
-  return in - (1/3)*in*in*in;
-  
-}
-float DistoTVPlugin::tvnoise(float sig, float knob)
+
+float DistoTVPlugin::tvnoise(float sig, float knob, float NoiseSample)
 { // need work
-  sig = sig +(sin(sig*0.00001*knob));
-  sig = sig +(sin(sig*0.000001*knob));
-  sig = sig +(sin(sig*0.0000001*knob));
-  sig = sig +(sin(sig*0.000000001*knob));
+  sig = sig +(knob*0.01*NoiseSample);
+   
+  sig = sig +(knob*0.01*sin(sig));
+  sig = sig +(knob*0.01*sin(0.1*sig));
+  sig = sig +(knob*0.01*sin(0.01*sig));
+  sig = sig +(knob*0.01*sin(0.001*sig));
   
   return sig;
 }
@@ -420,8 +420,14 @@ void DistoTVPlugin::run(const float** inputs, float** outputs, uint32_t frames)
 	
         if (graph == 190) {graph = 0; /*memcpy(wave_y_DSP,  wave_y, 4*(AREAHEIGHT+1));*/}
         graph++;
-	wave_y_DSP[graph] = wave_y[graph]/2 + 0.25;// scale here now better then memcpy
-
+	wave_y_DSP[graph] = sin(wave_y[graph]/2 + 0.25);// scale here now better then memcpy
+        // need a funktion for Interpolation methods to wave_y_DSP, right now its a sine.
+	
+	// noise wheel
+	if(NoiseSeq == 5){NoiseSeq = 0;}
+	NoiseSeq++;
+	
+	
         //amplitude
         sigL1 = tube(sigL1,0.14 * fDist, fPre);
         sigR2 = tube(sigR2, 0.14 * fDist, fPre);
@@ -441,11 +447,11 @@ void DistoTVPlugin::run(const float** inputs, float** outputs, uint32_t frames)
 	cubclipL = sigL1;
 	cubclipR = sigR2;
 	
-	  if( cubclipL > 0.7){ cubclipL = 0.7; }
-	  if( cubclipL < -0.7){ cubclipL = -0.7; }
+	  if( cubclipL > 1){ cubclipL = 1; }
+	  if( cubclipL < -1){ cubclipL = -1; }
 	
-	  if(cubclipR >0.7){ cubclipR = 0.7; }
-	  if(cubclipR < -0.7){ cubclipR = -0.7;}	
+	  if(cubclipR > 1){ cubclipR = 1; }
+	  if(cubclipR < -1){ cubclipR = -1;}	
 	
 	cubclipL = (2.f/ kPI) * (1.5 * cubclipL - 0.5 * cubclipL * cubclipL * cubclipL);
 	cubclipR = (2.f/ kPI) * (1.5 * cubclipR - 0.5 * cubclipR * cubclipR * cubclipR);
@@ -486,7 +492,7 @@ void DistoTVPlugin::run(const float** inputs, float** outputs, uint32_t frames)
        
 
 
-        // need Interpolation methods for wave_y_DSP
+       
 
         if (sigL1 >= 0.5+wave_y_DSP[graph]){
           sigL1 =  0.5+wave_y_DSP[graph];
@@ -516,11 +522,10 @@ void DistoTVPlugin::run(const float** inputs, float** outputs, uint32_t frames)
 	  graph--;
 	}
 	
-	sigL1 = sigL1 + tvnoise(sigL1,fTVNoise);
-	sigR2 = sigR2 + tvnoise(sigR2,fTVNoise);
+	sigL1 = sigL1 + tvnoise(sigL1,fTVNoise,NoiseSample[NoiseSeq]);
+	sigR2 = sigR2 + tvnoise(sigR2,fTVNoise,NoiseSample[NoiseSeq]);
 	
-	// Bug make Cubic Dist with fixed volume, its on max volume an needs a limiter
-	// Dist knob final blend in
+	
 	sigL1 = sigDryL1 - (sigDryL1 * 0.01 *fDist)  + (sigL1 * 0.01 * fDist) + (softclipL * 0.01 * fTVNoise) + (cubclipL * 0.01 * fCub);
 	sigR2 = sigDryR2 - (sigDryR2 * 0.01 *fDist)  + (sigR2 * 0.01 * fDist) + (softclipR * 0.01 * fTVNoise) + (cubclipR * 0.01 * fCub);
 
