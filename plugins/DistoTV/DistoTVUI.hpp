@@ -21,10 +21,11 @@
 
 #include "DistoTVArtwork.hpp"
 
-#define AREAHEIGHT 190
+#define AREAHEIGHT 1000
 
 START_NAMESPACE_DISTRHO
 using DGL::Image;
+using DGL::ImageSwitch;
 using DGL::ImageKnob;
 using DGL::ImageSlider;
 
@@ -34,7 +35,8 @@ using DGL::ImageSlider;
 
 class DistoTVUI : public UI,
                          public ImageKnob::Callback,
-                         public ImageSlider::Callback
+                         public ImageSlider::Callback,
+                         public ImageSwitch::Callback
 {
 public:
     DistoTVUI();
@@ -46,8 +48,9 @@ protected:
     // DSP Callbacks
 
     void parameterChanged(uint32_t index, float value) override;
-    void programLoaded(uint32_t index) override;
-    void stateChanged(const char* key, const char* value) override;
+    void programLoaded(uint32_t index);
+    void stateChanged(const char* key, const char* value);
+    
     
   
 
@@ -61,9 +64,10 @@ protected:
     void imageSliderDragStarted(ImageSlider* slider) override;
     void imageSliderDragFinished(ImageSlider* slider) override;
     void imageSliderValueChanged(ImageSlider* slider, float value) override;
+    void imageSwitchClicked(ImageSwitch* tog, bool down) override;
     
     // Display
-    void onNanoDisplay()  override;
+    void onNanoDisplay();
     void uiIdle() override;
     
     // Mouse
@@ -84,12 +88,12 @@ private:
     bool fWaveUpdated;
     char fWaveState[4*AREAHEIGHT+1]; // 4 char(3 values and 1 space for every pixel) +1 extra for "NULL" terminator = The State Wave String :D
 
-    
+    bool fBoolCrossres;
     
     
     ScopedPointer<ImageKnob> fKnobLow, fKnobMid, fKnobHigh, fKnobMaster, fKnobDist, fKnobPreAMP, fKnobBit, fKnobBitTilt, fKnobTVNoise, fKnobCubic;
     ScopedPointer<ImageSlider> fSliderWet;
-    
+    ScopedPointer<ImageSwitch> fSwitchCrossres;
 
     DISTRHO_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(DistoTVUI)
 };

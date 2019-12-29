@@ -21,7 +21,7 @@
 #include <math.h>
 
 
-#define AREAHEIGHT 190
+#define AREAHEIGHT 1000
 START_NAMESPACE_DISTRHO
 
 // -----------------------------------------------------------------------
@@ -33,15 +33,16 @@ public:
     {
         paramWet= 0,
         paramTVNoise,
-	paramCub,
+        paramCub,
         paramBit,
-	paramTilt,
+        paramTilt,
         paramDist,
-	paramPre,
+        paramPre,
         paramLow, 
         paramMid,
         paramHigh,
         paramMaster,
+        paramCrossres,
         paramCount
     };
 
@@ -132,11 +133,12 @@ protected:
 */
 private:
     
+    float fCrossres;
   
     bool had_NuN = false;
     bool had_Inf = false;
   
-    int graph = 0, NoiseSeq = 0;
+    int graph = 0, NoiseSeq = 0, rms = 0;
     bool updatebuff = false;
     bool cubicSampels = false;
     

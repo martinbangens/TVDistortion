@@ -68,12 +68,12 @@ void DistoTVPlugin::initParameter(uint32_t index, Parameter& parameter)
 
     case paramBit:
         parameter.hints      = kParameterIsAutomable;
-        parameter.name       = "Bit";
+        parameter.name       = "lenth";
         parameter.symbol     = "bit";
-        parameter.unit       = "%";
+        parameter.unit       = "samples";
         parameter.ranges.def = 0.0f;
         parameter.ranges.min = 0.0f;
-        parameter.ranges.max = 100.0f;
+        parameter.ranges.max = 32.0f;
         break;
 
     case paramDist:
@@ -156,6 +156,17 @@ void DistoTVPlugin::initParameter(uint32_t index, Parameter& parameter)
         parameter.ranges.min = -48.0f;
         parameter.ranges.max = 6.0f;
         break;
+        
+    case paramCrossres:
+        parameter.hints      = kParameterIsAutomable | kParameterIsBoolean;
+        parameter.name       = "Crossres";
+        parameter.symbol     = "bool";
+        parameter.unit       = "1/0";
+        parameter.ranges.def = 0.0f;
+        parameter.ranges.min = 0.0f;
+        parameter.ranges.max = 1.0f;
+	break;
+        
     }
 }
 
@@ -190,6 +201,8 @@ float DistoTVPlugin::getParameterValue(uint32_t index) const
         return fPre;
     case paramMaster:
         return fMaster;
+    case paramCrossres:
+        return fCrossres;
     default:
         return 0.0f;
     }
@@ -240,44 +253,48 @@ void DistoTVPlugin::setParameterValue(uint32_t index, float value)
         fMaster = value;
         outVol  = std::exp( (fMaster/48.0f) * 48.0f / kAMP_DB);
         break;
+    case paramCrossres:
+        fCrossres = value;
+        break;
     }
 }
 
 void DistoTVPlugin::setState(const char* key, const char* value)
 {
-        //printf("\nthis is setState string\n%s", value);
-        if (strcmp(key, "waveform") == 0) {
-                char* tmp;
-                int i = 0;
-                char tmpbuf[4*AREAHEIGHT+1] = {0};
-                snprintf(tmpbuf, 4*AREAHEIGHT+1, "%s", value);
-                //printf("\nthe value of tmpbuf\n%s", tmpbuf);
-                tmp = strtok(tmpbuf, " ");
-                while ((tmp != NULL) && (i < AREAHEIGHT)) {
-                        wave_y[i] = ((float) atoi(tmp))/AREAHEIGHT - 0.5; // take float values of the strings and put in wave_y
+   //printf("\nthis is setState string\n%s", value);
+   if (strcmp(key, "waveform") == 0) {
+       char* tmp;
+       int i = 0;
+       char tmpbuf[4*AREAHEIGHT+1] = {0};
+       snprintf(tmpbuf, 4*AREAHEIGHT+1, "%s", value);
+       //printf("\nthe value of tmpbuf\n%s", tmpbuf);
+       tmp = strtok(tmpbuf, " ");
+       while ((tmp != NULL) && (i < AREAHEIGHT)) {
+               wave_y[i] = ((float) atoi(tmp))/300 - 0.5; // take float values of the strings and put in wave_y
                         
-                        //printf("wave_y[%d]=%.2f \n", i, wave_y[i]);
-                        tmp = strtok(NULL, " ");
-                        i++;
-                }
+               printf("wave_y[%d]=%.2f \n", i, wave_y[i]);
+               tmp = strtok(NULL, " ");
+               i++;
+               }
         
        }
 }
 
 String DistoTVPlugin::getState(const char * key)const {
-  if (strcmp(key, "waveform") == 0) {
-    char tmpbuf[4*AREAHEIGHT+1] = {0};
-    int i = 0;
-    int value;
-    char word[5];   
-    while(i < AREAHEIGHT) {
-     value = (int)(wave_y[i]*(AREAHEIGHT+0.5))+95;
-     snprintf(word,5,"%03d ", value);
-     strcat(tmpbuf,word);     
-     i++; 
+   if (strcmp(key, "waveform") == 0) {
+       char tmpbuf[4*AREAHEIGHT+1] = {0};
+       int i = 0;
+       int value;
+       char word[5];   
+       while(i < AREAHEIGHT) { // need a better presice way to handle the nummbers
+             value = (int)(wave_y[i]*(300+0.5))+150;
+             snprintf(word,5,"%03d ", value);
+             strcat(tmpbuf,word);     
+             i++; 
    }
    
-   //printf("\nthis is getState string\n%s",tmpbuf);
+   printf("\nThis is getstate() stored string:\n%s\n",tmpbuf);
+   printf("\n%f\n",fCrossres);
    return String(tmpbuf);
    }
    
@@ -318,6 +335,7 @@ void DistoTVPlugin::loadProgram(uint32_t index)
     fCub = 0.0f;
     fTilt = 0.0f;
     fPre = 0.0f;
+    fCrossres = 0.0f;
 
     // Internal stuff
     lowVol = midVol = highVol = outVol = 1.0f;
@@ -338,7 +356,7 @@ void DistoTVPlugin::activate()
 {
     
     int rndnum;
-    for (int i = 0; i <= 100; i++){
+    for (int i = 0; i <= 190; i++){
         rndnum =  rand() % 100 + 1;
     	rnd[i] = rndnum * 0.0000000000000000000000000000001f;
     }
@@ -370,6 +388,7 @@ void DistoTVPlugin::deactivate()
 }
 float DistoTVPlugin::tube(float sig, float gain, float pregain)
 {
+  //need work
   float endgain = gain+(pregain*3);
   
   if (endgain < 0) { endgain = 0; }
@@ -417,23 +436,27 @@ void DistoTVPlugin::run(const float** inputs, float** outputs, uint32_t frames)
         //graph wheel
 	//
 	//scaling is done only posetive frome one point and up, later mirrored to negative
+	//the base curve will be added here atan()
+	//this needs to be tested visually and analysed
 	graph++;
-        if (graph == 190) {graph = 0; /*memcpy(wave_y_DSP,  wave_y, 4*(AREAHEIGHT+1));*/}
+        if (graph == 1000) {graph = 0; /*memcpy(wave_y_DSP,  wave_y, 4*(AREAHEIGHT+1));*/}
         
-	wave_y_DSP[graph] = sin(wave_y[graph]/2 + 0.25);// scale here now better then memcpy
-        // need a funktion for Interpolation methods to wave_y_DSP, right now its a sine.
+	wave_y_DSP[graph] = wave_y[graph]/2 + 0.25;// scale here now better then memcpy
+        // need a funktion for smoothing to wave_y_DSP.
 	
 	// noise wheel
 	NoiseSeq++; if(NoiseSeq == 5){NoiseSeq = 0;}
 	
-	
+	// rms noise wheel
+	rms++; if(rms == 190){rms = 0;}	
 	
         //amplitude
         sigL1 = tube(sigL1,0.14 * fDist, fPre);
         sigR2 = tube(sigR2, 0.14 * fDist, fPre);
         
-	softclipL = (2.f/ kPI) * atan(sigL1);
-	softclipR = (2.f/ kPI) * atan(sigR2);
+	//soft distortion
+	//softclipL = (2.f/ kPI) * atan(sigL1);
+	//softclipR = (2.f/ kPI) * atan(sigR2);
         
 
 	// experamental clipping
@@ -444,21 +467,23 @@ void DistoTVPlugin::run(const float** inputs, float** outputs, uint32_t frames)
 	//sigL1 = sin(sigL1*sigL1*sigL1);
 	//sigR2 = sin(sigR2*sigR2*sigR2);
 	
-	cubclipL = sigL1;
-	cubclipR = sigR2;
+	//cubic distortion
+	//cubclipL = sigL1;
+	//cubclipR = sigR2;
 	
-	  if( cubclipL > 1){ cubclipL = 1; }
-	  if( cubclipL < -1){ cubclipL = -1; }
+	  //if( cubclipL > 1){ cubclipL = 1; }
+	  //if( cubclipL < -1){ cubclipL = -1; }
 	
-	  if(cubclipR > 1){ cubclipR = 1; }
-	  if(cubclipR < -1){ cubclipR = -1;}	
+	  //if(cubclipR > 1){ cubclipR = 1; }
+	  //if(cubclipR < -1){ cubclipR = -1;}	
 	
-	cubclipL = (2.f/ kPI) * (1.5 * cubclipL - 0.5 * cubclipL * cubclipL * cubclipL);
-	cubclipR = (2.f/ kPI) * (1.5 * cubclipR - 0.5 * cubclipR * cubclipR * cubclipR);
+	//cubclipL = (2.f/ kPI) * (1.5 * cubclipL - 0.5 * cubclipL * cubclipL * cubclipL);
+	//cubclipR = (2.f/ kPI) * (1.5 * cubclipR - 0.5 * cubclipR * cubclipR * cubclipR);
 
 	
-	//Polarity switch resets the graph. Work for natural sounds 
-/*	    
+	//Polarity switch resets the graph. Work for natural sounds
+    if (fCrossres == 1.0) {
+	    
 	if( sigL1 < 0){
 	   PolarityL = 0;
 	   if (PrePolarityL==1) {graph=0;}
@@ -482,7 +507,7 @@ void DistoTVPlugin::run(const float** inputs, float** outputs, uint32_t frames)
         
         PrePolarityL = PolarityL;
 	PrePolarityR = PolarityR;
-*/	
+}
  	
         // Hard clipping from graph
         // 
@@ -494,8 +519,8 @@ void DistoTVPlugin::run(const float** inputs, float** outputs, uint32_t frames)
 
        
 
-        if (sigL1 >= 0.5+wave_y_DSP[graph]){
-          sigL1 =  0.5+wave_y_DSP[graph];
+ if (sigL1 >= 0.5+wave_y_DSP[graph]){
+       sigL1 =  0.5+wave_y_DSP[graph];
 	}
 	if (sigL1 <= -0.5-wave_y_DSP[graph]){
 	  sigL1 = -0.5-wave_y_DSP[graph];
@@ -511,6 +536,8 @@ void DistoTVPlugin::run(const float** inputs, float** outputs, uint32_t frames)
 	
 	//bit
 	// this was supposed to be bit dist but it became graph length manipulator
+	// now Finaly its gonna be Interpolation
+	
 	if (fBit > 0){
 	  if (bit == 0){
 	    bit = fBit;
@@ -521,13 +548,13 @@ void DistoTVPlugin::run(const float** inputs, float** outputs, uint32_t frames)
 	  bit--;
 	  graph--;
 	}
+	// add tv-noise
+	//sigL1 = sigL1 + tvnoise(sigL1,fTVNoise,NoiseSample[NoiseSeq]);
+	//sigR2 = sigR2 + tvnoise(sigR2,fTVNoise,NoiseSample[NoiseSeq]);
 	
-	sigL1 = sigL1 + tvnoise(sigL1,fTVNoise,NoiseSample[NoiseSeq]);
-	sigR2 = sigR2 + tvnoise(sigR2,fTVNoise,NoiseSample[NoiseSeq]);
-	
-	
-	sigL1 = sigDryL1 - (sigDryL1 * 0.01 *fDist)  + (sigL1 * 0.01 * fDist) + (softclipL * 0.01 * fTVNoise) + (cubclipL * 0.01 * fCub);
-	sigR2 = sigDryR2 - (sigDryR2 * 0.01 *fDist)  + (sigR2 * 0.01 * fDist) + (softclipR * 0.01 * fTVNoise) + (cubclipR * 0.01 * fCub);
+	// blend in the distortions need to work on the balance
+	sigL1 = sigDryL1 - (sigDryL1 * 0.01 *fDist)  + (sigL1 * 0.01 * fDist); /*+ (softclipL * 0.01 * fTVNoise) + (cubclipL * 0.01 * fCub);*/
+	sigR2 = sigDryR2 - (sigDryR2 * 0.01 *fDist)  + (sigR2 * 0.01 * fDist); /*+ (softclipR * 0.01 * fTVNoise) + (cubclipR * 0.01 * fCub);*/
 
 	// Filter
         tmp1LP = a0LP * sigL1 - b1LP * tmp1LP + kDC_ADD;
@@ -551,11 +578,10 @@ void DistoTVPlugin::run(const float** inputs, float** outputs, uint32_t frames)
         outFinalR = (sigR2*0.00001*fWet) + sigDryR2 - (sigDryR2*0.00001*fWet);
         
 	
-	//extra tv noise, need work
-	// need work
+	// extra tv noise, need work
 	// rms
-	sigL1 = sigL1 + rnd[graph];
-	sigR2 = sigR2 + rnd[graph];
+	sigL1 = sigL1 + rnd[rms];
+	sigR2 = sigR2 + rnd[rms];
 
 	// Limit
 	if(outFinalL < -1.){ outFinalL = -1.; } if(outFinalL > 1.){ outFinalL = 1.; }
