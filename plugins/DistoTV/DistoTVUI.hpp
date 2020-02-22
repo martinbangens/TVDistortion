@@ -51,6 +51,7 @@ protected:
     void programLoaded(uint32_t index);
     void stateChanged(const char* key, const char* value);
     
+
     
   
 
@@ -61,9 +62,11 @@ protected:
     void imageKnobDragStarted(ImageKnob* knob) override;
     void imageKnobDragFinished(ImageKnob* knob) override;
     void imageKnobValueChanged(ImageKnob* knob, float value) override;
+    
     void imageSliderDragStarted(ImageSlider* slider) override;
     void imageSliderDragFinished(ImageSlider* slider) override;
     void imageSliderValueChanged(ImageSlider* slider, float value) override;
+    
     void imageSwitchClicked(ImageSwitch* tog, bool down) override;
     
     // Display
@@ -92,8 +95,9 @@ private:
     
     
     ScopedPointer<ImageKnob> fKnobLow, fKnobMid, fKnobHigh, fKnobMaster, fKnobDist, fKnobPreAMP, fKnobBit, fKnobBitTilt, fKnobTVNoise, fKnobCubic;
-    ScopedPointer<ImageSlider> fSliderWet;
+    ScopedPointer<ImageSlider> fSliderWet, fSliderScale;
     ScopedPointer<ImageSwitch> fSwitchCrossres;
+
 
     DISTRHO_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(DistoTVUI)
 };

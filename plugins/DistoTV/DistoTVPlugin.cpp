@@ -165,8 +165,17 @@ void DistoTVPlugin::initParameter(uint32_t index, Parameter& parameter)
         parameter.ranges.def = 0.0f;
         parameter.ranges.min = 0.0f;
         parameter.ranges.max = 1.0f;
-	break;
+        break;
         
+    case paramScale:
+        parameter.hints      = kParameterIsAutomable | kParameterIsInteger;
+        parameter.name       = "Scale Model";
+        parameter.symbol     = "float";
+        parameter.unit       = "f";
+        parameter.ranges.def = 0.0f;
+        parameter.ranges.min = 0.0f;
+        parameter.ranges.max = 9.0f;
+        break;
     }
 }
 
@@ -203,6 +212,8 @@ float DistoTVPlugin::getParameterValue(uint32_t index) const
         return fMaster;
     case paramCrossres:
         return fCrossres;
+    case paramScale:
+        return fScale;
     default:
         return 0.0f;
     }
@@ -256,6 +267,9 @@ void DistoTVPlugin::setParameterValue(uint32_t index, float value)
     case paramCrossres:
         fCrossres = value;
         break;
+    case paramScale:
+        fScale = value;
+        break;
     }
 }
 
@@ -293,8 +307,11 @@ String DistoTVPlugin::getState(const char * key)const {
              i++; 
    }
    
-   printf("\nThis is getstate() stored string:\n%s\n",tmpbuf);
-   printf("\n%f\n",fCrossres);
+   //Igonre this is for my own personal understanding
+   
+   //printf("\nThis is getstate() stored string:\n%s\n",tmpbuf);
+   //printf("\n%f\n",fCrossres);
+   
    return String(tmpbuf);
    }
    
@@ -336,6 +353,7 @@ void DistoTVPlugin::loadProgram(uint32_t index)
     fTilt = 0.0f;
     fPre = 0.0f;
     fCrossres = 0.0f;
+    fScale = 0.0f;
 
     // Internal stuff
     lowVol = midVol = highVol = outVol = 1.0f;
@@ -433,7 +451,10 @@ void DistoTVPlugin::run(const float** inputs, float** outputs, uint32_t frames)
         sigDryL1 = sigL1 = in1[i];
         sigDryR2 = sigR2 = in2[i];
         
+       
         //graph wheel
+        
+    fScaleDSP =  0.50 - (fScale*0.05);
 	//
 	//scaling is done only posetive frome one point and up, later mirrored to negative
 	//the base curve will be added here atan()
@@ -441,7 +462,7 @@ void DistoTVPlugin::run(const float** inputs, float** outputs, uint32_t frames)
 	graph++;
         if (graph == 1000) {graph = 0; /*memcpy(wave_y_DSP,  wave_y, 4*(AREAHEIGHT+1));*/}
         
-	wave_y_DSP[graph] = wave_y[graph]/2 + 0.25;// scale here now better then memcpy
+	wave_y_DSP[graph] = wave_y[graph]*2*fScaleDSP;// scale here now better then memcpy
         // need a funktion for smoothing to wave_y_DSP.
 	
 	// noise wheel
@@ -494,7 +515,7 @@ void DistoTVPlugin::run(const float** inputs, float** outputs, uint32_t frames)
 	   if (PrePolarityL==0) {graph=0;}
 	   }
 	      
-	    
+	    //separet reset for sterio sounds needed
          if (sigR2 < 0){
 	    PolarityR = 0;
 	    if (PrePolarityR==1) {graph=0;}
@@ -505,8 +526,9 @@ void DistoTVPlugin::run(const float** inputs, float** outputs, uint32_t frames)
 	    if (PrePolarityR==0) {graph=0;}
 	    }
         
+        //previous polarit 
         PrePolarityL = PolarityL;
-	PrePolarityR = PolarityR;
+        PrePolarityR = PolarityR;
 }
  	
         // Hard clipping from graph
@@ -519,17 +541,17 @@ void DistoTVPlugin::run(const float** inputs, float** outputs, uint32_t frames)
 
        
 
- if (sigL1 >= 0.5+wave_y_DSP[graph]){
-       sigL1 =  0.5+wave_y_DSP[graph];
+ if (sigL1 >= (0.5-fScaleDSP)+0.5+wave_y_DSP[graph]){
+       sigL1 =  (0.5-fScaleDSP)+0.5+wave_y_DSP[graph];
 	}
-	if (sigL1 <= -0.5-wave_y_DSP[graph]){
-	  sigL1 = -0.5-wave_y_DSP[graph];
+	if (sigL1 <= -(0.5-fScaleDSP)-0.5-wave_y_DSP[graph]){
+	  sigL1 = -(0.5-fScaleDSP)-0.5-wave_y_DSP[graph];
 	}
-	if (sigR2 >= 0.5+wave_y_DSP[graph]){
-	  sigR2 = 0.5+wave_y_DSP[graph];
+	if (sigR2 >= (0.5-fScaleDSP)+0.5+wave_y_DSP[graph]){
+	  sigR2 = (0.5-fScaleDSP)+0.5+wave_y_DSP[graph];
 	}
-	if (sigR2 <= -0.5-wave_y_DSP[graph]){
-	  sigR2 = -0.5-wave_y_DSP[graph];
+	if (sigR2 <= -(0.5-fScaleDSP)-0.5-wave_y_DSP[graph]){
+	  sigR2 = -(0.5-fScaleDSP)-0.5-wave_y_DSP[graph];
 	}
         
 

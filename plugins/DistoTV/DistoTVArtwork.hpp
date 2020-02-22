@@ -40,6 +40,11 @@ namespace DistoTVArtwork
     const unsigned int knobSmallWidth    = 31;
     const unsigned int knobSmallHeight   = 31;
 
+    extern const char* notchData;
+    const unsigned int notchDataSize = 2220;
+    const unsigned int notchWidth    = 37;
+    const unsigned int notchHeight   = 15;
+
     extern const char* sliderData;
     const unsigned int sliderDataSize = 2160;
     const unsigned int sliderWidth    = 18;

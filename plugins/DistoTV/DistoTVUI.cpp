@@ -140,6 +140,7 @@ DistoTVUI::DistoTVUI() // constructor definition.
     fKnobHigh->setRotationAngle(270);
     fKnobHigh->setCallback(this);
     
+    
     //buttons
     //Image Button_offImage(Art::button_offData, Art::button_offWidth, Art::button_offHeight);
     //Image Button_onImage(Art::button_onData, Art::button_onWidth, Art::button_onHeight);
@@ -151,7 +152,19 @@ DistoTVUI::DistoTVUI() // constructor definition.
     fSwitchCrossres->setAbsolutePos(300, 350);
     fSwitchCrossres->setCallback(this);
     fSwitchCrossres->setDown(false);
-
+    
+    // notch switch slider
+    Image notchImage(DistoTVArtwork::notchData, DistoTVArtwork::notchWidth, DistoTVArtwork::notchHeight);
+    
+    fSliderScale = new ImageSlider(this, notchImage);
+    fSliderScale->setStartPos(400,330);
+    fSliderScale->setEndPos(400,385);
+    fSliderScale->setRange(0.0f, 9.0f);
+    fSliderScale->setStep(1.0f);
+    fSliderScale->setDefault(0.0f);
+    fSliderScale->setCallback(this);
+    
+    
     // drawing area
     fCanvasArea.setPos(12,30);
     fCanvasArea.setSize(AREAHEIGHT,300);
@@ -230,6 +243,9 @@ void DistoTVUI::parameterChanged(uint32_t index, float value)
     case DistoTVPlugin::paramCrossres:
         fSwitchCrossres->setDown(value);
         break;
+    case DistoTVPlugin::paramScale:
+        fSliderScale->setValue(value);
+        break;
     }
 }
 
@@ -250,6 +266,7 @@ void DistoTVUI::programLoaded(uint32_t index)
     fKnobPreAMP->setValue(0.0f);
     fKnobMaster->setValue(0.0f);
     fSwitchCrossres->setDown(false);
+    fSliderScale->setValue(0.0f);
     }
 
 }
@@ -284,6 +301,9 @@ void DistoTVUI::imageSliderDragFinished(ImageSlider* slider)
 
 void DistoTVUI::imageSliderValueChanged(ImageSlider* slider, float value)
 {
+    if( slider == fSliderScale)
+    setParameterValue(slider->getId()+12, value);
+    else
     setParameterValue(slider->getId(), value);
 }
 

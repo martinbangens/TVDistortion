@@ -43,6 +43,7 @@ public:
         paramHigh,
         paramMaster,
         paramCrossres,
+        paramScale,
         paramCount
     };
 
@@ -134,6 +135,7 @@ protected:
 private:
     
     float fCrossres;
+    float fScale = 0, fScaleDSP ;
   
     bool had_NuN = false;
     bool had_Inf = false;
