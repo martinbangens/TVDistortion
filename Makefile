@@ -27,7 +27,9 @@ endif
 
 plugins: dgl
 	# Make DistoTV
+	# make RandomMIDIcc
 	$(MAKE) all -C plugins/DistoTV
+	$(MAKE) all -C plugins/RandomMIDIcc
 
 
 ifneq ($(CROSS_COMPILING),true)
