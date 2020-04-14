@@ -1,5 +1,6 @@
 /*
  * RandomMIDIcc
+ * 
  * Copyright (C) 2019 Martin Bångens <marbangens@gmail.com>
  *
  * This program is free software; you can redistribute it and/or
@@ -31,8 +32,10 @@ public:
     {
         paramMaxMs,
         paramMinMs,
-        paramMaxNum,
-        paramMinNum
+        paramMaxValue,
+        paramMinValue,
+	paramControleNumber,
+	paramMidiChannel
     };
 
     RandomMIDIccPlugin();
@@ -48,7 +51,7 @@ protected:
 
     const char* getDescription() const override
     {
-        return "Random Midi CC for mad people";
+        return "Generate random Midi CC values for mad people";
     }
 
     const char* getMaker() const noexcept override
@@ -95,18 +98,19 @@ protected:
     void activate() override;
     void deactivate() override;
     void run(const float**, float**, uint32_t,
-             const MidiEvent* midiEvents, uint32_t midiEventCount) override;
+		    const MidiEvent* events, uint32_t eventCount) override;
 
     
 
     
 // -------------------------------------------------------------------
-// here we have data stored safe
 private:
-    
+// this is only temporarily, have not decided what types to use 
 
-    float fmax_ms, fmin_ms, fmax_num, fmin_num;
-
+    int fmax_ms, fmin_ms;
+    int fmax_value, fmin_value;
+    int fcontrol_number;
+    int fmidi_channel;
 
     DISTRHO_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(RandomMIDIccPlugin)
 };

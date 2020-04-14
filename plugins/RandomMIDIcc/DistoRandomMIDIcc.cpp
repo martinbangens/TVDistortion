@@ -1,5 +1,6 @@
 /*
  * RandomMIDIcc
+ * 
  * Copyright (C) 2019 Martin Bångens <marbangens@gmail.com>
  *
  * This program is free software; you can redistribute it and/or
@@ -13,6 +14,7 @@
  *
  * For a full copy of the license see the LICENSE file.
  */
+
 #include "DistoRandomMIDIcc.hpp"
 #include <cstdlib>
 
@@ -23,7 +25,7 @@ START_NAMESPACE_DISTRHO
 // -----------------------------------------------------------------------
 
 RandomMIDIccPlugin::RandomMIDIccPlugin()
-    : Plugin(4, 0, 0) //parameters,  programs(patches), states(data save)
+    : Plugin(6, 0, 0) //parameters,  programs(patches), states(data save)
 {
     // set default values
     loadProgram(0);
@@ -44,9 +46,9 @@ void RandomMIDIccPlugin::initParameter(uint32_t index, Parameter& parameter)
         parameter.name       = "Max ms";
         parameter.symbol     = "ms";
         parameter.unit       = "ms";
-        parameter.ranges.def = 0.0f;
-        parameter.ranges.min = 0.0f;
-        parameter.ranges.max = 100.0f;
+        parameter.ranges.def = 20;
+        parameter.ranges.min = 20;
+        parameter.ranges.max = 2000;
         break;
 
     case paramMinMs:
@@ -54,33 +56,51 @@ void RandomMIDIccPlugin::initParameter(uint32_t index, Parameter& parameter)
         parameter.name       = "Min ms";
         parameter.symbol     = "ms";
         parameter.unit       = "ms";
-        parameter.ranges.def = 0.0f;
-        parameter.ranges.min = 0.0f;
-        parameter.ranges.max = 100.0f;
+        parameter.ranges.def = 20;
+        parameter.ranges.min = 20;
+        parameter.ranges.max = 2000;
         break;
 
-    case paramMaxNum:
+    case paramMaxValue:
         parameter.hints      = kParameterIsAutomable;
-        parameter.name       = "Max number";
-        parameter.symbol     = "nr.";
-        parameter.unit       = "nr.";
-        parameter.ranges.def = 0.0f;
-        parameter.ranges.min = 0.0f;
-        parameter.ranges.max = 100.0f;
+        parameter.name       = "Max Value";
+        parameter.symbol     = "";
+        parameter.unit       = "";
+        parameter.ranges.def = 127;
+        parameter.ranges.min = 0;
+        parameter.ranges.max = 127;
         break;
 
-    case paramMinNum:
+    case paramMinValue:
         parameter.hints      = kParameterIsAutomable;
-        parameter.name       = "Min number";
-        parameter.symbol     = "nr.";
-        parameter.unit       = "nr.";
-        parameter.ranges.def = 0.0f;
-        parameter.ranges.min = 0.0f;
-        parameter.ranges.max = 100.0f;
+        parameter.name       = "Min Value";
+        parameter.symbol     = "";
+        parameter.unit       = "";
+        parameter.ranges.def = 0;
+        parameter.ranges.min = 0;
+        parameter.ranges.max = 127;
         break;
 
+    case paramControleNumber:
+	parameter.hints      = kParameterIsAutomable;
+	parameter.name       = "ControleNumber";
+	parameter.symbol     = "";
+	parameter.unit       = "cn";
+	parameter.ranges.def = 0;	
+        parameter.ranges.min = 0;
+        parameter.ranges.max = 127;
+	break;
 
-     
+    case paramMidiChannel:
+	parameter.hints      = kParameterIsAutomable;
+        parameter.name       = "MidiChannel";
+	parameter.symbol     = "";
+	parameter.unit       = "";
+	parameter.ranges.def = 0;
+	parameter.ranges.min = 0;
+	parameter.ranges.max = 16;
+	break;
+
     }
 }
 
@@ -97,10 +117,14 @@ float RandomMIDIccPlugin::getParameterValue(uint32_t index) const
         return fmax_ms;
     case paramMinMs:
         return fmin_ms;
-    case paramMaxNum:
-        return fmax_num;
-    case paramMinNum:
-        return fmin_num;
+    case paramMaxValue:
+        return fmax_value;
+    case paramMinValue:
+        return fmin_value;
+    case paramControleNumber:
+	return fcontrol_number;
+    case paramMidiChannel:
+	return fmidi_channel;
 
     default:
         return 0.0f;
@@ -112,17 +136,23 @@ void RandomMIDIccPlugin::setParameterValue(uint32_t index, float value)
     switch (index)
     {
     case paramMaxMs:
-        fmax_ms   = value;
+        fmax_ms         = value;
         break;
     case paramMinMs:
-        fmin_ms   = value;
+        fmin_ms         = value;
         break;
-    case paramMaxNum:
-        fmax_num   = value;
+    case paramMaxValue:
+        fmax_value      = value;
         break;
-    case paramMinNum:
-        fmin_num = value;
+    case paramMinValue:
+        fmin_value      = value;
         break;
+    case paramControleNumber:
+	fcontrol_number = value;
+	break;
+    case paramMidiChannel:
+	fmidi_channel   = value;
+	break;
     }
 }
 
@@ -141,17 +171,16 @@ void RandomMIDIccPlugin::initProgramName(uint32_t index, String& programName)
 
 // this is used for loding a default "patch" in the daw/plugin host. Some daws then let you create you own patches, but we dont need to have this internaly 
 void RandomMIDIccPlugin::loadProgram(uint32_t index)
-{
-  
-  
+{  
     if (index == 0){
 
     // Default values
-    fmax_ms = 0.0f;
-    fmin_ms = 0.0f;
-    fmax_num = 0.0f;
-    fmin_num = 0.0f;
-
+    fmax_ms = 2000;
+    fmin_ms = 20;
+    fmax_value = 127;
+    fmin_value = 0;
+    fcontrol_number = 0;
+    fmidi_channel = 0;
 
     // reset values (not sure if need now)
     activate();
@@ -165,7 +194,7 @@ void RandomMIDIccPlugin::loadProgram(uint32_t index)
 
 void RandomMIDIccPlugin::activate()
 {
-// here we can execute code that take time, that we dont want to do when the plugin is runing in realtime
+// Generate a set of tru random numbers here. could bee an array like int random[10]
 }
 
 void RandomMIDIccPlugin::deactivate()
@@ -173,11 +202,29 @@ void RandomMIDIccPlugin::deactivate()
 // this my not be needed, but this is used for NULL the data for saftey, and watever else you can think of when deactivatin the plugin
 }
 
-// need to add midi out here only for now
-void RandomMIDIccPlugin::run(const float**, float**, uint32_t, const MidiEvent * events, uint32_t eventCount)
+void RandomMIDIccPlugin::run(const float**, float**, uint32_t,
+			     const MidiEvent* events, uint32_t eventCount)
 {
-    struct MidiEvent cc_event;
-    writeMidiEvent(cc_event);
+   uint8_t chan;
+   struct MidiEvent cc_event;
+
+	for (uint32_t i=0; i<eventCount; ++i) {
+	
+	// writeMidiEvent(cc_event);
+	//
+	// need some fast but real random algo to generate infinit random new numbers
+	//
+	// then use NUMBER % 127 and send it out to midi cc
+	// 
+	// MIDI CC is 0xB0 followd by 2 Data bytes
+	//
+
+
+	// Just send midi data from input right to output
+	// 
+	
+	writeMidiEvent(events[i]);
+	}
 
 }
 
