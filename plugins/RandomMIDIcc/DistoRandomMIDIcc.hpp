@@ -110,6 +110,9 @@ private:
 //
     unsigned long fx=123456789, fy=362436069, fz=521288629;
 
+    uint32_t fFrameClock; // max value 4,294,967,295
+    double fSampleRate;
+
     int fmax_ms, fmin_ms;
     int fmax_value, fmin_value;
     int fcontrol_number;

@@ -182,7 +182,7 @@ void RandomMIDIccPlugin::loadProgram(uint32_t index)
     fcontrol_number = 0;
     fmidi_channel = 0;
 
-    // reset values (not sure if need now)
+    // reset values (not sure if needed now)
     activate();
 
     }
@@ -210,6 +210,8 @@ unsigned long RandomMIDIccPlugin::xorshf96(void) {          //period 2^96-1
 
 void RandomMIDIccPlugin::activate()
 {
+	fSampleRate = getSampleRate();
+
 	//test
 	//std::cout << RandomMIDIccPlugin::xorshf96() << std::endl;
 }
@@ -223,7 +225,11 @@ void RandomMIDIccPlugin::run(const float**, float**, uint32_t frames,
 			     const MidiEvent* events, uint32_t eventCount)
 {
    uint8_t chan;
-        std::cout << "frames:"  << frames << std::endl;
+   fFrameClock += frames;
+   struct MidiEvent MyMidiEvent;
+
+   //test     
+   //std::cout << "frames:"  << frames << std::endl;
 
 	for (uint32_t i=0; i<eventCount; ++i) {
 	
@@ -233,7 +239,8 @@ void RandomMIDIccPlugin::run(const float**, float**, uint32_t frames,
 	//
 	// then use NUMBER % 127 and send it out to midi cc
 	// 
-	// MIDI CC is 0xB0 followd by 2 Data bytes
+	// MIDI CC is 0xB0(1011xxxx, xxxx is chanel number) followd by 2 Data bytes
+	// 2nd Byte Value is "CC number" 3rd Byte Value is final Value to be set
 	//
 
 
@@ -241,8 +248,15 @@ void RandomMIDIccPlugin::run(const float**, float**, uint32_t frames,
 	// this should be priority nr.1 cus its not good to "stay in the way" for midi in
 	//
 	
-	writeMidiEvent(events[i]); // if buffer is not full
+	writeMidiEvent(events[i]);
 	}
+	
+	// lets start with fix set of frames, every 100
+	// xorshft() % 127;	
+	
+	//write out midi cc AFTER input event in buffer
+	//
+	//for (uint32_t i=0 i<)
 
 }
 
