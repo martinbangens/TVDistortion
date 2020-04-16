@@ -192,9 +192,26 @@ void RandomMIDIccPlugin::loadProgram(uint32_t index)
 // -----------------------------------------------------------------------
 // Process
 
+
+unsigned long RandomMIDIccPlugin::xorshf96(void) {          //period 2^96-1
+	unsigned long t;
+	    fx ^= fx << 16;
+	    fx ^= fx >> 5;
+	    fx ^= fx << 1;
+
+	    t = fx;
+            fx = fy;
+	    fy = fz;
+	    fz = t ^ fx ^ fy;
+
+	return fz;
+}
+
+
 void RandomMIDIccPlugin::activate()
 {
-// Generate a set of tru random numbers here. could bee an array like int random[10]
+	//test
+	//std::cout << RandomMIDIccPlugin::xorshf96() << std::endl;
 }
 
 void RandomMIDIccPlugin::deactivate()
@@ -202,11 +219,11 @@ void RandomMIDIccPlugin::deactivate()
 // this my not be needed, but this is used for NULL the data for saftey, and watever else you can think of when deactivatin the plugin
 }
 
-void RandomMIDIccPlugin::run(const float**, float**, uint32_t,
+void RandomMIDIccPlugin::run(const float**, float**, uint32_t frames,
 			     const MidiEvent* events, uint32_t eventCount)
 {
    uint8_t chan;
-   struct MidiEvent cc_event;
+        std::cout << "frames:"  << frames << std::endl;
 
 	for (uint32_t i=0; i<eventCount; ++i) {
 	
@@ -221,9 +238,10 @@ void RandomMIDIccPlugin::run(const float**, float**, uint32_t,
 
 
 	// Just send midi data from input right to output
-	// 
+	// this should be priority nr.1 cus its not good to "stay in the way" for midi in
+	//
 	
-	writeMidiEvent(events[i]);
+	writeMidiEvent(events[i]); // if buffer is not full
 	}
 
 }

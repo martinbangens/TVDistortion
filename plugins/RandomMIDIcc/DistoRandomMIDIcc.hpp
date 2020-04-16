@@ -95,9 +95,10 @@ protected:
     // -------------------------------------------------------------------
     // Process
 
+    unsigned long xorshf96(void);
     void activate() override;
     void deactivate() override;
-    void run(const float**, float**, uint32_t,
+    void run(const float**, float**, uint32_t frames,
 		    const MidiEvent* events, uint32_t eventCount) override;
 
     
@@ -105,7 +106,9 @@ protected:
     
 // -------------------------------------------------------------------
 private:
-// this is only temporarily, have not decided what types to use 
+// this is only temporarily, have not decided what types to use
+//
+    unsigned long fx=123456789, fy=362436069, fz=521288629;
 
     int fmax_ms, fmin_ms;
     int fmax_value, fmin_value;
