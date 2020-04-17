@@ -18,7 +18,7 @@
 #include "DistoRandomMIDIcc.hpp"
 #include <cstdlib>
 
-#include <iostream> //for debuging, see whats going on
+#include <stdio.h>
 
 START_NAMESPACE_DISTRHO
 
@@ -226,15 +226,13 @@ void RandomMIDIccPlugin::run(const float**, float**, uint32_t frames,
 {
    uint8_t chan;
    fFrameClock += frames;
-   struct MidiEvent MyMidiEvent;
+   MidiEvent MyMidiEvent;
 
    //test     
    //std::cout << "frames:"  << frames << std::endl;
 
 	for (uint32_t i=0; i<eventCount; ++i) {
 	
-	// writeMidiEvent(cc_event);
-	//
 	// need some fast but real random algo to generate infinit random new numbers
 	//
 	// then use NUMBER % 127 and send it out to midi cc
@@ -242,21 +240,47 @@ void RandomMIDIccPlugin::run(const float**, float**, uint32_t frames,
 	// MIDI CC is 0xB0(1011xxxx, xxxx is chanel number) followd by 2 Data bytes
 	// 2nd Byte Value is "CC number" 3rd Byte Value is final Value to be set
 	//
+	// https://www.midi.org/specifications-old/item/the-midi-1-0-specification
+	//
 
 
 	// Just send midi data from input right to output
 	// this should be priority nr.1 cus its not good to "stay in the way" for midi in
 	//
-	
-	writeMidiEvent(events[i]);
+	//
+	//
+	// Here I can learn what the events data looks like
+	//
+	//
+	//
+		printf("-----------------------\n");
+		printf("Midi:events.frame  %u\n", events[i].frame);
+		printf("Midi:events.size   %u\n", events[i].size);
+		printf("Midi:events.data[0]%X\n", events[i].data[0]);
+		printf("Midi:events.data[1]%X\n", events[i].data[1]);
+		printf("Midi:events.data[2]%X\n", events[i].data[2]);
+		printf("Midi:events.data[3]%X\n", events[i].data[3]); // usually random junk
+		printf("-----------------------\n");
+
+		writeMidiEvent(events[i]);
 	}
 	
-	// lets start with fix set of frames, every 100
-	// xorshft() % 127;	
-	
-	//write out midi cc AFTER input event in buffer
 	//
-	//for (uint32_t i=0 i<)
+	//
+	//	TEST
+	//
+	//
+	
+	//	MyMidiEvent.frame = 100;
+	//	MyMidiEvent.size = 3; // for midi cc
+	//	MyMidiEvent.data[0] = 0xB0; // the ending 0 is chanel number
+	//    	MyMidiEvent.data[1] = 0; // cc number
+	//	MyMidiEvent.data[2] = xorshf96() % 127;
+	//	MyMidiEvent.data[3] = 0xB
+
+	//	writeMidiEvent(MyMidiEvent);
+
+	
 
 }
 
