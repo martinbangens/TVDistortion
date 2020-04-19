@@ -275,15 +275,13 @@ void RandomMIDIccPlugin::run(const float**, float**, uint32_t frames,
 	else{	
 again:
    		MidiEvent MyMidiEvent;
-		uint8_t max_value_overload = 0;
-
-		if (fmin_value + fmax_value > 127) max_value_overload = (fmin_value + fmax_value) % 127;
 
 		MyMidiEvent.frame = fFrameClock;
 		MyMidiEvent.size = 3;
 		MyMidiEvent.data[0] = 0xB0 | (uint8_t)fmidi_channel;
 		MyMidiEvent.data[1] = (uint8_t) fcontrol_number;
-		MyMidiEvent.data[2] = (uint8_t) fmin_value + (xorshf96() % (fmax_value-max_value_overload));
+		if (fmin_value > fmax_value) MyMidiEvent.data[2] = (uint8_t) fmin_value;
+		else MyMidiEvent.data[2] = (uint8_t) fmin_value + (xorshf96() % (fmax_value - fmin_value + 1));
 
 		writeMidiEvent(MyMidiEvent);
 
