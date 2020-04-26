@@ -30,10 +30,10 @@ class RandomMIDIccPlugin : public Plugin
 public:
     enum Parameters
     {
-        paramMaxMs,
         paramMinMs,
-        paramMaxValue,
+        paramMaxMs,
         paramMinValue,
+        paramMaxValue,
 	paramControleNumber,
 	paramMidiChannel
     };

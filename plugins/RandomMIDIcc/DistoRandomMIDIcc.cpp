@@ -41,16 +41,6 @@ void RandomMIDIccPlugin::initParameter(uint32_t index, Parameter& parameter)
 {
     switch (index)
     {
-    case paramMaxMs:
-        parameter.hints      = kParameterIsAutomable;
-        parameter.name       = "Max ms";
-        parameter.symbol     = "";
-        parameter.unit       = "ms";
-        parameter.ranges.def = 20;
-        parameter.ranges.min = 20;
-        parameter.ranges.max = 2000;
-        break;
-
     case paramMinMs:
         parameter.hints      = kParameterIsAutomable;
         parameter.name       = "Min ms";
@@ -61,14 +51,14 @@ void RandomMIDIccPlugin::initParameter(uint32_t index, Parameter& parameter)
         parameter.ranges.max = 2000;
         break;
 
-    case paramMaxValue:
+    case paramMaxMs:
         parameter.hints      = kParameterIsAutomable;
-        parameter.name       = "Max Value";
+        parameter.name       = "Max ms";
         parameter.symbol     = "";
-        parameter.unit       = "v";
-        parameter.ranges.def = 127;
-        parameter.ranges.min = 0;
-        parameter.ranges.max = 127;
+        parameter.unit       = "ms";
+        parameter.ranges.def = 20;
+        parameter.ranges.min = 20;
+        parameter.ranges.max = 2000;
         break;
 
     case paramMinValue:
@@ -81,9 +71,19 @@ void RandomMIDIccPlugin::initParameter(uint32_t index, Parameter& parameter)
         parameter.ranges.max = 127;
         break;
 
+    case paramMaxValue:
+        parameter.hints      = kParameterIsAutomable;
+        parameter.name       = "Max Value";
+        parameter.symbol     = "";
+        parameter.unit       = "v";
+        parameter.ranges.def = 127;
+        parameter.ranges.min = 0;
+        parameter.ranges.max = 127;
+        break;
+
     case paramControleNumber:
 	parameter.hints      = kParameterIsAutomable;
-	parameter.name       = "ControleNumber";
+	parameter.name       = "Controle Number";
 	parameter.symbol     = "";
 	parameter.unit       = "cc";
 	parameter.ranges.def = 0;	
@@ -93,7 +93,7 @@ void RandomMIDIccPlugin::initParameter(uint32_t index, Parameter& parameter)
 
     case paramMidiChannel:
 	parameter.hints      = kParameterIsAutomable;
-        parameter.name       = "MidiChannel";
+        parameter.name       = "Midi Channel";
 	parameter.symbol     = "";
 	parameter.unit       = "ch";
 	parameter.ranges.def = 1;
@@ -113,14 +113,14 @@ float RandomMIDIccPlugin::getParameterValue(uint32_t index) const
 {
     switch (index)
     {
-    case paramMaxMs:
-        return fmax_ms;
     case paramMinMs:
         return fmin_ms;
-    case paramMaxValue:
-        return fmax_value;
+    case paramMaxMs:
+        return fmax_ms;
     case paramMinValue:
         return fmin_value;
+    case paramMaxValue:
+        return fmax_value;
     case paramControleNumber:
 	return fcontrol_number;
     case paramMidiChannel:
@@ -135,17 +135,17 @@ void RandomMIDIccPlugin::setParameterValue(uint32_t index, float value)
 {
     switch (index)
     {
-    case paramMaxMs:
-        fmax_ms = value;
-        break;
     case paramMinMs:
         fmin_ms = value;
         break;
-    case paramMaxValue:
-        fmax_value = value;
+    case paramMaxMs:
+        fmax_ms = value;
         break;
     case paramMinValue:
         fmin_value = value;
+        break;
+    case paramMaxValue:
+        fmax_value = value;
         break;
     case paramControleNumber:
 	fcontrol_number = value;
@@ -161,7 +161,7 @@ void RandomMIDIccPlugin::setParameterValue(uint32_t index, float value)
 void RandomMIDIccPlugin::initProgramName(uint32_t index, String& programName)
 {
   
-  switch (index) {
+    switch (index) {
         case 0:
             programName = "Default";
             break;
@@ -175,10 +175,10 @@ void RandomMIDIccPlugin::loadProgram(uint32_t index)
     if (index == 0){
 
     // Default values
-    fmax_ms = 2000;
     fmin_ms = 20;
-    fmax_value = 127;
+    fmax_ms = 2000;
     fmin_value = 0;
+    fmax_value = 127;
     fcontrol_number = 0;
     fmidi_channel = 0;
 
@@ -194,49 +194,49 @@ void RandomMIDIccPlugin::loadProgram(uint32_t index)
 
 
 unsigned long RandomMIDIccPlugin::xorshf96(void){          //period 2^96-1
-	unsigned long t;
-	    fx ^= fx << 16;
-	    fx ^= fx >> 5;
-	    fx ^= fx << 1;
+    unsigned long t;
+        fx ^= fx << 16;
+        fx ^= fx >> 5;
+        fx ^= fx << 1;
 
-	    t = fx;
-            fx = fy;
-	    fy = fz;
-	    fz = t ^ fx ^ fy;
+        t = fx;
+        fx = fy;
+        fy = fz;
+        fz = t ^ fx ^ fy;
 
-	return fz;
+        return fz;
 }
 
 
 void RandomMIDIccPlugin::activate()
 {
-	fFramesToMs = getSampleRate();
-	fFramesToMs = fFramesToMs/1000;
+    fFramesToMs = getSampleRate();
+    fFramesToMs = fFramesToMs/1000;
 
-	//printf("Frames per milisecond %f\n", fFramesToMs);
+    //printf("Frames per milisecond %f\n", fFramesToMs);
 	
-	//printf("Frames for 20 milliseconds %f\n", fFramesToMs*20);
+    //printf("Frames for 20 milliseconds %f\n", fFramesToMs*20);
 	
-	fFrameClock = (uint32_t ) (fmin_ms * fFramesToMs)
-			+ (uint32_t) xorshf96() % (uint32_t) (fmax_ms * fFramesToMs);
+    fFrameClock = (uint32_t) (fmin_ms * fFramesToMs)
+                + (uint32_t) xorshf96() % (uint32_t) (fmax_ms * fFramesToMs);
 	
-	//printf("fFrameClock = %u", fFrameClock);
+    //printf("fFrameClock = %u", fFrameClock);
 }
 
 void RandomMIDIccPlugin::deactivate()
 {
-	// reset plugin to original state
-	fx=123456789, fy=362436069, fz=521288629;
-	fFrameClock = (uint32_t ) (fmin_ms * fFramesToMs)
-			+ (uint32_t) xorshf96() % (uint32_t) (fmax_ms * fFramesToMs);
+    // reset plugin to original state
+    fx=123456789, fy=362436069, fz=521288629;
+    fFrameClock = (uint32_t) (fmin_ms * fFramesToMs)
+                + (uint32_t) xorshf96() % (uint32_t) (fmax_ms * fFramesToMs);
 
 }
 
 void RandomMIDIccPlugin::run(const float**, float**, uint32_t frames,
-			     const MidiEvent* events, uint32_t eventCount)
+                             const MidiEvent* events, uint32_t eventCount)
 {
 
-	for (uint32_t i=0; i<eventCount; ++i) {
+    for (uint32_t i=0; i<eventCount; ++i) {
 	
 	// Generate infinit random new numbers
 	//
@@ -268,35 +268,36 @@ void RandomMIDIccPlugin::run(const float**, float**, uint32_t frames,
 	}
 
 
-	if (fFrameClock > frames){
-		fFrameClock = fFrameClock - frames;
-		return;
+    if (fFrameClock > frames){
+        fFrameClock = fFrameClock - frames;
+        return;
 	}
-	else{	
+    else {	
+
 again:
-   		MidiEvent MyMidiEvent;
+            MidiEvent MyMidiEvent;
 
-		MyMidiEvent.frame = fFrameClock;
-		MyMidiEvent.size = 3;
-		MyMidiEvent.data[0] = 0xB0 | (uint8_t)fmidi_channel;
-		MyMidiEvent.data[1] = (uint8_t) fcontrol_number;
-		if (fmin_value > fmax_value) MyMidiEvent.data[2] = (uint8_t) fmin_value;
-		else MyMidiEvent.data[2] = (uint8_t) fmin_value + (xorshf96() % (fmax_value - fmin_value + 1));
+            MyMidiEvent.frame = fFrameClock;
+            MyMidiEvent.size = 3;
+            MyMidiEvent.data[0] = 0xB0 | (uint8_t)fmidi_channel;
+            MyMidiEvent.data[1] = (uint8_t) fcontrol_number;
+            if (fmin_value > fmax_value) MyMidiEvent.data[2] = (uint8_t) fmin_value;
+            else MyMidiEvent.data[2] = (uint8_t) fmin_value + (xorshf96() % (fmax_value - fmin_value + 1));
 
-		writeMidiEvent(MyMidiEvent);
+            writeMidiEvent(MyMidiEvent);
 
-		// genrate new time
-		//
+            // genrate new time
+
 		
-		if (fmin_ms > fmax_ms) fFrameClock = (uint32_t) (fmin_ms * fFramesToMs);
-		else{
-		fFrameClock = (uint32_t ) (fmin_ms * fFramesToMs)
-			+ (uint32_t) xorshf96() % (uint32_t) (fmax_ms * fFramesToMs);
+            if (fmin_ms > fmax_ms) fFrameClock = (uint32_t) (fmin_ms * fFramesToMs);
+	       else{
+               fFrameClock = (uint32_t) (fmin_ms * fFramesToMs)
+                           + (uint32_t) xorshf96() % (uint32_t) (fmax_ms * fFramesToMs);
 		}
 		
-	if (fFrameClock <= frames) goto again;
+            if (fFrameClock <= frames) goto again;
 	
-	}
+        }
 	
         // the frame clock's gonna count the samples util the next midi
 	// event. the frame clock's value ganna be set randomly.
