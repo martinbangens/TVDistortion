@@ -17,17 +17,19 @@ THIS IS NOT FINISHED BUT IT CAN BE USED
 
 TO DO
 
-graph reset button
+* Improve DSP
 
-smooth functionality
+* Graph reset button
 
-redesign "graphic to dsp"
+* Smooth functionality
 
-program interpolation
+* Redesign "graphic to dsp"
 
-remove some knobs and cleanup ui
+* Program interpolation
 
-design ui
+* Remove some knobs and cleanup ui
+
+* Design ui
 
 
 
@@ -41,7 +43,7 @@ Screenshot
 <b>
 
 DistoTV<br/>
-![screenshot](https://raw.githubusercontent.com/martinbangens/TVDistortion/master/plugins/DistoTV/snapshot1.png "DistoTV")
+![screenshot](https://raw.githubusercontent.com/martinbangens/TVDistortion/master/plugins/TVDistortion/snapshot1.png "TVDistortion")
 
 
 </b>
