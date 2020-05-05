@@ -41,7 +41,7 @@ Screenshot
 <b>
 
 DistoTV<br/>
-![screenshot](https://raw.githubusercontent.com/martinbangens/DistoTV/master/plugins/DistoTV/snapshot1.png "DistoTV")
+![screenshot](https://raw.githubusercontent.com/martinbangens/TVDistortion/master/plugins/DistoTV/snapshot1.png "DistoTV")
 
 
 </b>
