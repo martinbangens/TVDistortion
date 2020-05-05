@@ -44,7 +44,7 @@ void RandomMIDIccPlugin::initParameter(uint32_t index, Parameter& parameter)
     case paramMinMs:
         parameter.hints      = kParameterIsAutomable;
         parameter.name       = "Min ms";
-        parameter.symbol     = "";
+        parameter.symbol     = "ms";
         parameter.unit       = "ms";
         parameter.ranges.def = 20;
         parameter.ranges.min = 20;
@@ -54,7 +54,7 @@ void RandomMIDIccPlugin::initParameter(uint32_t index, Parameter& parameter)
     case paramMaxMs:
         parameter.hints      = kParameterIsAutomable;
         parameter.name       = "Max ms";
-        parameter.symbol     = "";
+        parameter.symbol     = "ms";
         parameter.unit       = "ms";
         parameter.ranges.def = 20;
         parameter.ranges.min = 20;
@@ -64,8 +64,8 @@ void RandomMIDIccPlugin::initParameter(uint32_t index, Parameter& parameter)
     case paramMinValue:
         parameter.hints      = kParameterIsAutomable;
         parameter.name       = "Min Value";
-        parameter.symbol     = "";
-        parameter.unit       = "v";
+        parameter.symbol     = "int";
+        parameter.unit       = "int";
         parameter.ranges.def = 0;
         parameter.ranges.min = 0;
         parameter.ranges.max = 127;
@@ -74,8 +74,8 @@ void RandomMIDIccPlugin::initParameter(uint32_t index, Parameter& parameter)
     case paramMaxValue:
         parameter.hints      = kParameterIsAutomable;
         parameter.name       = "Max Value";
-        parameter.symbol     = "";
-        parameter.unit       = "v";
+        parameter.symbol     = "int";
+        parameter.unit       = "int";
         parameter.ranges.def = 127;
         parameter.ranges.min = 0;
         parameter.ranges.max = 127;
@@ -84,7 +84,7 @@ void RandomMIDIccPlugin::initParameter(uint32_t index, Parameter& parameter)
     case paramControleNumber:
 	parameter.hints      = kParameterIsAutomable;
 	parameter.name       = "Controle Number";
-	parameter.symbol     = "";
+	parameter.symbol     = "int";
 	parameter.unit       = "cc";
 	parameter.ranges.def = 0;	
         parameter.ranges.min = 0;
@@ -94,7 +94,7 @@ void RandomMIDIccPlugin::initParameter(uint32_t index, Parameter& parameter)
     case paramMidiChannel:
 	parameter.hints      = kParameterIsAutomable;
         parameter.name       = "Midi Channel";
-	parameter.symbol     = "";
+	parameter.symbol     = "int";
 	parameter.unit       = "ch";
 	parameter.ranges.def = 1;
 	parameter.ranges.min = 1;

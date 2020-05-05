@@ -1,7 +1,4 @@
-/*
- * DistoTV Plugin, based on 3BandEQ by Filipe Coelho and
- * Michael Gruhn
- * Copyright (C) 2019 Martin Bångens <marbangens@gmail.com>
+/* Copyright (C) 2019 Martin Bångens <marbangens@gmail.com>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -18,7 +15,7 @@
 
 
 #include <cmath>
-//#include <lo/lo_osc_types.h>
+#include <lo/lo_osc_types.h>
 
 static const float kCUBS   = 1e-14f;
 static const float kAMP_DB = 8.656170245f; 

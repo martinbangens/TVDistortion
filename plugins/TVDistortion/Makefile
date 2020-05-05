@@ -1,14 +1,14 @@
 #!/usr/bin/make -f
 # Makefile for DISTRHO Plugins #
 # ---------------------------- #
-# Created by falkTX
+# Created by Martin Bångens
 #
 # Edited
 
 # --------------------------------------------------------------
 # Project name, used for binaries
 
-NAME = DistoTV
+NAME = TVDistortion
 
 # --------------------------------------------------------------
 # Files to build
@@ -33,6 +33,12 @@ TARGETS += jack
 endif
 
 TARGETS += vst
+
+ifeq ($(HAVE_DGL),true)
+ifeq ($(HAVE_LIBLO),true)
+TARGETS += dssi
+endif
+endif
 
 ifeq ($(HAVE_DGL),true)
 TARGETS += lv2_sep

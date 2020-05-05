@@ -55,22 +55,22 @@ protected:
 
     const char* getLabel() const noexcept override
     {
-        return "DistoTV";
+        return "TVDistortion";
     }
 
     const char* getDescription() const override
     {
-        return "Distortion, stereo version.";
+        return "Dynamic Distortion";
     }
 
     const char* getMaker() const noexcept override
     {
-        return "DistoTV";
+        return "Martin Bångens";
     }
 
     const char* getHomePage() const override
     {
-        return "https://github.com/martinbangens/DistoTV";
+        return "https://github.com/martinbangens/TVDistortion";
     }
 
     const char* getLicense() const noexcept override

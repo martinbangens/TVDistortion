@@ -25,6 +25,7 @@ include ../../dpf/Makefile.plugins.mk
 # --------------------------------------------------------------
 # Enable all possible plugin types
 
+#GUI Not present
 #ifeq ($(HAVE_JACK),true)
 #TARGETS += jack
 #endif

@@ -1,7 +1,7 @@
 #!/usr/bin/make -f
 # Makefile for DISTRHO Plugins #
 # ---------------------------- #
-# Created by falkTX
+# Created by Martin Bångens
 #
 # Edited
 
@@ -26,9 +26,8 @@ ifeq ($(HAVE_CAIRO_OR_OPENGL),true)
 endif
 
 plugins: dgl
-	# Make DistoTV
-	# make RandomMIDIcc
-	$(MAKE) all -C plugins/DistoTV
+
+	$(MAKE) all -C plugins/TVDistortion
 	$(MAKE) all -C plugins/RandomMIDIcc
 
 
@@ -50,7 +49,8 @@ endif
 clean:
 	$(MAKE) clean -C dpf/dgl
 	$(MAKE) clean -C dpf/utils/lv2-ttl-generator
-	$(MAKE) clean -C plugins/DistoTV
+	$(MAKE) clean -C plugins/TVDistortion
+	$(MAKE) clean -C plugins/RandomMIDIcc
 
 
 # --------------------------------------------------------------
@@ -72,8 +72,8 @@ endif # HAVE_CAIRO_OR_OPENGL
 	cp -r bin/*.lv2   $(DESTDIR)$(PREFIX)/lib/lv2/
 
 ifeq ($(HAVE_JACK),true)
-	install -m 755 bin/DistoTV             $(DESTDIR)$(PREFIX)/bin/
-
+	install -m 755 bin/TVDistortion             $(DESTDIR)$(PREFIX)/bin/
+#GUI Not present	install -m 755 bin/RandomMIDIcc             $(DESTDIR)$(PREFIX)/bin/
 endif # HAVE_JACK
 
 # --------------------------------------------------------------
