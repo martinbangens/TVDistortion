@@ -99,7 +99,7 @@ DistoTVUI::DistoTVUI() // constructor definition.
     fKnobPreAMP = new ImageKnob(this, knobSmallImage);
     fKnobPreAMP->setId(DistoTVPlugin::paramPre);
     fKnobPreAMP->setAbsolutePos(203, 330);
-    fKnobPreAMP->setRange(-14.0f, 14.0f);
+    fKnobPreAMP->setRange(-14.0f, 48.0f);
     fKnobPreAMP->setDefault(0.0f);
     fKnobPreAMP->setRotationAngle(270);
     fKnobPreAMP->setCallback(this);

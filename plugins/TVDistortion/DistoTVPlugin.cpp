@@ -17,7 +17,6 @@
 #include <cmath>
 #include <lo/lo_osc_types.h>
 
-static const float kCUBS   = 1e-14f;
 static const float kAMP_DB = 8.656170245f; 
 static const float kDC_ADD = 1e-30f; 	   
 static const float kPI     = 3.141592654f;
@@ -141,7 +140,7 @@ void DistoTVPlugin::initParameter(uint32_t index, Parameter& parameter)
         parameter.unit       = "p";
         parameter.ranges.def = 0.0f;
         parameter.ranges.min = -14.0f;
-        parameter.ranges.max = 14.0f;
+        parameter.ranges.max = 48.0f;
         break;
 
     case paramMaster:
@@ -401,26 +400,14 @@ void DistoTVPlugin::deactivate()
     tmp1LP = tmp2LP = tmp1HP = tmp2HP = 0.0f;
     //printf("\nhad_Inf=%d\n""had_NuN=%d\n",had_Inf,had_NuN);
 }
-float DistoTVPlugin::tube(float sig, float gain, float pregain)
+float DistoTVPlugin::tube(float sig, float dbamp)
 {
-  //need work
-  float endgain = gain+(pregain*3);
-  
-  if (endgain < 0) { endgain = 0; }
-  
-  sig = sig * (2*endgain); 
-  
-  if (sig < 0.00000000001f and sig > 0.0000000000000000000000000001f){
-   sig = sin(sig);
-  }
-  
-  if (sig > -0.00000000001f and sig < -0.0000000000000000000000000001f){
-   sig = sin(sig);
-  }
-  
-  sig = sig + sin(0.000000000000000000000000001f);
-  
-  return sig;
+    // weard and simple tube
+    float amp = std::exp(dbamp/8.656170245);
+    float tubesig = std::tan(sig);
+    
+    
+    return (amp * tubesig) + sig ;
 }
 
 float DistoTVPlugin::tvnoise(float sig, float knob, float NoiseSample)
@@ -441,7 +428,6 @@ void DistoTVPlugin::run(const float** inputs, float** outputs, uint32_t frames)
     const float* in2  = inputs[1];
     float*       out1 = outputs[0];
     float*       out2 = outputs[1];
-    
     
     for (uint32_t i=0; i < frames; ++i)
     {
@@ -469,14 +455,14 @@ void DistoTVPlugin::run(const float** inputs, float** outputs, uint32_t frames)
 	rms++; if(rms == 190){rms = 0;}	
 	
         //amplitude
-        sigL1 = tube(sigL1,0.14 * fDist, fPre);
-        sigR2 = tube(sigR2, 0.14 * fDist, fPre);
+        sigL1 = tube(sigL1, fPre);
+        sigR2 = tube(sigR2, fPre);
         
 	//soft distortion
 	//softclipL = (2.f/ kPI) * atan(sigL1);
 	//softclipR = (2.f/ kPI) * atan(sigR2);
         
-
+    	
 	// experamental clipping
 	
 	//sigL1 = sin(tan(sigL1));

@@ -19,6 +19,8 @@ TO DO
 
 * Improve DSP
 
+* Make all knobs and scale logarithm
+
 * Graph reset button
 
 * Smooth functionality

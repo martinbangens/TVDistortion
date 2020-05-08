@@ -114,7 +114,7 @@ protected:
     //DSP
     
     float tvnoise(float sig, float knob, float NoiseSample);
-    float tube(float sig, float gain, float pregain);
+    float tube(float sig, float dbamp);
     float CheckForBadEggs(float input);
     
 // -------------------------------------------------------------------
@@ -133,6 +133,7 @@ protected:
 }
 */
 private:
+
     
     float fCrossres;
     float fScale = 0, fScaleDSP ;
