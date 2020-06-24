@@ -21,7 +21,8 @@
 
 #include "DistoTVArtwork.hpp"
 
-#define AREAHEIGHT 1000
+#define AREAHEIGHT 301
+#define AREALENGTH 1000
 
 START_NAMESPACE_DISTRHO
 using DGL::Image;
@@ -70,7 +71,7 @@ protected:
     void imageSwitchClicked(ImageSwitch* tog, bool down) override;
     
     // Display
-    void onNanoDisplay();
+    void onDisplay();
     void uiIdle() override;
     
     // Mouse
@@ -81,22 +82,23 @@ private:
     
     Image fImgBackground;
     
-    float wave_y[AREAHEIGHT+1] = {0}; //Reflect DSP Data
-    
+    uint16_t UI_wave_y_Pixels[AREALENGTH+1] = {0}; //Reflect DSP Data
+    int tmpX, tmpY;
 
     bool fDragging;
-    bool fDragValid;
-    DGL::Rectangle<int> fCanvasArea; //OpenGL image data for the wave + size and position 
+
+    DGL::Rectangle<int> fCanvasArea;
 
     bool fWaveUpdated;
-    char fWaveState[4*AREAHEIGHT+1]; // 4 char(3 values and 1 space for every pixel) +1 extra for "NULL" terminator = The State Wave String :D
+    char fWaveState[4*AREALENGTH+1]; // 4 char(3 values and 1 space for every pixel) +1 extra for "NULL" terminator = The State Wave String :D
 
     bool fBoolCrossres;
+    bool fBoolMouseSM;
     
     
-    ScopedPointer<ImageKnob> fKnobLow, fKnobMid, fKnobHigh, fKnobMaster, fKnobDist, fKnobPreAMP, fKnobBit, fKnobBitTilt, fKnobTVNoise, fKnobCubic;
-    ScopedPointer<ImageSlider> fSliderWet, fSliderScale;
-    ScopedPointer<ImageSwitch> fSwitchCrossres;
+    ScopedPointer<ImageKnob> fKnobDist, fKnobPreAMP, fKnobLow, fKnobMid, fKnobHigh, fKnobMaster;
+    ScopedPointer<ImageSlider> fSliderWet, fSliderAmpType, fSliderInterpolation, fSliderScale;
+    ScopedPointer<ImageSwitch> fSwitchCrossres, fSwitchMouseSM;
 
 
     DISTRHO_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(DistoTVUI)

@@ -18,10 +18,11 @@
 #pragma once
 
 #include "DistrhoPlugin.hpp"
-#include <math.h>
+#include <cmath>
 
 
-#define AREAHEIGHT 1000
+#define AREAHEIGHT 301
+#define AREALENGTH 1000
 START_NAMESPACE_DISTRHO
 
 // -----------------------------------------------------------------------
@@ -31,20 +32,18 @@ class DistoTVPlugin : public Plugin
 public:
     enum Parameters
     {
-        paramWet= 0,
-        paramTVNoise,
-        paramCub,
-        paramBit,
-        paramTilt,
+        paramWet,
         paramDist,
         paramPre,
+	paramAmpType,
+ 	paramInterpolation,
+        paramScale,
+        paramCrossres,
+	paramMouseSM,
         paramLow, 
         paramMid,
         paramHigh,
-        paramMaster,
-        paramCrossres,
-        paramScale,
-        paramCount
+        paramMaster
     };
 
     DistoTVPlugin();
@@ -134,30 +133,34 @@ protected:
 */
 private:
 
+    // need to get a vacuum cleaner here...
     
-    float fCrossres;
-    float fScale = 0, fScaleDSP ;
+    float fCrossres = false, fMouseSM = false;
+    float fScale = 0, fScaleDSP = 0.5;
   
     bool had_NuN = false;
     bool had_Inf = false;
   
     int graph = 0, NoiseSeq = 0, rms = 0;
     bool updatebuff = false;
-    bool cubicSampels = false;
+    //bool cubicSampels = false;
     
     bool PrePolarityL, PolarityL, PrePolarityR, PolarityR;
     
     float rnd[191];
     float bit; 
-    float wave_y[AREAHEIGHT+1] = {0};
-    float wave_y_DSP[AREAHEIGHT+1] = {0};
+    //float wave_y[AREAHEIGHT+1] = {0};
+    float wave_y_DSP = 0;
     float NoiseSample[6] = {0.00000001,0.000000000002,0.0000000002,0.00000000001,0.0000000001,0};
+
+    // this one is a new way to store the wave information
+    uint16_t DSP_wave_y_Pixels[1000] = {0};      // (0-999)+1
     
     float softclipL, softclipR, cubclipL, cubclipR;
     
     float sigL1, sigR2, sigDryL1, sigDryR2, outFinalL, outFinalR;
     
-    float fWet, fTVNoise, fBit, fDist, fCub, fTilt, fPre;
+    float fWet, fDist, fPre, fAmpType, fInterpolation;
     
     float fLow, fMid, fHigh, fMaster;
 

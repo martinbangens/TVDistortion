@@ -5,6 +5,11 @@
 
 namespace DistoTVArtwork
 {
+    extern const char* amp_typeData;
+    const unsigned int amp_typeDataSize = 4800;
+    const unsigned int amp_typeWidth    = 80;
+    const unsigned int amp_typeHeight   = 15;
+
     extern const char* backgroundData;
     const unsigned int backgroundDataSize = 1228800;
     const unsigned int backgroundWidth    = 1024;
@@ -30,6 +35,11 @@ namespace DistoTVArtwork
     const unsigned int button_onSmallWidth    = 25;
     const unsigned int button_onSmallHeight   = 34;
 
+    extern const char* interpolationData;
+    const unsigned int interpolationDataSize = 4800;
+    const unsigned int interpolationWidth    = 80;
+    const unsigned int interpolationHeight   = 15;
+
     extern const char* knobData;
     const unsigned int knobDataSize = 15376;
     const unsigned int knobWidth    = 62;
@@ -40,10 +50,10 @@ namespace DistoTVArtwork
     const unsigned int knobSmallWidth    = 31;
     const unsigned int knobSmallHeight   = 31;
 
-    extern const char* notchData;
-    const unsigned int notchDataSize = 2220;
-    const unsigned int notchWidth    = 37;
-    const unsigned int notchHeight   = 15;
+    extern const char* scaleData;
+    const unsigned int scaleDataSize = 2220;
+    const unsigned int scaleWidth    = 37;
+    const unsigned int scaleHeight   = 15;
 
     extern const char* sliderData;
     const unsigned int sliderDataSize = 2160;

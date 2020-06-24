@@ -15,7 +15,8 @@
 
 
 #include <cmath>
-#include <lo/lo_osc_types.h>
+//#include <lo/lo_osc_types.h>
+
 
 static const float kAMP_DB = 8.656170245f; 
 static const float kDC_ADD = 1e-30f; 	   
@@ -26,7 +27,7 @@ START_NAMESPACE_DISTRHO
 // -----------------------------------------------------------------------
 
 DistoTVPlugin::DistoTVPlugin()
-    : Plugin(paramCount, 1, 1) //  program, states
+    : Plugin(12, 1, 1) //  program, states
 {
     // set default values
     loadProgram(0);
@@ -47,29 +48,9 @@ void DistoTVPlugin::initParameter(uint32_t index, Parameter& parameter)
         parameter.name       = "Wet";
         parameter.symbol     = "wet";
         parameter.unit       = "W";
-        parameter.ranges.def = 50000.0f;
-        parameter.ranges.min = 0.0f;
-        parameter.ranges.max = 100000.0f;
-        break;
-
-    case paramTVNoise:
-        parameter.hints      = kParameterIsAutomable;
-        parameter.name       = "TVNoise";
-        parameter.symbol     = "tvnoise";
-        parameter.unit       = "%";
-        parameter.ranges.def = 0.0f;
-        parameter.ranges.min = 0.0f;
-        parameter.ranges.max = 100.0f;
-        break;
-
-    case paramBit:
-        parameter.hints      = kParameterIsAutomable;
-        parameter.name       = "lenth";
-        parameter.symbol     = "bit";
-        parameter.unit       = "samples";
-        parameter.ranges.def = 0.0f;
-        parameter.ranges.min = 0.0f;
-        parameter.ranges.max = 32.0f;
+        parameter.ranges.def = 1.5f;
+        parameter.ranges.min = 1.0f;
+        parameter.ranges.max = 2.0f;
         break;
 
     case paramDist:
@@ -82,6 +63,66 @@ void DistoTVPlugin::initParameter(uint32_t index, Parameter& parameter)
         parameter.ranges.max = 100.0f;
         break;
 
+    case paramPre:
+        parameter.hints      = kParameterIsAutomable;
+        parameter.name       = "PreAMP";
+        parameter.symbol     = "pre";
+        parameter.unit       = "p";
+        parameter.ranges.def = 0.0f;
+        parameter.ranges.min = -14.0f;
+        parameter.ranges.max = 48.0f;
+        break;
+
+    case paramAmpType:
+        parameter.hints      = kParameterIsAutomable | kParameterIsInteger;
+        parameter.name       = "AmpType";
+        parameter.symbol     = "float";
+        parameter.unit       = "f";
+        parameter.ranges.def = 1.0f;
+        parameter.ranges.min = 1.0f;
+        parameter.ranges.max = 3.0f;
+        break;
+    
+    case paramInterpolation:
+        parameter.hints      = kParameterIsAutomable | kParameterIsInteger;
+        parameter.name       = "Interpolation";
+        parameter.symbol     = "float";
+        parameter.unit       = "f";
+        parameter.ranges.def = 1.0f;
+        parameter.ranges.min = 1.0f;
+        parameter.ranges.max = 3.0f;
+        break;
+    
+    case paramScale:
+        parameter.hints      = kParameterIsAutomable | kParameterIsInteger;
+        parameter.name       = "Scale";
+        parameter.symbol     = "float";
+        parameter.unit       = "f";
+        parameter.ranges.def = 0.0f;
+        parameter.ranges.min = 0.0f;
+        parameter.ranges.max = 9.0f;
+        break;
+    
+    case paramCrossres:
+        parameter.hints      = kParameterIsAutomable | kParameterIsBoolean;
+        parameter.name       = "Crossres";
+        parameter.symbol     = "bool";
+        parameter.unit       = "1/0";
+        parameter.ranges.def = 0.0f;
+        parameter.ranges.min = 0.0f;
+        parameter.ranges.max = 1.0f;
+        break;
+        
+    case paramMouseSM:
+        parameter.hints      = kParameterIsAutomable | kParameterIsBoolean;
+        parameter.name       = "MouseSM";
+        parameter.symbol     = "bool";
+        parameter.unit       = "1/0";
+        parameter.ranges.def = 0.0f;
+        parameter.ranges.min = 0.0f;
+        parameter.ranges.max = 1.0f;
+        break;
+        
     case paramLow:
         parameter.hints      = kParameterIsAutomable;
         parameter.name       = "Low";
@@ -112,37 +153,6 @@ void DistoTVPlugin::initParameter(uint32_t index, Parameter& parameter)
         parameter.ranges.max = 24.0f;
         break;
 	
-    case paramCub:
-        parameter.hints      = kParameterIsAutomable;
-        parameter.name       = "Cubz";
-        parameter.symbol     = "cubz";
-        parameter.unit       = "cp";
-        parameter.ranges.def = 0.0f;
-        parameter.ranges.min = 0.0f;
-        parameter.ranges.max = 100.0f;
-        break;
-
-    case paramTilt:
-        parameter.hints      = kParameterIsAutomable;
-        parameter.name       = "Tilt";
-        parameter.symbol     = "tilt";
-        parameter.unit       = "%";
-        parameter.ranges.def = 0.0f;
-        parameter.ranges.min = 0.0f;
-        parameter.ranges.max = 189.0f;
-        break;
-
-	
-    case paramPre:
-        parameter.hints      = kParameterIsAutomable;
-        parameter.name       = "PreAMP";
-        parameter.symbol     = "pre";
-        parameter.unit       = "p";
-        parameter.ranges.def = 0.0f;
-        parameter.ranges.min = -14.0f;
-        parameter.ranges.max = 48.0f;
-        break;
-
     case paramMaster:
         parameter.hints      = kParameterIsAutomable;
         parameter.name       = "Master";
@@ -153,25 +163,6 @@ void DistoTVPlugin::initParameter(uint32_t index, Parameter& parameter)
         parameter.ranges.max = 6.0f;
         break;
         
-    case paramCrossres:
-        parameter.hints      = kParameterIsAutomable | kParameterIsBoolean;
-        parameter.name       = "Crossres";
-        parameter.symbol     = "bool";
-        parameter.unit       = "1/0";
-        parameter.ranges.def = 0.0f;
-        parameter.ranges.min = 0.0f;
-        parameter.ranges.max = 1.0f;
-        break;
-        
-    case paramScale:
-        parameter.hints      = kParameterIsAutomable | kParameterIsInteger;
-        parameter.name       = "Scale Model";
-        parameter.symbol     = "float";
-        parameter.unit       = "f";
-        parameter.ranges.def = 0.0f;
-        parameter.ranges.min = 0.0f;
-        parameter.ranges.max = 9.0f;
-        break;
     }
 }
 
@@ -186,30 +177,28 @@ float DistoTVPlugin::getParameterValue(uint32_t index) const
     {
     case paramWet:
         return fWet;
-    case paramTVNoise:
-        return fTVNoise;
-    case paramBit:
-        return fBit;
     case paramDist:
         return fDist;
+    case paramPre:
+        return fPre;
+    case paramAmpType:
+        return fAmpType;
+    case paramInterpolation:
+        return fInterpolation;
+    case paramScale:
+        return fScale;
+    case paramCrossres:
+        return fCrossres;
+    case paramMouseSM:
+        return fMouseSM;
     case paramLow:
         return fLow;
     case paramMid:
         return fMid;
     case paramHigh:
         return fHigh;
-    case paramCub:
-        return fCub;
-    case paramTilt:
-        return fTilt;
-    case paramPre:
-        return fPre;
     case paramMaster:
         return fMaster;
-    case paramCrossres:
-        return fCrossres;
-    case paramScale:
-        return fScale;
     default:
         return 0.0f;
     }
@@ -225,24 +214,27 @@ void DistoTVPlugin::setParameterValue(uint32_t index, float value)
     case paramWet:
         fWet   = value;
         break;
-    case paramTVNoise:
-        fTVNoise   = value;
-        break;
-    case paramBit:
-        fBit   = (int)value;
-        bit = fBit;
-        break;
     case paramDist:
         fDist = value;
         break;
-    case paramCub:
-        fCub = value;
-        break;
-    case paramTilt:
-        fTilt = 190 - (int)value;
-        break;
     case paramPre:
         fPre = value;
+        break;
+    case paramAmpType:
+        fAmpType = value;
+        break;
+    case paramInterpolation:
+        fInterpolation = value;
+        break;
+    case paramScale:
+        fScale = value;
+        fScaleDSP =  0.50 - (fScale*0.05);
+        break;
+    case paramCrossres:
+        fCrossres = value;
+        break;
+    case paramMouseSM:
+        fMouseSM = value;
         break;
     case paramLow:
         fLow   = value;
@@ -260,12 +252,6 @@ void DistoTVPlugin::setParameterValue(uint32_t index, float value)
         fMaster = value;
         outVol  = std::exp( (fMaster/48.0f) * 48.0f / kAMP_DB);
         break;
-    case paramCrossres:
-        fCrossres = value;
-        break;
-    case paramScale:
-        fScale = value;
-        break;
     }
 }
 
@@ -275,14 +261,14 @@ void DistoTVPlugin::setState(const char* key, const char* value)
    if (strcmp(key, "waveform") == 0) {
        char* tmp;
        int i = 0;
-       char tmpbuf[4*AREAHEIGHT+1] = {0};
-       snprintf(tmpbuf, 4*AREAHEIGHT+1, "%s", value);
+       char tmpbuf[4*AREALENGTH+1] = {0};
+       snprintf(tmpbuf, 4*AREALENGTH+1, "%s", value);
        //printf("\nthe value of tmpbuf\n%s", tmpbuf);
        tmp = strtok(tmpbuf, " ");
-       while ((tmp != NULL) && (i < AREAHEIGHT)) {
-               wave_y[i] = ((float) atoi(tmp))/300 - 0.5; // take float values of the strings and put in wave_y
+       while ((tmp != NULL) && (i < AREALENGTH)) {
+               DSP_wave_y_Pixels[i] = atoi(tmp); // take string values put in DSP_wave_y_Pixels (host restore state of saved wave)
                         
-               printf("wave_y[%d]=%.2f \n", i, wave_y[i]);
+               //printf("DSP_wave_y_Pixels[%d]=%d \n", i, DSP_wave_y_Pixels[i]);
                tmp = strtok(NULL, " ");
                i++;
                }
@@ -292,13 +278,13 @@ void DistoTVPlugin::setState(const char* key, const char* value)
 
 String DistoTVPlugin::getState(const char * key)const {
    if (strcmp(key, "waveform") == 0) {
-       char tmpbuf[4*AREAHEIGHT+1] = {0};
-       int i = 0;
+       char tmpbuf[4*AREALENGTH+1] = {0};
+       int i = -1;
        int value;
-       char word[5];   
-       while(i < AREAHEIGHT) { // need a better presice way to handle the nummbers
-             value = (int)(wave_y[i]*(300+0.5))+150;
-             snprintf(word,5,"%03d ", value);
+       char word[7];
+       while(i < AREALENGTH) {
+             value = DSP_wave_y_Pixels[i];
+             snprintf(word,7,"%03d ", value);
              strcat(tmpbuf,word);     
              i++; 
    }
@@ -337,19 +323,18 @@ void DistoTVPlugin::loadProgram(uint32_t index)
     if (index == 0){
 
     // Default values
-    fWet = 50000.0f;
-    fTVNoise = 0.0f;
-    fBit = 0.0f;
+    fWet = 1.5f;
     fDist = 0.0f;
+    fPre = 0.0f;
+    fAmpType = 1.0f;
+    fInterpolation = 1.0f;
+    fScale = 0.0f;
+    fCrossres = 0.0f;
+    fMouseSM = 0.0f;
     fLow = 0.0f;
     fMid = 0.0f;
     fHigh = 0.0f;
     fMaster = 0.0f;
-    fCub = 0.0f;
-    fTilt = 0.0f;
-    fPre = 0.0f;
-    fCrossres = 0.0f;
-    fScale = 0.0f;
 
     // Internal stuff
     lowVol = midVol = highVol = outVol = 1.0f;
@@ -436,25 +421,22 @@ void DistoTVPlugin::run(const float** inputs, float** outputs, uint32_t frames)
         
        
         //graph wheel
-        
-    fScaleDSP =  0.50 - (fScale*0.05);
 	//
-	//scaling is done only posetive frome one point and up, later mirrored to negative
-	//the base curve will be added here atan()
 	//this needs to be tested visually and analysed
-	graph++;
-        if (graph == 1000) {graph = 0; /*memcpy(wave_y_DSP,  wave_y, 4*(AREAHEIGHT+1));*/}
-        
-	wave_y_DSP[graph] = wave_y[graph]*2*fScaleDSP;// scale here now better then memcpy
-        // need a funktion for smoothing to wave_y_DSP.
 	
-	// noise wheel
+	graph++;
+        if (graph == 1000) {graph = 0;}
+        
+	wave_y_DSP = ((((AREAHEIGHT-DSP_wave_y_Pixels[graph-1])/150)-1)*fScaleDSP)+0.5; // scale here for now
+        // need a funktion for interpolation to wave_y_DSP. some randomness to it
+	
+	// noise wheel (gonna be removed or improved)
 	NoiseSeq++; if(NoiseSeq == 5){NoiseSeq = 0;}
 	
 	// rms noise wheel
 	rms++; if(rms == 190){rms = 0;}	
 	
-        //amplitude
+        //amplitude (need to simulate a real tube) make the signal magnetic over to the clipping point
         sigL1 = tube(sigL1, fPre);
         sigR2 = tube(sigR2, fPre);
         
@@ -521,43 +503,41 @@ void DistoTVPlugin::run(const float** inputs, float** outputs, uint32_t frames)
         //
        
 
+ 
 
-       
-
- if (sigL1 >= (0.5-fScaleDSP)+0.5+wave_y_DSP[graph]){
-       sigL1 =  (0.5-fScaleDSP)+0.5+wave_y_DSP[graph];
+        if (sigL1 >= wave_y_DSP){
+            sigL1 =  wave_y_DSP;
 	}
-	if (sigL1 <= -(0.5-fScaleDSP)-0.5-wave_y_DSP[graph]){
-	  sigL1 = -(0.5-fScaleDSP)-0.5-wave_y_DSP[graph];
+	if (sigL1 <= -wave_y_DSP){
+	    sigL1 =  -wave_y_DSP;
 	}
-	if (sigR2 >= (0.5-fScaleDSP)+0.5+wave_y_DSP[graph]){
-	  sigR2 = (0.5-fScaleDSP)+0.5+wave_y_DSP[graph];
+	if (sigR2 >= wave_y_DSP){
+	    sigR2 =  wave_y_DSP;
 	}
-	if (sigR2 <= -(0.5-fScaleDSP)-0.5-wave_y_DSP[graph]){
-	  sigR2 = -(0.5-fScaleDSP)-0.5-wave_y_DSP[graph];
+	if (sigR2 <= -wave_y_DSP){
+	  sigR2 = -wave_y_DSP;
 	}
         
-
 	
 	//bit
 	// this was supposed to be bit dist but it became graph length manipulator
 	// now Finaly its gonna be Interpolation
 	
-	if (fBit > 0){
-	  if (bit == 0){
-	    bit = fBit;
-	    if (fTilt > 0){bit = bit + graph;}
-	      if (graph<fTilt){bit= bit -graph;}
-	    graph++;
-	  }
-	  bit--;
-	  graph--;
-	}
+	//if (fBit > 0){
+	//  if (bit == 0){
+	//    bit = fBit;
+	//    if (fTilt > 0){bit = bit + graph;}
+	//      if (graph<fTilt){bit= bit -graph;}
+	//    graph++;
+	//  }
+	//  bit--;
+	//  graph--;
+	//}
 	// add tv-noise
 	//sigL1 = sigL1 + tvnoise(sigL1,fTVNoise,NoiseSample[NoiseSeq]);
 	//sigR2 = sigR2 + tvnoise(sigR2,fTVNoise,NoiseSample[NoiseSeq]);
 	
-	// blend in the distortions need to work on the balance
+	// blend in the distortions need to work on the balance better with log fuctions
 	sigL1 = sigDryL1 - (sigDryL1 * 0.01 *fDist)  + (sigL1 * 0.01 * fDist); /*+ (softclipL * 0.01 * fTVNoise) + (cubclipL * 0.01 * fCub);*/
 	sigR2 = sigDryR2 - (sigDryR2 * 0.01 *fDist)  + (sigR2 * 0.01 * fDist); /*+ (softclipR * 0.01 * fTVNoise) + (cubclipR * 0.01 * fCub);*/
 
@@ -578,9 +558,9 @@ void DistoTVPlugin::run(const float** inputs, float** outputs, uint32_t frames)
 	sigDryL1 = sigDryL1 * outVol;
 	sigDryR2 = sigDryR2 * outVol;
 	
-        // Wet knob final blend in
-        outFinalL = (sigL1*0.00001*fWet) + sigDryL1 - (sigDryL1*0.00001*fWet);
-        outFinalR = (sigR2*0.00001*fWet) + sigDryR2 - (sigDryR2*0.00001*fWet);
+        // Wet knob final blend in (needs to be log)
+        outFinalL = (sigL1*log(fWet)) + sigDryL1 - (sigDryL1*log(fWet));
+        outFinalR = (sigR2*log(fWet)) + sigDryR2 - (sigDryR2*log(fWet));
         
 	
 	// extra tv noise, need work
@@ -591,7 +571,6 @@ void DistoTVPlugin::run(const float** inputs, float** outputs, uint32_t frames)
 	// Limit
 	if(outFinalL < -1.){ outFinalL = -1.; } if(outFinalL > 1.){ outFinalL = 1.; }
 	if(outFinalR < -1.){ outFinalR = -1.; } if(outFinalR > 1.){ outFinalR = 1.; }
-	
 	
 	
 	//out1[i] = CheckForBadEggs(sigL1);
