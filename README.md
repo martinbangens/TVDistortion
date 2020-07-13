@@ -31,7 +31,7 @@ TO DO
 
 * Remove some knobs and cleanup ui
 
-* Design ui
+* Design ui, "lable knobs"
 
 
 
@@ -42,23 +42,27 @@ liblo
 mesa 
 
 
+RandomMIDIcc
+===========
+
+This plugin generate and sends random midicc data.
+
+
+
+DigitalGainer
+===========
+
+Makes square wave of the signal and ceeps the the frequensis and look at them as sin waves in or to modulate and amplitude them to squares.
+
+
+
 Screenshot
 -----------
 <b>
 
 DistoTV<br/>
 ![screenshot](https://raw.githubusercontent.com/martinbangens/TVDistortion/master/plugins/TVDistortion/snapshot1.png "TVDistortion")
+![screenshot](https://raw.githubusercontent.com/martinbangens/TVDistortion/master/plugins/TVDistortion/snapshot2.png "TVDistortion")
 
 
 </b>
-
-
-RandomMIDIcc
-
-This plugin generate and sends random midicc data
-
-DigitalGainer
-
-Makes square wave of the signal and ceeps the the frequensis and look at them as sin waves in or to modulate
-and amplitude them to squares
-
