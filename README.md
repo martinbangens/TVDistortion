@@ -29,8 +29,6 @@ TO DO
 
 * Program interpolation
 
-* Remove some knobs and cleanup ui
-
 * Design ui, "lable knobs"
 
 
@@ -41,6 +39,7 @@ liblo
 
 mesa 
 
+jack (developed with jack2, jack1 have not been tested)
 
 RandomMIDIcc
 ===========
@@ -52,7 +51,7 @@ This plugin generate and sends random midicc data.
 DigitalGainer
 ===========
 
-Makes square wave of the signal and ceeps the the frequensis and look at them as sin waves in or to modulate and amplitude them to squares.
+Makes square wave of the signal and keeps the the frequencies and look at them as sin waves in or to modulate and amplitude them to squares.
 
 
 
