@@ -123,7 +123,7 @@ DistoTVUI::DistoTVUI() // constructor definition.
     fSwitchMouseSM->setId(DistoTVPlugin::paramMouseSM);
     fSwitchMouseSM->setAbsolutePos(150, 350);
     fSwitchMouseSM->setCallback(this);
-    fSwitchMouseSM->setDown(false); 
+    fSwitchMouseSM->setDown(true); 
 
     //knob Mid filter
     fKnobMid = new ImageKnob(this, knobSmallImage);
@@ -178,9 +178,9 @@ void DistoTVUI::stateChanged(const char* key, const char* value)
 	        snprintf(tmpbuf, 4*AREALENGTH, "%s", value);
 	        tmp = strtok(tmpbuf, " ");
 	        while ((tmp != NULL) && (i < AREALENGTH)) {
-	                UI_wave_y_Pixels[i] = 301-((float)atoi(tmp));
+	                UI_wave_y_Pixels[i] = (float)atoi(tmp);
 	                i++;
-	                //printf("%03d ", (int)wave_y[i]);
+	                //printf("%03d ", (int)UI_wave_y_Pixels[i]);
 	                tmp = strtok(NULL, " ");
 	        }
 	} 
@@ -246,7 +246,7 @@ void DistoTVUI::programLoaded(uint32_t index)
     fSliderInterpolation->setValue(1.0f);
     fSliderScale->setValue(0.0f);
     fSwitchCrossres->setDown(false);
-    fSwitchMouseSM->setDown(false);
+    fSwitchMouseSM->setDown(true);
     fKnobLow->setValue(0.0f);
     fKnobMid->setValue(0.0f);
     fKnobHigh->setValue(0.0f);
@@ -328,8 +328,8 @@ bool DistoTVUI::onMouse(const MouseEvent & ev) // this gets called when the mous
             memset(fWaveState, 0, sizeof(fWaveState));// fill fWaveState whit 0
         
             for(int i = 0; i < AREALENGTH; i++) {
-                char wavestr[5] = {0};
-                snprintf(wavestr, sizeof(wavestr), "%03d ", (int) (fCanvasArea.getHeight()-UI_wave_y_Pixels[i]));
+                char wavestr[7] = {0};
+                snprintf(wavestr, sizeof(wavestr), "%03d ",  UI_wave_y_Pixels[i]);
                 strcat(fWaveState, wavestr);
             }
 
@@ -340,7 +340,7 @@ bool DistoTVUI::onMouse(const MouseEvent & ev) // this gets called when the mous
 	tmpX = x-12;
 	tmpY = y-30;
 
-    }
+        }
     }
     if (ev.press == false)
     {
@@ -375,15 +375,15 @@ bool DistoTVUI::onMotion(const MotionEvent & ev) // this gets called when mouse 
 	    float numbers = abs(tmpX-(x-12));
 
             float divider = 1.0/numbers;
-            float printnum;
+            float tmp;
     
             for (int i = 1; i < numbers+1; i++){
-                 printnum = ((y-30)-tmpY)*divider*i;
+                 tmp = ((y-30)-tmpY)*divider*i;
                  if (tmpX < (x-12)){
-                    UI_wave_y_Pixels[/*får inte gå över*/i-1+tmpX] = tmpY + (int)nearbyint(printnum);
+                    UI_wave_y_Pixels[/*får inte gå över*/i-1+tmpX] = tmpY + (int)nearbyint(tmp);
                  }
                  else{
-                    UI_wave_y_Pixels[/*får inte gå över*/tmpX-i] = tmpY + (int)nearbyint(printnum); 
+                    UI_wave_y_Pixels[/*får inte gå över*/tmpX-i] = tmpY + (int)nearbyint(tmp); 
                  }
              }
 	    
@@ -396,8 +396,8 @@ bool DistoTVUI::onMotion(const MotionEvent & ev) // this gets called when mouse 
 
 
         for(int i = 0; i < AREALENGTH; i++) {
-            char wavestr[5] = {0};
-            snprintf(wavestr, sizeof(wavestr), "%03d ", (int) (fCanvasArea.getHeight()-UI_wave_y_Pixels[i]));
+            char wavestr[7] = {0};
+            snprintf(wavestr, sizeof(wavestr), "%03d ", UI_wave_y_Pixels[i]);
             strcat(fWaveState, wavestr);
         }
 
@@ -423,7 +423,7 @@ void DistoTVUI::onDisplay()
     glLineWidth(2);
     
     int i;
-    glColor4f(0.235f, 1.f, 0.235f, 1.0f);
+    glColor4f(0.3f, 0.9f, 0.188f, 1.0f);
     for (i = 1; i < AREALENGTH; ++i) {
         glBegin(GL_LINES);
         glVertex2i(i-1+fCanvasArea.getX(), UI_wave_y_Pixels[i-1]+fCanvasArea.getY());

@@ -1,6 +1,6 @@
 /*
  * DistoTV Plugin, based on 3BandEQ by Filipe Coelho
- * Copyright (C) 2019 Martin Bångens <marbangens@gmail.com>
+ * Copyright (C) 2020 Martin Bångens <marbangens@gmail.com>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -18,15 +18,13 @@
 #define DISTRHO_PLUGIN_INFO_H_INCLUDED
 
 #define DISTRHO_PLUGIN_BRAND "DISTRHO"
-#define DISTRHO_PLUGIN_NAME  "TVDistortion"
+#define DISTRHO_PLUGIN_NAME  "DigitalGain"
 #define DISTRHO_PLUGIN_URI   "https://github.com/martinbangens/TVDistortion"
 #define DISTRHO_PLUGIN_HAS_UI        1
 #define DISTRHO_PLUGIN_IS_RT_SAFE    0
 #define DISTRHO_PLUGIN_NUM_INPUTS    2
 #define DISTRHO_PLUGIN_NUM_OUTPUTS   2
-#define DISTRHO_PLUGIN_WANT_PROGRAMS 1
-#define DISTRHO_PLUGIN_WANT_STATE    1
-#define DISTRHO_PLUGIN_WANT_FULL_STATE 1 
+#define DISTRHO_PLUGIN_WANT_PROGRAMS 1 
 
 
 #define DISTRHO_PLUGIN_LV2_CATEGORY "lv2:distortion"

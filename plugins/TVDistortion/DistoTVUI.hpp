@@ -82,7 +82,7 @@ private:
     
     Image fImgBackground;
     
-    uint16_t UI_wave_y_Pixels[AREALENGTH+1] = {0}; //Reflect DSP Data
+    uint16_t UI_wave_y_Pixels[AREALENGTH+1] = {151}; //Reflect DSP Data
     int tmpX, tmpY;
 
     bool fDragging;

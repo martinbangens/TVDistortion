@@ -4,7 +4,7 @@ I started this because I miss Disto::Fx on Linux
 I was thinking there should be something like that on Linux,
 some dynamic distortion plug-in(whit lot of diffident clipping methods)
 The idea is that you should be able to paint a distortion curve on the TV screen,
-then the curve should be applied to diffrent "smoothing" or interpolation methods and diffrent scales
+then the curve should be applied to different "smoothing" or interpolation methods and different scales
 
 
 I love making noisy music, I listen to a lot of old industrial music like Cabaret Voltaire or Psychic TV.
@@ -35,9 +35,11 @@ TO DO
 
 
 
-It also comes with a plugin called RandomMIDIcc for now
-this plugin sends random midicc data
+Dependences
 
+liblo
+
+mesa 
 
 
 Screenshot
@@ -49,3 +51,14 @@ DistoTV<br/>
 
 
 </b>
+
+
+RandomMIDIcc
+
+This plugin generate and sends random midicc data
+
+DigitalGainer
+
+Makes square wave of the signal and ceeps the the frequensis and look at them as sin waves in or to modulate
+and amplitude them to squares
+

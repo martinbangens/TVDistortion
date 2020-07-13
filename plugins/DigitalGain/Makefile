@@ -8,17 +8,17 @@
 # --------------------------------------------------------------
 # Project name, used for binaries
 
-NAME = TVDistortion
+NAME = DigitalGain
 
 # --------------------------------------------------------------
 # Files to build
 
 FILES_DSP = \
-	DistoTVPlugin.cpp
+	DistrhoPluginDigitalGain.cpp
 
 FILES_UI  = \
-	DistoTVArtwork.cpp \
-	DistoTVUI.cpp
+	DistrhoArtworkDigitalGain.cpp \
+	DistrhoUIDigitalGain.cpp
 
 # --------------------------------------------------------------
 # Do some magic
@@ -32,7 +32,7 @@ ifeq ($(HAVE_JACK),true)
 TARGETS += jack
 endif
 
-TARGETS += vst
+TARGETS += vst ladspa
 
 ifeq ($(HAVE_DGL),true)
 ifeq ($(HAVE_LIBLO),true)
@@ -41,7 +41,7 @@ endif
 endif
 
 ifeq ($(HAVE_DGL),true)
-TARGETS += lv2_sep
+TARGETS += lv2
 endif
 
 

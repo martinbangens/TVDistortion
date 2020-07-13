@@ -64,12 +64,12 @@ protected:
 
     const char* getMaker() const noexcept override
     {
-        return "Martin Bångens";
+        return "Martin Bangens";
     }
 
     const char* getHomePage() const override
     {
-        return "https://github.com/martinbangens/TVDistortion";
+        return "TVDistortion";
     }
 
     const char* getLicense() const noexcept override
