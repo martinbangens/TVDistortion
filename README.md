@@ -1,4 +1,4 @@
-DistoTV
+TVDistortion
 ===========
 I started this because I miss Disto::Fx on Linux
 I was thinking there should be something like that on Linux,
@@ -60,9 +60,9 @@ Screenshot
 -----------
 <b>
 
-DistoTV<br/>
+TVDistortion<br/>
 ![screenshot](https://raw.githubusercontent.com/martinbangens/TVDistortion/master/plugins/TVDistortion/snapshot1.png "TVDistortion")
-![screenshot](https://raw.githubusercontent.com/martinbangens/TVDistortion/master/plugins/TVDistortion/snapshot2.png "TVDistortion")
 
+![screenshot](https://raw.githubusercontent.com/martinbangens/TVDistortion/master/plugins/TVDistortion/snapshot2.png "TVDistortion")
 
 </b>
