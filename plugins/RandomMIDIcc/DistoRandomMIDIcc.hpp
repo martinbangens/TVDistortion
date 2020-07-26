@@ -56,7 +56,7 @@ protected:
 
     const char* getMaker() const noexcept override
     {
-        return "Martin Bångens";
+        return "Martin Bangens";
     }
 
     const char* getHomePage() const override

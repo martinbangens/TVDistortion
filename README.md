@@ -52,14 +52,10 @@ This plugin generate and sends random midicc data.
 
 
 
-DigitalGainer
+Rainbow
 ===========
 
-Makes square wave of the signal and keeps the the frequencies and look at the signal frequencies as a sine waves to modulate and amplitude them to square waves. Round the corners for waves haping the signal, add extra small randomness in frequency and volume.
-
-knob1 Gain
-
-knob2 tone
+I want to make a crossover distortion plugin, that lets the user edit distortion in diffrent regions of the signal, like a rainbow.
 
 Screenshot
 -----------

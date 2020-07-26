@@ -17,9 +17,9 @@
 #ifndef DISTRHO_PLUGIN_INFO_H_INCLUDED
 #define DISTRHO_PLUGIN_INFO_H_INCLUDED
 
-#define DISTRHO_PLUGIN_BRAND "DISTRHO"
-#define DISTRHO_PLUGIN_NAME  "RamdomMIDIcc"
-#define DISTRHO_PLUGIN_URI   "http://distrho.sf.net"
+#define DISTRHO_PLUGIN_BRAND "RAP"
+#define DISTRHO_PLUGIN_NAME  "RandomMIDIcc"
+#define DISTRHO_PLUGIN_URI   "https://github.com/martinbangens/robot#RandomMIDIcc"
 
 #define DISTRHO_PLUGIN_HAS_UI        0
 #define DISTRHO_PLUGIN_IS_RT_SAFE    0

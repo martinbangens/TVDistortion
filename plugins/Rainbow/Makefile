@@ -14,11 +14,11 @@ NAME = DigitalGain
 # Files to build
 
 FILES_DSP = \
-	DistrhoPluginDigitalGain.cpp
+	DistrhoPluginRainbow.cpp
 
 FILES_UI  = \
-	DistrhoArtworkDigitalGain.cpp \
-	DistrhoUIDigitalGain.cpp
+	DistrhoArtworkRainbow.cpp \
+	DistrhoUIRainbow.cpp
 
 # --------------------------------------------------------------
 # Do some magic
@@ -41,7 +41,9 @@ endif
 endif
 
 ifeq ($(HAVE_DGL),true)
-TARGETS += lv2
+TARGETS += lv2_sep
+else
+TARGETS += lv2_dsp
 endif
 
 

@@ -19,15 +19,19 @@
 
 #include <cmath>
 #include <algorithm>
+
+#define parameterGain 0
+#define parameterTone 1
+
 START_NAMESPACE_DISTRHO
 
 // ---------------------------------------------------------------------------
 
-class DigitalGain : public Plugin
+class Rainbow : public Plugin
 {
 public:
 
-    DigitalGain();
+    Rainbow();
 
 
     // -----------------------------------------------------------------------
@@ -37,26 +41,38 @@ protected:
     // Info
     
     const char* getLabel() const noexcept override
-	    return "DigitalGain";
+    {
+        return "Rainbow";
+    }
 
     const char* getDescription() const override
-	    return "Amplifer whith a twist";
+    {
+        return "Amplifer";
+    }
     
     const char* getMaker() const noexcept override
-	    return "Martin Bangens";
+    {
+        return "Martin Bangens";
+    }
     
     const char* getHomePage() const override
-	    return "DigitalGain";
+    {
+        return "Rainbow";
+    }
     
     const char* getLicense() const noexcept override
-	    return "LGPL";
+    {
+        return "LGPL";
+    }
 
     uint32_t getVersion() const noexcept override
-	    return d_version(0, 0, 1);
-
+    {
+        return d_version(0, 0, 1);
+    }
     int64_t getUniqueId() const noexcept override
-	    return d_cconst('D', 'g', 'G', 'i');
-
+    {
+        return d_cconst('D', 'i', 'G', 'a');
+    }
 
 
 
@@ -65,12 +81,13 @@ protected:
     //Int
 
     void initParameter(uint32_t index, Parameter& parameter) override;
-
+    void initProgramName(uint32_t index, String& programName) override;
 
     //Data
     
     float getParameterValue(uint32_t index) const override;
     void  setParameterValue(uint32_t index, float value) override;
+    void  loadProgram(uint32_t index) override;
 
     //Process
     
@@ -82,9 +99,10 @@ protected:
 
 private:
     
+    float fGain = 0;
+    float fTone = 0;
     
-    
-    DISTRHO_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(DigitalGain)
+    DISTRHO_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(Rainbow)
 };
 
 // -----------------------------------------------------------------------

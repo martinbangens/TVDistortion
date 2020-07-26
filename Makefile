@@ -29,6 +29,7 @@ plugins: dgl
 
 	$(MAKE) all -C plugins/TVDistortion
 	$(MAKE) all -C plugins/RandomMIDIcc
+	$(MAKE) all -C plugins/Rainbow
 
 
 ifneq ($(CROSS_COMPILING),true)
@@ -51,6 +52,7 @@ clean:
 	$(MAKE) clean -C dpf/utils/lv2-ttl-generator
 	$(MAKE) clean -C plugins/TVDistortion
 	$(MAKE) clean -C plugins/RandomMIDIcc
+	$(MAKE) clean -C plugins/Rainbow
 
 
 # --------------------------------------------------------------
