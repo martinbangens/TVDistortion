@@ -52,7 +52,10 @@ class RainbowUI : public UI,
     private:
 
         Image fImgBackground;
-        ScopedPointer<ImageKnob> fKnobGain, fKnobTone;
+ 
+        //DGL::Rectangle<int> fRainbow;
+
+        ScopedPointer<ImageKnob> fKnobWet, fKnobRed, fKnobOrange, fKnobYellow, fKnobGreen, fKnobBlue, fKnobIndigo, fKnobViolet;
 
 	DISTRHO_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(RainbowUI)
 };

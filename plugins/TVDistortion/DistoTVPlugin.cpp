@@ -429,11 +429,11 @@ void DistoTVPlugin::run(const float** inputs, float** outputs, uint32_t frames)
 	//
 	//this needs to be tested visually and analysed
 	
-	graph++;
+	if (Ipsc == 0)graph++;
         if (graph == 1000) {graph = 0;}
         
-	wave_y_DSP = ((((AREAHEIGHT-DSP_wave_y_Pixels[graph-1])/150)-1)*fScaleDSP)+0.5; // scale here for now
-        // need a funktion for interpolation to wave_y_DSP. some randomness to it
+	wave_y_DSP = ((((AREAHEIGHT-DSP_wave_y_Pixels[graph])/150)-1)*fScaleDSP)+0.5;        // scale here for now
+	wave_y_DSP_next = ((((AREAHEIGHT-DSP_wave_y_Pixels[graph+1])/150)-1)*fScaleDSP)+0.5; // to calculate Interpolation
 	
 	// noise wheel (gonna be removed or improved)
 	NoiseSeq++; if(NoiseSeq == 5){NoiseSeq = 0;}
@@ -506,9 +506,11 @@ void DistoTVPlugin::run(const float** inputs, float** outputs, uint32_t frames)
         // signal is sterio and the clipping can be done on 4 places separetly
         // left+ and left- and right+ and right-
         //
-       
+       	int interpol = (int)fInterpolation;
 
- 
+    switch (interpol) {
+
+    case 1:
 
         if (sigL1 >= wave_y_DSP){
             sigL1 =  wave_y_DSP;
@@ -523,6 +525,52 @@ void DistoTVPlugin::run(const float** inputs, float** outputs, uint32_t frames)
 	  sigR2 = -wave_y_DSP;
 	}
         
+    break;
+
+    case 2: // basic linear Interpolation, just take half the delta value and add it in the middle 
+		
+    if (Ipsc==0) {
+	
+	float Interpolation_y_DSP = wave_y_DSP +( (wave_y_DSP_next-wave_y_DSP)/2); 
+
+        if (sigL1 >= Interpolation_y_DSP){
+            sigL1 =  Interpolation_y_DSP;
+	}
+	if (sigL1 <= -Interpolation_y_DSP){
+	    sigL1 =  -Interpolation_y_DSP;
+	}
+	if (sigR2 >= Interpolation_y_DSP){
+	    sigR2 =  Interpolation_y_DSP;
+	}
+	if (sigR2 <= -Interpolation_y_DSP){
+	  sigR2 = -Interpolation_y_DSP;
+	}
+        
+	Ipsc=1;
+
+    }
+    
+    else if (Ipsc==1) { 
+
+        if (sigL1 >= wave_y_DSP){
+            sigL1 =  wave_y_DSP;
+	}
+	if (sigL1 <= -wave_y_DSP){
+	    sigL1 =  -wave_y_DSP;
+	}
+	if (sigR2 >= wave_y_DSP){
+	    sigR2 =  wave_y_DSP;
+	}
+	if (sigR2 <= -wave_y_DSP){
+	  sigR2 = -wave_y_DSP;
+	}
+        
+	Ipsc=0;
+
+    }
+    
+    break;
+    }
 	
 	//bit
 	// this was supposed to be bit dist but it became graph length manipulator

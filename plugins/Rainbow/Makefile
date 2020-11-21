@@ -8,7 +8,7 @@
 # --------------------------------------------------------------
 # Project name, used for binaries
 
-NAME = DigitalGain
+NAME = Rainbow
 
 # --------------------------------------------------------------
 # Files to build

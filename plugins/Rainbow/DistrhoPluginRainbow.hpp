@@ -20,8 +20,16 @@
 #include <cmath>
 #include <algorithm>
 
-#define parameterGain 0
-#define parameterTone 1
+//Parameter ID's
+
+#define parameterWet 0
+#define parameterRed 1
+#define parameterOrange 2
+#define parameterYellow 3
+#define parameterGreen 4
+#define parameterBlue 5
+#define parameterIndigo 6
+#define parameterViolet 7
 
 START_NAMESPACE_DISTRHO
 
@@ -71,7 +79,7 @@ protected:
     }
     int64_t getUniqueId() const noexcept override
     {
-        return d_cconst('D', 'i', 'G', 'a');
+        return d_cconst('R', 'a', 'B', 'w');
     }
 
 
@@ -99,8 +107,16 @@ protected:
 
 private:
     
-    float fGain = 0;
-    float fTone = 0;
+    // Parameters
+    
+    float fWet    = 0;
+    float fRed    = 0;
+    float fOrange = 0;
+    float fYellow = 0;
+    float fGreen  = 0;
+    float fBlue   = 0;
+    float fIndigo = 0;
+    float fViolet = 0;
     
     DISTRHO_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(Rainbow)
 };

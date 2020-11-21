@@ -134,7 +134,10 @@ protected:
 private:
 
     // need to get a vacuum cleaner here...
-    
+   
+    uint8_t Ipsc = 0;  // Interpolation Sampel clock
+    float wave_y_DSP_next = 0;
+
     float fCrossres = false, fMouseSM = false;
     float fScale = 0, fScaleDSP = 0.5;
   

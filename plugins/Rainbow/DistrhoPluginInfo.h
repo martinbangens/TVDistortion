@@ -17,9 +17,9 @@
 #ifndef DISTRHO_PLUGIN_INFO_H_INCLUDED
 #define DISTRHO_PLUGIN_INFO_H_INCLUDED
 
-#define DISTRHO_PLUGIN_BRAND "RAP"
-#define DISTRHO_PLUGIN_NAME  "DigitalGain"
-#define DISTRHO_PLUGIN_URI   "https://github.com/martinbangens/robot#DigitalGain"
+#define DISTRHO_PLUGIN_BRAND "Robot"
+#define DISTRHO_PLUGIN_NAME  "Rainbow"
+#define DISTRHO_PLUGIN_URI   "https://github.com/martinbangens/robot#Rainbow"
 #define DISTRHO_PLUGIN_HAS_UI        1
 #define DISTRHO_PLUGIN_IS_RT_SAFE    0
 #define DISTRHO_PLUGIN_NUM_INPUTS    2
@@ -27,6 +27,6 @@
 #define DISTRHO_PLUGIN_WANT_PROGRAMS 1 
 
 
-#define DISTRHO_PLUGIN_LV2_CATEGORY "lv2:gain"
+#define DISTRHO_PLUGIN_LV2_CATEGORY "lv2:distortion"
 
 #endif // DISTRHO_PLUGIN_INFO_H_INCLUDED
