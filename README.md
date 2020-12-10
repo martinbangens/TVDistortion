@@ -29,7 +29,7 @@ TO DO
 
 * Smooth functionality
 
-* Redesign "graphic to dsp"
+* Redesign "pixels to dsp"
 
 * Program interpolation
 
@@ -51,13 +51,26 @@ RandomMIDIcc
 This plugin generate and sends random midicc data.
 
 
-
 Rainbow
 ===========
 
 I want to make a crossover distortion plugin, that lets the user edit distortion in diffrent regions of the signal, like a rainbow.
 
-Screenshot
+
+Bark
+===========
+
+A midi triggerd compressor/gate, snappy punchy.
+
+
+CreamWhipper
+===========
+
+Cubic distortion, waveshaping and saturation.
+Knobs = Wet/dry, Drive, Threshold, Ceiling;
+
+
+Screenshots
 -----------
 <b>
 

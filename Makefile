@@ -30,6 +30,7 @@ plugins: dgl
 	$(MAKE) all -C plugins/TVDistortion
 	$(MAKE) all -C plugins/RandomMIDIcc
 	$(MAKE) all -C plugins/Rainbow
+	$(MAKE) all -C plugins/CreamWhipper
 
 
 ifneq ($(CROSS_COMPILING),true)

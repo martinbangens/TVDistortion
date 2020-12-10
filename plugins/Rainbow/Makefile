@@ -14,11 +14,11 @@ NAME = Rainbow
 # Files to build
 
 FILES_DSP = \
-	DistrhoPluginRainbow.cpp
+	RobotRainbowPlugin.cpp
 
 FILES_UI  = \
-	DistrhoArtworkRainbow.cpp \
-	DistrhoUIRainbow.cpp
+	RobotRainbowArtwork.cpp \
+	RobotRainbowUI.cpp
 
 # --------------------------------------------------------------
 # Do some magic

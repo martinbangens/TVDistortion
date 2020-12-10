@@ -14,7 +14,7 @@ NAME = RandomMIDIcc
 # Files to build
 
 FILES_DSP = \
-	DistoRandomMIDIcc.cpp
+	RobotRandomMIDIccPlugin.cpp
 
 
 # --------------------------------------------------------------

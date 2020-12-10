@@ -14,11 +14,11 @@ NAME = TVDistortion
 # Files to build
 
 FILES_DSP = \
-	DistoTVPlugin.cpp
+	RobotTVDistortionPlugin.cpp
 
 FILES_UI  = \
-	DistoTVArtwork.cpp \
-	DistoTVUI.cpp
+	RobotTVDistortionArtwork.cpp \
+	RobotTVDistortionUI.cpp
 
 # --------------------------------------------------------------
 # Do some magic
