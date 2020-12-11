@@ -50,26 +50,26 @@ RandomMIDIcc
 
 This plugin generate and sends random midicc data.
 
-
+Finished to be used
 Rainbow
 ===========
 
 I want to make a crossover distortion plugin, that lets the user edit distortion in diffrent regions of the signal, like a rainbow.
 
-
+NOT FINISHED
 Bark
 ===========
 
 A midi triggerd compressor/gate, snappy punchy.
 
-
+NOT FINISHED
 CreamWhipper
 ===========
 
-Cubic distortion, waveshaping and saturation.
-Knobs = Wet/dry, Drive, Threshold, Ceiling;
+Cubic distortion, waveshaping and saturation. Knobs will be Wet/dry, Drive, Threshold, Ceiling and maybe a knob that would shift the frequency of the "cubic distortion funtion"
+The distortion will amplify the signal like "f(x)=x^3" and experiment with polynomial waveshaping. The signal then go thru 3 saturation algorithms A B and C.
 
-
+NOT FINISHED
 Screenshots
 -----------
 <b>
