@@ -66,8 +66,10 @@ NOT FINISHED
 CreamWhipper
 ===========
 
-Cubic distortion, waveshaping and saturation. Knobs will be Wet/dry, Drive, Threshold, Ceiling and maybe a knob that would shift the frequency of the "cubic distortion funtion"
-The distortion will amplify the signal like "f(x)=x^3" and experiment with polynomial waveshaping. The signal then go thru 3 saturation algorithms A B and C.
+Cubic distortion, waveshaping and saturation. Knobs will be Wet/dry(0-100%), Drive(0-100%), Threshold(0dB to -40dB), Ceiling(0dB to -40dB) and maybe a knob that would shift the frequency of the "cubic distortion funtion"
+The distortion will amplify the signal like "f(x)=x^3" and add polynomial waveshaping. The signal then go thru 3 saturation algorithms A B and C. The ceiling for the
+distortion and saturation and maybe a bit before the 1.0 and -1.0 values could be a extremely thin line with extreme compression. This line should not be linear and maybe
+a little random. All knob use a natural log scale.
 
 NOT FINISHED
 Screenshots
