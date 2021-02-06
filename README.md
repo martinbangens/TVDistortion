@@ -5,18 +5,17 @@ Robot Audio Plugins
 TVDistortion
 ===========
 I started this because I miss Disto::Fx on Linux
-I was thinking there should be something like that on Linux,
-some dynamic distortion plug-in(whit lot of diffident clipping methods)
+some dynamic distortion plugin(whit lot of diffident clipping methods)
 The idea is that you should be able to paint a distortion curve on the TV screen,
 then the curve should be applied to different "smoothing" or interpolation methods and different scales
-
+I have not yet thought out what this plugin gona be
 
 I love making noisy music, I listen to a lot of old industrial music like Cabaret Voltaire or Psychic TV.
 I'm noob to programming, I know the basics, took courses in c++ when I was younger.
 
 You are more then welcome to do whatever you want with the code, I would love to see what that would look like :)
 
-THIS IS NOT FINISHED BUT IT CAN BE USED
+THIS IS NOT FINISHED DON'T USE IT YET
 
 
 TO DO
@@ -27,23 +26,25 @@ TO DO
 
 * Graph reset button
 
-* Smooth functionality
-
 * Redesign "pixels to dsp"
 
-* Program interpolation
+* Program interpolation(BUGS!!, need a funktion that filers out bad numbers, also smoothing filter...)
 
-* Design ui, "lable knobs"
+* Design ui, "(how to?)lable knobs thoroughly"
 
+* Presets
 
+* Make an alternative scalable gui
 
 Dependences
 
-liblo
+liblo 
 
 mesa 
 
 jack (developed with jack2, jack1 have not been tested)
+
+Thanks to zam-plugins and DPF-Plugins everybody involved for makeing GPL plugins
 
 RandomMIDIcc
 ===========

@@ -94,9 +94,9 @@ void DistoTVPlugin::initParameter(uint32_t index, Parameter& parameter)
         parameter.name       = "Interpolation";
         parameter.symbol     = "float";
         parameter.unit       = "f";
-        parameter.ranges.def = 1.0f;
-        parameter.ranges.min = 1.0f;
-        parameter.ranges.max = 3.0f;
+        parameter.ranges.def = 0.0f;
+        parameter.ranges.min = 0.0f;
+        parameter.ranges.max = 4.0f;
         break;
     
     case paramScale:
@@ -231,6 +231,7 @@ void DistoTVPlugin::setParameterValue(uint32_t index, float value)
         break;
     case paramInterpolation:
         fInterpolation = value;
+	Ipsc = 0;
         break;
     case paramScale:
         fScale = value;
@@ -437,15 +438,19 @@ void DistoTVPlugin::run(const float** inputs, float** outputs, uint32_t frames)
         if (graph == 1000) {graph = 0;}
         
 	wave_y_DSP = ((((AREAHEIGHT-DSP_wave_y_Pixels[graph])/150)-1)*fScaleDSP)+0.5;        // scale here for now
-	wave_y_DSP_next = ((((AREAHEIGHT-DSP_wave_y_Pixels[graph+1])/150)-1)*fScaleDSP)+0.5; // to calculate Interpolation
-	
+	if (graph == 999) wave_y_DSPnext = ((((AREAHEIGHT-DSP_wave_y_Pixels[0])/150)-1)*fScaleDSP)+0.5;
+	else 
+	wave_y_DSPnext = ((((AREAHEIGHT-DSP_wave_y_Pixels[graph+1])/150)-1)*fScaleDSP)+0.5;       
+
+
+
 	// noise wheel (gonna be removed or improved)
 	NoiseSeq++; if(NoiseSeq == 5){NoiseSeq = 0;}
 	
 	// rms noise wheel
 	rms++; if(rms == 190){rms = 0;}	
 	
-        //amplitude (need to simulate a real tube) make the signal magnetic over to the clipping point
+        //amplitude (simulate a real tube later)
         sigL1 = tube(sigL1);
         sigR2 = tube(sigR2);
         
@@ -510,70 +515,176 @@ void DistoTVPlugin::run(const float** inputs, float** outputs, uint32_t frames)
         // signal is sterio and the clipping can be done on 4 places separetly
         // left+ and left- and right+ and right-
         //
+	// Later this gonna be changed to a threshold for more processing, 
+	//
        	int interpol = (int)fInterpolation;
 
     switch (interpol) {
+    
+	    // Later this will be changed
+	    // The logic is (IF Ipsc = 0 THEN wave_y_DSP = next value)
+
+/*
+           void hermite_quadratic(float *p, float x0, float y0, float k0, float x1, float k1)
+            {
+                // y = p[0]*x^2 + p[1]*x + p[2]
+                p[0]    = (k0 - k1)*0.5f / (x0 - x1);
+                p[1]    = k0 - 2.0f*p[0]*x0;
+                p[2]    = y0 - p[0]*x0*x0 - p[1]*x0;
+            }
+
+            void hermite_cubic(float *p, float x0, float y0, float k0, float x1, float y1, float k1)
+            {
+                // y = p[0]*x^3 + p[1]*x^2 + p[2]*x + p[3]
+                // dy/dx = 3*p[0]*x^2 + 2*p[1]*x + p[2]
+                double dx    = x1 - x0;
+                double dy    = y1 - y0;
+                double kx    = dy / dx;
+                double xx1   = x1*x1;
+                double xx2   = x0 + x1;
+
+                double a     = ((k0 + k1)*dx - 2.0f*dy) / (dx*dx*dx);
+                double b     = ((kx - k0) + a*((2.0f*x0-x1)*x0 - xx1))/dx;
+                double c     = kx - a*(xx1+xx2*x0) - b*xx2;
+                double d     = y0 - x0*(c+x0*(b+x0*a));
+
+                p[0]    = a;
+                p[1]    = b;
+                p[2]    = c;
+                p[3]    = d;
+            }
+
+            void exponent(float *p, float x0, float y0, float x1, float y1, float k)
+            {
+                double e        = exp(k*(x0 - x1));
+                p[0]            = (y0 - e*y1) / (1.0 - e);
+                p[1]            = (y0 - p[0]) / exp(k*x0);
+                p[2]            = k;
+            }
+
+            void linear(float *p, float x0, float y0, float x1, float y1)
+            {
+                p[0]            = (y1 - y0) / (x1 - x0);
+                p[1]            = y0 - p[0]*x0;
+            }
+*/
+
+    default:
+
+        if (sigL1 >= wave_y_DSP){
+            sigL1  = wave_y_DSP;
+	}
+	if (sigL1 <= -wave_y_DSP){
+	    sigL1  = -wave_y_DSP;
+	}
+	if (sigR2 >= wave_y_DSP){
+	    sigR2 =  wave_y_DSP;
+	}
+	if (sigR2 <= -wave_y_DSP){
+	    sigR2  = -wave_y_DSP;
+	}
+        
+    break;
 
     case 1:
-
-        if (sigL1 >= wave_y_DSP){
-            sigL1 =  wave_y_DSP;
-	}
-	if (sigL1 <= -wave_y_DSP){
-	    sigL1 =  -wave_y_DSP;
-	}
-	if (sigR2 >= wave_y_DSP){
-	    sigR2 =  wave_y_DSP;
-	}
-	if (sigR2 <= -wave_y_DSP){
-	  sigR2 = -wave_y_DSP;
-	}
-        
-    break;
-
-    case 2: // basic linear Interpolation, just take half the delta value and add it in the middle 
-		
-    if (Ipsc==0) {
+    {		
+	// for Ispc 1 2 3, make new value
+	//
 	
-	float Interpolation_y_DSP = wave_y_DSP +( (wave_y_DSP_next-wave_y_DSP)/2); 
+	float k = wave_y_DSPnext - wave_y_DSP;
+
+	float Interpolation_y_DSP = wave_y_DSP + (k*Ipsc)/3;
 
         if (sigL1 >= Interpolation_y_DSP){
-            sigL1 =  Interpolation_y_DSP;
+            sigL1  = Interpolation_y_DSP;
 	}
 	if (sigL1 <= -Interpolation_y_DSP){
-	    sigL1 =  -Interpolation_y_DSP;
+	    sigL1  = -Interpolation_y_DSP;
 	}
 	if (sigR2 >= Interpolation_y_DSP){
-	    sigR2 =  Interpolation_y_DSP;
+	    sigR2  = Interpolation_y_DSP;
 	}
 	if (sigR2 <= -Interpolation_y_DSP){
-	  sigR2 = -Interpolation_y_DSP;
+	    sigR2  = -Interpolation_y_DSP;
+	}
+       
+       if (Ipsc == 3) Ipsc = 0;
+       else Ipsc++;
+    }	
+    break;
+    
+    case 2: // need to remove denormals and smoooth out supper high freq, right now it sound too painfull and it can crash the host lol
+    {	
+	float k = wave_y_DSPnext - wave_y_DSP;
+    	float e = exp(-k);
+	float Interpolation_y_DSP = 0;
+
+        if (Ipsc == 1){
+	       	Interpolation_y_DSP = (wave_y_DSP - e*wave_y_DSP) / (1.0 - e);
+		fInterpolationTmp = Interpolation_y_DSP;
+	}
+        if (Ipsc == 2) Interpolation_y_DSP = (wave_y_DSP - fInterpolationTmp ) / exp(k*2);
+
+        if (sigL1 >= Interpolation_y_DSP){
+            sigL1  = Interpolation_y_DSP;
+	}
+	if (sigL1 <= -Interpolation_y_DSP){
+	    sigL1  = -Interpolation_y_DSP;
+	}
+	if (sigR2 >= Interpolation_y_DSP){
+	    sigR2  = Interpolation_y_DSP;
+	}
+	if (sigR2 <= -Interpolation_y_DSP){
+	    sigR2  = -Interpolation_y_DSP;
 	}
         
-	Ipsc=1;
-
+	
+       if (Ipsc == 2) Ipsc = 0;
+       else Ipsc++;
     }
-    
-    else if (Ipsc==1) { 
+        break;
+
+    case 3:
+     
 
         if (sigL1 >= wave_y_DSP){
-            sigL1 =  wave_y_DSP;
+            sigL1  = wave_y_DSP;
 	}
 	if (sigL1 <= -wave_y_DSP){
-	    sigL1 =  -wave_y_DSP;
+	    sigL1  = -wave_y_DSP;
 	}
 	if (sigR2 >= wave_y_DSP){
-	    sigR2 =  wave_y_DSP;
+	    sigR2  = wave_y_DSP;
 	}
 	if (sigR2 <= -wave_y_DSP){
-	  sigR2 = -wave_y_DSP;
+	    sigR2  = -wave_y_DSP;
 	}
         
-	Ipsc=0;
+	//Ipsc=0;
 
-    }
-    
-    break;
+        break;
+
+    case 4:
+     
+
+        if (sigL1 >= wave_y_DSP){
+            sigL1  = wave_y_DSP;
+	}
+	if (sigL1 <= -wave_y_DSP){
+	    sigL1  = -wave_y_DSP;
+	}
+	if (sigR2 >= wave_y_DSP){
+	    sigR2  = wave_y_DSP;
+	}
+	if (sigR2 <= -wave_y_DSP){
+	    sigR2  = -wave_y_DSP;
+	}
+        
+	//Ipsc=0;
+
+        break;
+
+
     }
 	
 	//bit
@@ -595,8 +706,8 @@ void DistoTVPlugin::run(const float** inputs, float** outputs, uint32_t frames)
 	//sigR2 = sigR2 + tvnoise(sigR2,fTVNoise,NoiseSample[NoiseSeq]);
 	
 	// blend in the distortions need to work on the balance better with exponential fuctions
-	sigL1 = sigDryL1 - (sigDryL1 * pow(0.01, fDist))  + (sigL1 * pow(0.01, fDist)); /*+ (softclipL * 0.01 * fTVNoise) + (cubclipL * 0.01 * fCub);*/
-	sigR2 = sigDryR2 - (sigDryR2 * pow(0.01, fDist))  + (sigR2 * pow(0.01, fDist)); /*+ (softclipR * 0.01 * fTVNoise) + (cubclipR * 0.01 * fCub);*/
+	sigL1 = sigDryL1 - exp(sigDryL1 * 0.01 * fDist)  + exp(sigL1 * 0.01 * fDist); /*+ (softclipL * 0.01 * fTVNoise) + (cubclipL * 0.01 * fCub);*/
+	sigR2 = sigDryR2 - exp(sigDryR2 * 0.01 * fDist)  + exp(sigR2 * 0.01 * fDist); /*+ (softclipR * 0.01 * fTVNoise) + (cubclipR * 0.01 * fCub);*/
 
 	// Filter
         tmp1LP = a0LP * sigL1 - b1LP * tmp1LP + kDC_ADD;

@@ -1,6 +1,5 @@
 /*
- * DistoTV Plugin, based on 3BandEQ by Filipe Coelho and
- * Michael Gruhn
+ * DistoTV Plugin
  * Copyright (C) 2019 Martin Bångens <marbangens@gmail.com>
  *
  * This program is free software; you can redistribute it and/or
@@ -146,24 +145,26 @@ private:
   
     int graph = 0, NoiseSeq = 0, rms = 0;
     bool updatebuff = false;
-    //bool cubicSampels = false;
     
     bool PrePolarityL, PolarityL, PrePolarityR, PolarityR;
     
     float rnd[191];
     float bit; 
-    //float wave_y[AREAHEIGHT+1] = {0};
+    
     float wave_y_DSP = 0;
+    float wave_y_DSPnext = 0;
+
     float NoiseSample[6] = {0.00000001,0.000000000002,0.0000000002,0.00000000001,0.0000000001,0};
 
     // this one is a new way to store the wave information
-    uint16_t DSP_wave_y_Pixels[1000] = {0};      // (0-999)+1
+    uint16_t DSP_wave_y_Pixels[1000] = {0};
     
     float softclipL, softclipR, cubclipL, cubclipR;
     
     float sigL1, sigR2, sigDryL1, sigDryR2, outFinalL, outFinalR;
     
     float fWet, fDist, fPre, fAmpType, fInterpolation;
+    float fInterpolationTmp =0;
     
     float fLow, fMid, fHigh, fMaster;
 

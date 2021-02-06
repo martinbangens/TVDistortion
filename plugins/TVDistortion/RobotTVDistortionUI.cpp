@@ -98,9 +98,9 @@ DistoTVUI::DistoTVUI() // constructor definition.
     fSliderInterpolation->setId(DistoTVPlugin::paramInterpolation);
     fSliderInterpolation->setStartPos(300,330);
     fSliderInterpolation->setEndPos(300,385);
-    fSliderInterpolation->setRange(1.0f, 3.0f);
+    fSliderInterpolation->setRange(0.0f, 5.0f);
     fSliderInterpolation->setStep(1.0f);
-    fSliderInterpolation->setDefault(1.0f);
+    fSliderInterpolation->setDefault(0.0f);
     fSliderInterpolation->setCallback(this);
     
     fSliderScale = new ImageSlider(this, scaleImage);
