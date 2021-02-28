@@ -1,12 +1,15 @@
 #!/bin/bash
 
 
+make clean
+
+
 set -e
 
 
 
 if [ ! -f Makefile ]; then
-  echo "Makefile not found, please run this script from TVDistortion root source dir"
+  echo "Makefile not found, please run this script from robot root source dir"
   exit
 fi
 

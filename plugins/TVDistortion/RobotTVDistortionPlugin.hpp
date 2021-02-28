@@ -113,10 +113,10 @@ protected:
     
     float tvnoise(float sig, float knob, float NoiseSample);
     float tube(float sig);
-    float CheckForBadEggs(float input);
+    //float CheckForBadEggs(float input);
     
 // -------------------------------------------------------------------
-    /*float CheckForBadEggs(float input){
+    float CheckForBadEggs(float input){
     switch(std::fpclassify(input)){
         case FP_INFINITE:
 	  had_Inf = true;
@@ -129,7 +129,6 @@ protected:
 	  return input;
    }
 }
-*/
 private:
 
     // need to get a vacuum cleaner here...

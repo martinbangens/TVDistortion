@@ -28,7 +28,7 @@ TO DO
 
 * Redesign "pixels to dsp"
 
-* Program interpolation(BUGS!!, need a funktion that filers out bad numbers, also smoothing filter...)
+* Program interpolation(half done)
 
 * Design ui, "(how to?)lable knobs thoroughly"
 

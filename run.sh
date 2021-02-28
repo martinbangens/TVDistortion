@@ -1,5 +1,5 @@
 #!/bin/bash
-/home/marbangens/Code/TVDistortion/bin/TVDistortion &
+bin/TVDistortion &
 sleep 3;
 jack_connect "TVDistortion:out1" "Calf Studio Gear:Analyzer In #1";
 jack_connect "TVDistortion:out2" "Calf Studio Gear:Analyzer In #2";
