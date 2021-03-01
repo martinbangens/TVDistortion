@@ -28,7 +28,7 @@ TO DO
 
 * Redesign "pixels to dsp"
 
-* Program interpolation(half done)
+* Program interpolation(half done, different smoothing filter will give interpolation more character)
 
 * Design ui, "(how to?)lable knobs thoroughly"
 

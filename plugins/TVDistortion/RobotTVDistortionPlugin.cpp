@@ -568,6 +568,45 @@ void DistoTVPlugin::run(const float** inputs, float** outputs, uint32_t frames)
        else Ipsc++;
     }	
     break;
+    
+    
+    case 2: 
+    {	
+	float k = wave_y_DSPnext - wave_y_DSP;
+    	float ex = exp(k);
+	float Interpolation_y_DSP = 0;
+	
+	if (Ipsc == 0) Interpolation_y_DSP = wave_y_DSP;
+        
+	if (Ipsc == 1){
+	       	Interpolation_y_DSP = (wave_y_DSP - ex*wave_y_DSP)/ex;
+		fInterpolationTmp = Interpolation_y_DSP;
+	}
+        if (Ipsc == 2) Interpolation_y_DSP = (wave_y_DSP - fInterpolationTmp)/ex;
+
+        if (sigL1 >= Interpolation_y_DSP){
+            sigL1  = Interpolation_y_DSP;
+	}
+	if (sigL1 <= -Interpolation_y_DSP){
+	    sigL1  = -Interpolation_y_DSP;
+	}
+	if (sigR2 >= Interpolation_y_DSP){
+	    sigR2  = Interpolation_y_DSP;
+	}
+	if (sigR2 <= -Interpolation_y_DSP){
+	    sigR2  = -Interpolation_y_DSP;
+	}
+       
+	if(Interpolation_y_DSP < -1.){Interpolation_y_DSP   = -1.; } if(Interpolation_y_DSP  > 1.){Interpolation_y_DSP   = 1.; }
+
+	
+        if (Ipsc == 2) Ipsc = 0;
+        else Ipsc++;
+    }
+    break;
+
+    case 3:
+    {
 /*
            void hermite_quadratic(float *p, float x0, float y0, float k0, float x1, float k1)
             {
@@ -598,33 +637,36 @@ void DistoTVPlugin::run(const float** inputs, float** outputs, uint32_t frames)
                 p[3]    = d;
             }
 
-            void exponent(float *p, float x0, float y0, float x1, float y1, float k)
-            {
-                double e        = exp(k*(x0 - x1));
-                p[0]            = (y0 - e*y1) / (1.0 - e);
-                p[1]            = (y0 - p[0]) / exp(k*x0);
-                p[2]            = k;
-            }
-
-            void linear(float *p, float x0, float y0, float x1, float y1)
-            {
-                p[0]            = (y1 - y0) / (x1 - x0);
-                p[1]            = y0 - p[0]*x0;
-            }
 */
-   // need to modify exp interpolation to fitt this manny samples and be less step
-    case 2: 
-    {	
-	float k = wave_y_DSPnext - wave_y_DSP;
-    	float ex = exp(k);
+	// most importent here will be k0 k1 slop
+	// x go towords infinity and dont matter
+	// if x should matter it would be the wave ringbuffer position that is 1000
+	double dx    = 1;
+        double dy    = wave_y_DSPnext - wave_y_DSP;
+        double kx    = dy / dx;
+        double xx1   = 1;
+        double xx2   = 1;
 	float Interpolation_y_DSP = 0;
 
-        if (Ipsc == 1){
-	       	Interpolation_y_DSP = (wave_y_DSP - ex*wave_y_DSP)/ex;
-		fInterpolationTmp = Interpolation_y_DSP;
+        if (Ipsc == 0) Interpolation_y_DSP = wave_y_DSP;
+	
+	if (Ipsc == 1){
+            //double a = ((k0 + k1)*dx - 2.0f*dy) / (dx*dx*dx);
+	    //Interpolation_y_DSP   = (float)a;
 	}
-        if (Ipsc == 2) Interpolation_y_DSP = (wave_y_DSP - fInterpolationTmp)/ex;
 
+        if (Ipsc == 2){
+	
+	}
+        
+	if (Ipsc == 3){
+	
+	}
+        
+	if (Ipsc == 4){
+	
+	}
+        
         if (sigL1 >= Interpolation_y_DSP){
             sigL1  = Interpolation_y_DSP;
 	}
@@ -632,39 +674,20 @@ void DistoTVPlugin::run(const float** inputs, float** outputs, uint32_t frames)
 	    sigL1  = -Interpolation_y_DSP;
 	}
 	if (sigR2 >= Interpolation_y_DSP){
-	    sigR2  = Interpolation_y_DSP;
+	    sigR2  = Interpolation_y_DSP ;
 	}
 	if (sigR2 <= -Interpolation_y_DSP){
 	    sigR2  = -Interpolation_y_DSP;
 	}
-       
+        
 	if(Interpolation_y_DSP < -1.){Interpolation_y_DSP   = -1.; } if(Interpolation_y_DSP  > 1.){Interpolation_y_DSP   = 1.; }
 
+        if (Ipsc == 4) Ipsc = 0;
+        else Ipsc++;
 	
-       if (Ipsc == 2) Ipsc = 0;
-       else Ipsc++;
+
     }
-        break;
-
-    case 3:
-     
-
-        if (sigL1 >= wave_y_DSP){
-            sigL1  = wave_y_DSP;
-	}
-	if (sigL1 <= -wave_y_DSP){
-	    sigL1  = -wave_y_DSP;
-	}
-	if (sigR2 >= wave_y_DSP){
-	    sigR2  = wave_y_DSP;
-	}
-	if (sigR2 <= -wave_y_DSP){
-	    sigR2  = -wave_y_DSP;
-	}
-        
-	//Ipsc=0;
-
-        break;
+    break;
 
     case 4:
      
